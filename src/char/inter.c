@@ -314,7 +314,14 @@ const char * geoip_countryname[253] = {"Unknown","Asia/Pacific Region","Europe",
 unsigned char *geoip_cache;
 void geoip_readdb(void){
 	struct stat bufa;
-	FILE *db=fopen("./db/GeoIP.dat","rb");
+	char geoip_path[1024];
+	FILE *db;
+	safesnprintf(geoip_path,sizeof(geoip_path),"%s/GeoIP.dat",db_path);
+	db=fopen(geoip_path,"rb");
+	if(db == NULL){
+		ShowError("Couldn't found '%s' file in geoip_readdb",geoip_path);
+		return;
+	}
 	fstat(fileno(db), &bufa);
 	geoip_cache = (unsigned char *) aMalloc(sizeof(unsigned char) * bufa.st_size);
 	if(fread(geoip_cache, sizeof(unsigned char), bufa.st_size, db) != bufa.st_size) { ShowError("geoip_cache reading didn't read all elements \n"); }
