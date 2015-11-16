@@ -1122,7 +1122,8 @@ int socket_config_read(const char* cfgName)
 	char line[1024],w1[1024],w2[1024];
 	FILE *fp;
 
-	fp = fopen(cfgName, "r");
+	safesnprintf(line,sizeof(line),"%s%s",CONF_PATH,cfgName);
+	fp = fopen(line, "r");
 	if(fp == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return 1;
@@ -1319,7 +1320,7 @@ int socket_getips(uint32* ips, int max)
 
 void socket_init(void)
 {
-	char *SOCKET_CONF_FILENAME = "conf/packet_athena.conf";
+	char *SOCKET_CONF_FILENAME = "packet_athena.conf";
 	unsigned int rlim_cur = FD_SETSIZE;
 
 #ifdef WIN32

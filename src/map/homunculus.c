@@ -1,6 +1,8 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
+#include <stdlib.h>
+
 #include "../common/cbasetypes.h"
 #include "../common/malloc.h"
 #include "../common/timer.h"
@@ -20,8 +22,6 @@
 #include "trade.h"
 
 #include "homunculus.h"
-
-#include <stdlib.h>
 
 struct s_homunculus_db homunculus_db[MAX_HOMUNCULUS_CLASS];	//[orn]
 struct homun_skill_tree_entry hskill_tree[MAX_HOMUNCULUS_CLASS][MAX_HOM_SKILL_TREE];

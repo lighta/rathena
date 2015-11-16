@@ -1,6 +1,13 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
+#ifdef WIN32
+#include "winapi.h"
+#endif
+#include <mysql.h>
+#include <stdlib.h>// strtoul
+
+#include "../config/core.h"
 #include "cbasetypes.h"
 #include "malloc.h"
 #include "showmsg.h"
@@ -8,13 +15,7 @@
 #include "timer.h"
 #include "sql.h"
 
-#ifdef WIN32
-#include "winapi.h"
-#endif
-#include <mysql.h>
-#include <stdlib.h>// strtoul
-
-#define SQL_CONF_NAME "conf/inter_athena.conf"
+#define SQL_CONF_NAME CONF_PATH"inter_athena.conf"
 
 void ra_mysql_error_handler(unsigned int ecode);
 
@@ -1027,5 +1028,5 @@ void Sql_inter_server_read(const char* cfgName, bool first) {
 }
 
 void Sql_Init(void) {
-	Sql_inter_server_read(SQL_CONF_NAME,true);
+	//Sql_inter_server_read(SQL_CONF_NAME,true);
 }

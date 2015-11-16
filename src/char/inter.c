@@ -738,8 +738,8 @@ static int inter_config_read(const char* cfgName)
 {
 	char line[1024];
 	FILE* fp;
-
-	fp = fopen(cfgName, "r");
+	safesnprintf(line,sizeof(line),"%s%s",CONF_PATH,cfgName);
+	fp = fopen(line, "r");
 	if(fp == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return 1;
@@ -802,7 +802,6 @@ int inter_log(char* fmt, ...)
 int inter_init_sql(const char *file)
 {
 	//int i;
-
 	inter_config_read(file);
 
 	//DB connection initialized

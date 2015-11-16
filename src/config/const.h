@@ -38,6 +38,8 @@
 #endif
 
 #define DBIMPORT "import"
+#define CONF_PATH "../../conf/"
+#define LOG_PATH "../../log/"
 
 /**
  * DefType

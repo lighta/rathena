@@ -18,9 +18,11 @@
 #include <signal.h>
 #ifndef _WIN32
 #include <unistd.h>
+
 #else
 #include "winapi.h" // Console close event handling
 #include <direct.h> // _chdir
+#include <LibLoaderAPI.h> //AddDllDirectory
 #endif
 
 
@@ -32,7 +34,7 @@ void (*shutdown_callback)(void) = NULL;
 #endif
 
 int runflag = CORE_ST_RUN;
-char db_path[12] = "db"; /// relative path for db from server
+char db_path[12] = "../../db"; /// relative path for db from server
 
 char *SERVER_NAME = NULL;
 char SERVER_TYPE = ATHENA_SERVER_NONE;
@@ -337,22 +339,17 @@ int main (int argc, char **argv)
 
 	malloc_init();// needed for Show* in display_title() [FlavioJS]
 
-#ifdef MINICORE // minimalist Core
-	display_title();
-	usercheck();
-	do_init(argc,argv);
-	do_final();
-#else// not MINICORE
 	set_server_type();
 	display_title();
 	usercheck();
-
+#ifndef MINICORE // minimalist Core
 	Sql_Init();
 	rathread_init();
 	mempool_init();
+#endif
 	db_init();
-	signals_init();
 
+	signals_init();
 #ifdef _WIN32
 	cevents_init();
 #endif
@@ -373,6 +370,7 @@ int main (int argc, char **argv)
 	timer_final();
 	socket_final();
 	db_final();
+#ifndef MINICORE // minimalist Core
 	mempool_final();
 	rathread_final();
 	ers_final();

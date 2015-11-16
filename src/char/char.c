@@ -2148,7 +2148,8 @@ int char_lan_config_read(const char *lancfgName) {
 	int line_num = 0, s_subnet=ARRAYLENGTH(subnet);
 	char line[1024], w1[64], w2[64], w3[64], w4[64];
 
-	if((fp = fopen(lancfgName, "r")) == NULL) {
+	safesnprintf(line,sizeof(line),"%s%s",CONF_PATH,lancfgName); //by default we are in conf path
+	if((fp = fopen(line, "r")) == NULL) {
 		ShowWarning("LAN Support configuration file is not found: %s\n", lancfgName);
 		return 1;
 	}
@@ -2451,7 +2452,8 @@ void char_sql_config_read(const char* cfgName) {
 	char line[1024], w1[1024], w2[1024];
 	FILE* fp;
 
-	if ((fp = fopen(cfgName, "r")) == NULL) {
+	safesnprintf(line,sizeof(line),"%s%s",CONF_PATH,cfgName); //by default we are in conf path
+	if ((fp = fopen(line, "r")) == NULL) {
 		ShowError("File not found: %s\n", cfgName);
 		return;
 	}
@@ -2544,7 +2546,7 @@ void char_sql_config_read(const char* cfgName) {
 
 void char_set_default_sql(){
 //	schema_config.db_use_sqldbs;
-	safestrncpy(schema_config.db_path,"db",sizeof(schema_config.db_path));
+	safestrncpy(schema_config.db_path,"../../db",sizeof(schema_config.db_path));
 	safestrncpy(schema_config.char_db,"char",sizeof(schema_config.char_db));
 	safestrncpy(schema_config.scdata_db,"sc_data",sizeof(schema_config.scdata_db));
 	safestrncpy(schema_config.cart_db,"cart_inventory",sizeof(schema_config.cart_db));
@@ -2645,8 +2647,10 @@ void char_set_defaults(){
 
 bool char_config_read(const char* cfgName, bool normal){
 	char line[1024], w1[1024], w2[1024];
-	FILE* fp = fopen(cfgName, "r");
+	FILE* fp;
 
+	safesnprintf(line,sizeof(line),"%s%s",CONF_PATH,cfgName); //by default we are in conf path
+	fp = fopen(line, "r");
 	if (fp == NULL) {
 		ShowError("Configuration file not found: %s.\n", cfgName);
 		return false;
@@ -2857,7 +2861,9 @@ bool char_config_read(const char* cfgName, bool normal){
  * Message conf function
  */
 int char_msg_config_read(char *cfgName){
-	return _msg_config_read(cfgName,CHAR_MAX_MSG,msg_table);
+	char cfgName_wpath[1024];
+	safesnprintf(cfgName_wpath,sizeof(cfgName_wpath),"%s%s",CONF_PATH,cfgName);
+	return _msg_config_read(cfgName_wpath,CHAR_MAX_MSG,msg_table);
 }
 const char* char_msg_txt(int msg_number){
 	return _msg_txt(msg_number,CHAR_MAX_MSG,msg_table);
@@ -2938,18 +2944,19 @@ int do_init(int argc, char **argv)
 	mapindex_init();
 
 	// Init default value
-	CHAR_CONF_NAME =   "conf/char_athena.conf";
-	LAN_CONF_NAME =    "conf/subnet_athena.conf";
-	SQL_CONF_NAME =    "conf/inter_athena.conf";
-	MSG_CONF_NAME_EN = "conf/msg_conf/char_msg.conf";
-	safestrncpy(console_log_filepath, "./log/char-msg_log.log", sizeof(console_log_filepath));
+	CHAR_CONF_NAME =   "char_athena.conf";
+	LAN_CONF_NAME =    "subnet_athena.conf";
+	SQL_CONF_NAME =    "inter_athena.conf";
+	MSG_CONF_NAME_EN = "msg_conf/char_msg.conf";
+	safestrncpy(console_log_filepath, LOG_PATH"char-msg_log.log", sizeof(console_log_filepath));
 
 	cli_get_options(argc,argv);
 
 	char_set_defaults();
+	char_set_default_sql();
+
 	char_config_read(CHAR_CONF_NAME, true);
 	char_lan_config_read(LAN_CONF_NAME);
-	char_set_default_sql();
 	char_sql_config_read(SQL_CONF_NAME);
 	msg_config_read(MSG_CONF_NAME_EN);
 
