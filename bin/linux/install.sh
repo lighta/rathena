@@ -3,6 +3,7 @@
 . ./function.sh
 
 #read -p "WARNING: This script is experimental. Press Ctrl+C to cancel or Enter to continue." readEnterKey
+cd ../.. #go back into main dir
 
 # NOTE: This requires GNU getopt.  On Mac OS X and FreeBSD, you have to install this
 # separately; see below.
@@ -32,8 +33,8 @@ cp -r db/ $PKG_PATH/var/$PKG/db
 if [ -d log ]; then cp -r log/ $PKG_PATH/var/$PKG/log; fi
 cp -r conf/ $PKG_PATH/etc/$PKG/conf
 cp -r npc/ $PKG_PATH/npc
-cp athena-start $PKG_PATH/	
-mv *-server* $PKG_PATH/bin/
+cp bin/linux/athena-start $PKG_PATH/	
+mv bin/linux/*-server* $PKG_PATH/bin/
 
 ln -fs $PKG_PATH/var/$PKG/db/ $PKG_PATH/db
 ln -fs $PKG_PATH/var/$PKG/log/ $PKG_PATH/log

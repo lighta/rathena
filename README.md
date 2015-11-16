@@ -32,7 +32,7 @@ is broken down into Windows and Linux prerequisites.
 	* MySQL Workbench ( http://www.mysql.com/downloads/workbench/ )
 	* MS Visual C++ ( http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-cpp-express )
 	* TortoiseGIT ( http://code.google.com/p/tortoisegit/ )
-	* MSysGit ( http://msysgit.github.io/ or https://github.com/msysgit/git/releases )
+	* MSysGit ( http://git-for-windows.github.io/ or https://github.com/msysgit/git/releases )
 
 * Linux (names of packages may require specific version numbers on certain distributions)
 	* gcc
