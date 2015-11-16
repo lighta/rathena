@@ -1,63 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\src\common\core.c">
+    <ClCompile Include="$(SRC_PATH)\common\core.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\des.c">
+    <ClCompile Include="$(SRC_PATH)\common\des.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\grfio.c">
+    <ClCompile Include="$(SRC_PATH)\common\grfio.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\malloc.c">
+    <ClCompile Include="$(SRC_PATH)\common\malloc.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\showmsg.c">
+    <ClCompile Include="$(SRC_PATH)\common\showmsg.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\strlib.c">
+    <ClCompile Include="$(SRC_PATH)\common\strlib.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\common\utils.c">
+    <ClCompile Include="$(SRC_PATH)\common\utils.c">
       <Filter>common</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tool\mapcache.c">
+    <ClCompile Include="$(SRC_PATH)\tool\mapcache.c">
       <Filter>mapcache</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\common\cbasetypes.h">
+    <ClInclude Include="$(SRC_PATH)\common\cbasetypes.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\core.h">
+    <ClInclude Include="$(SRC_PATH)\common\core.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\des.h">
+    <ClInclude Include="$(SRC_PATH)\common\des.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\grfio.h">
+    <ClInclude Include="$(SRC_PATH)\common\grfio.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\malloc.h">
+    <ClInclude Include="$(SRC_PATH)\common\malloc.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\mmo.h">
+    <ClInclude Include="$(SRC_PATH)\common\mmo.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\showmsg.h">
+    <ClInclude Include="$(SRC_PATH)\common\showmsg.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\strlib.h">
+    <ClInclude Include="$(SRC_PATH)\common\strlib.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\utils.h">
+    <ClInclude Include="$(SRC_PATH)\common\utils.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\common\winapi.h">
+    <ClInclude Include="$(SRC_PATH)\common\winapi.h">
       <Filter>common</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\config\renewal.h">
+    <ClInclude Include="$(SRC_PATH)\config\renewal.h">
       <Filter>config</Filter>
     </ClInclude>
   </ItemGroup>

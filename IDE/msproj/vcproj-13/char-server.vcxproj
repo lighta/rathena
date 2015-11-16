@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D356871D-58E1-450B-967A-E4E9646175AF}</ProjectGuid>
+    <RootNamespace>char-server</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\SrcPaths.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\SrcPaths.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SRC_PATH)\..\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SRC_PATH)\..\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">char-server</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">char-server</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ThirdParty_Path)\libconfig;$(ThirdParty_Path)\mysql\include;$(ThirdParty_Path)\msinttypes\include;$(ThirdParty_Path)\mt19937ar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_WIN32;__WIN32;_DEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=4096;LIBCONFIG_STATIC;YY_USE_CONST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4800;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libcmtd.lib;oldnames.lib;ws2_32.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ThirdParty_Path)\mysql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(ThirdParty_Path)\libconfig;$(ThirdParty_Path)\mysql\include;$(ThirdParty_Path)\msinttypes\include;$(ThirdParty_Path)\mt19937ar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_WIN32;__WIN32;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;LIBCONFIG_STATIC;YY_USE_CONST;FD_SETSIZE=4096;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4800;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libcmt.lib;oldnames.lib;ws2_32.lib;libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ThirdParty_Path)\mysql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\grammar.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\libconfig.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\parsectx.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\scanctx.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\scanner.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\strbuf.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\wincompat.h" />
+    <ClInclude Include="$(ThirdParty_Path)\mt19937ar\mt19937ar.h" />
+    <ClInclude Include="$(SRC_PATH)\common\cbasetypes.h" />
+    <ClInclude Include="$(SRC_PATH)\common\core.h" />
+    <ClInclude Include="$(SRC_PATH)\common\conf.h" />
+    <ClInclude Include="$(SRC_PATH)\common\db.h" />
+    <ClInclude Include="$(SRC_PATH)\common\ers.h" />
+    <ClInclude Include="$(SRC_PATH)\common\malloc.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mapindex.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mempool.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mmo.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mutex.h" />
+    <ClInclude Include="$(SRC_PATH)\common\nullpo.h" />
+    <ClInclude Include="$(SRC_PATH)\common\raconf.h" />
+    <ClInclude Include="$(SRC_PATH)\common\random.h" />
+    <ClInclude Include="$(SRC_PATH)\common\showmsg.h" />
+    <ClInclude Include="$(SRC_PATH)\common\socket.h" />
+    <ClInclude Include="$(SRC_PATH)\common\sql.h" />
+    <ClInclude Include="$(SRC_PATH)\common\strlib.h" />
+    <ClInclude Include="$(SRC_PATH)\common\thread.h" />
+    <ClInclude Include="$(SRC_PATH)\common\timer.h" />
+    <ClInclude Include="$(SRC_PATH)\common\utils.h" />
+    <ClInclude Include="$(SRC_PATH)\common\cli.h" />
+    <ClInclude Include="$(SRC_PATH)\common\msg_conf.h" />
+    <ClInclude Include="$(SRC_PATH)\common\winapi.h" />
+    <ClInclude Include="$(SRC_PATH)\config\core.h" />
+    <ClInclude Include="$(SRC_PATH)\char\char.h" />
+    <ClInclude Include="$(SRC_PATH)\char\char_clif.h" />
+    <ClInclude Include="$(SRC_PATH)\char\char_cnslif.h" />
+    <ClInclude Include="$(SRC_PATH)\char\char_logif.h" />
+    <ClInclude Include="$(SRC_PATH)\char\char_mapif.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_auction.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_elemental.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_guild.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_homun.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_mail.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_mercenary.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_party.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_pet.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_quest.h" />
+    <ClInclude Include="$(SRC_PATH)\char\int_storage.h" />
+    <ClInclude Include="$(SRC_PATH)\char\inter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\grammar.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\libconfig.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\scanctx.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\scanner.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\strbuf.c" />
+    <ClCompile Include="$(ThirdParty_Path)\mt19937ar\mt19937ar.c" />
+    <ClCompile Include="$(SRC_PATH)\common\core.c" />
+    <ClCompile Include="$(SRC_PATH)\common\conf.c" />
+    <ClCompile Include="$(SRC_PATH)\common\db.c" />
+    <ClCompile Include="$(SRC_PATH)\common\ers.c" />
+    <ClCompile Include="$(SRC_PATH)\common\malloc.c" />
+    <ClCompile Include="$(SRC_PATH)\common\mapindex.c" />
+    <ClCompile Include="$(SRC_PATH)\common\mempool.c" />
+    <ClCompile Include="$(SRC_PATH)\common\mutex.c" />
+    <ClCompile Include="$(SRC_PATH)\common\nullpo.c" />
+    <ClCompile Include="$(SRC_PATH)\common\raconf.c" />
+    <ClCompile Include="$(SRC_PATH)\common\random.c" />
+    <ClCompile Include="$(SRC_PATH)\common\showmsg.c" />
+    <ClCompile Include="$(SRC_PATH)\common\socket.c" />
+    <ClCompile Include="$(SRC_PATH)\common\sql.c" />
+    <ClCompile Include="$(SRC_PATH)\common\strlib.c" />
+    <ClCompile Include="$(SRC_PATH)\common\thread.c" />
+    <ClCompile Include="$(SRC_PATH)\common\timer.c" />
+    <ClCompile Include="$(SRC_PATH)\common\utils.c" />
+    <ClCompile Include="$(SRC_PATH)\common\cli.c" />
+    <ClCompile Include="$(SRC_PATH)\common\msg_conf.c" />
+    <ClCompile Include="$(SRC_PATH)\char\char.c" />
+    <ClCompile Include="$(SRC_PATH)\char\char_clif.c" />
+    <ClCompile Include="$(SRC_PATH)\char\char_cnslif.c" />
+    <ClCompile Include="$(SRC_PATH)\char\char_logif.c" />
+    <ClCompile Include="$(SRC_PATH)\char\char_mapif.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_auction.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_elemental.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_guild.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_homun.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_mail.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_mercenary.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_party.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_pet.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_quest.c" />
+    <ClCompile Include="$(SRC_PATH)\char\int_storage.c" />
+    <ClCompile Include="$(SRC_PATH)\char\inter.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

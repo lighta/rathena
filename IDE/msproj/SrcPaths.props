@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <SRC_PATH>..\..\..\src</SRC_PATH>
+    <ThirdParty_Path>..\..\..\3rdparty</ThirdParty_Path>
+    <Conf_Path>..\..\..\conf</Conf_Path>
+    <DB_Path>..\..\..\db</DB_Path>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+    <BuildMacro Include="SRC_PATH">
+      <Value>$(SRC_PATH)</Value>
+      <EnvironmentVariable>true</EnvironmentVariable>
+    </BuildMacro>
+    <BuildMacro Include="ThirdParty_Path">
+      <Value>$(ThirdParty_Path)</Value>
+    </BuildMacro>
+    <BuildMacro Include="Conf_Path">
+      <Value>$(Conf_Path)</Value>
+    </BuildMacro>
+    <BuildMacro Include="DB_Path">
+      <Value>$(DB_Path)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

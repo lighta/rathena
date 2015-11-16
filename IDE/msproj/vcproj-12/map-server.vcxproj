@@ -1,0 +1,366 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D356871D-58E1-450B-967A-E6E9646175AF}</ProjectGuid>
+    <RootNamespace>map-server</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\SrcPaths.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\SrcPaths.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SRC_PATH)\..\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SRC_PATH)\..\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">map-server</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">map-server</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ThirdParty_Path)\mysql\include;$(ThirdParty_Path)\zlib\include;$(ThirdParty_Path)\pcre\include;$(ThirdParty_Path)\msinttypes\include;$(ThirdParty_Path)\mt19937ar;$(ThirdParty_Path)\libconfig;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_WIN32;__WIN32;_DEBUG;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=4096;LIBCONFIG_STATIC;YY_USE_CONST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4018;4100;4800;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libcmtd.lib;oldnames.lib;ws2_32.lib;libmysql.lib;zdll.lib;pcre.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ThirdParty_Path)\mysql\lib;$(ThirdParty_Path)\zlib\lib;$(ThirdParty_Path)\pcre\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(ThirdParty_Path)\mysql\include;$(ThirdParty_Path)\zlib\include;$(ThirdParty_Path)\pcre\include;$(ThirdParty_Path)\msinttypes\include;$(ThirdParty_Path)\mt19937ar;$(ThirdParty_Path)\libconfig;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;_WIN32;__WIN32;NDEBUG;PCRE_SUPPORT;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;FD_SETSIZE=4096;LIBCONFIG_STATIC;YY_USE_CONST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <CompileAs>CompileAsC</CompileAs>
+      <DisableSpecificWarnings>4018;4100;4800;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>libcmt.lib;oldnames.lib;ws2_32.lib;libmysql.lib;zdll.lib;pcre.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ThirdParty_Path)\mysql\lib;$(ThirdParty_Path)\zlib\lib;$(ThirdParty_Path)\pcre\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\grammar.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\libconfig.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\parsectx.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\scanctx.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\scanner.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\strbuf.h" />
+    <ClInclude Include="$(ThirdParty_Path)\libconfig\wincompat.h" />
+    <ClInclude Include="$(ThirdParty_Path)\mt19937ar\mt19937ar.h" />
+    <ClInclude Include="$(SRC_PATH)\common\cbasetypes.h" />
+    <ClInclude Include="$(SRC_PATH)\common\conf.h" />
+    <ClInclude Include="$(SRC_PATH)\common\core.h" />
+    <ClInclude Include="$(SRC_PATH)\common\db.h" />
+    <ClInclude Include="$(SRC_PATH)\common\des.h" />
+    <ClInclude Include="$(SRC_PATH)\common\ers.h" />
+    <ClInclude Include="$(SRC_PATH)\common\grfio.h" />
+    <ClInclude Include="$(SRC_PATH)\common\malloc.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mapindex.h" />
+    <ClInclude Include="$(SRC_PATH)\common\md5calc.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mempool.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mmo.h" />
+    <ClInclude Include="$(SRC_PATH)\common\mutex.h" />
+    <ClInclude Include="$(SRC_PATH)\common\nullpo.h" />
+    <ClInclude Include="$(SRC_PATH)\common\raconf.h" />
+    <ClInclude Include="$(SRC_PATH)\common\random.h" />
+    <ClInclude Include="$(SRC_PATH)\common\showmsg.h" />
+    <ClInclude Include="$(SRC_PATH)\common\socket.h" />
+    <ClInclude Include="$(SRC_PATH)\common\sql.h" />
+    <ClInclude Include="$(SRC_PATH)\common\strlib.h" />
+    <ClInclude Include="$(SRC_PATH)\common\thread.h" />
+    <ClInclude Include="$(SRC_PATH)\common\timer.h" />
+    <ClInclude Include="$(SRC_PATH)\common\utils.h" />
+    <ClInclude Include="$(SRC_PATH)\common\winapi.h" />
+    <ClInclude Include="$(SRC_PATH)\common\cli.h" />
+    <ClInclude Include="$(SRC_PATH)\common\msg_conf.h" />
+    <ClInclude Include="$(SRC_PATH)\map\atcommand.h" />
+    <ClInclude Include="$(SRC_PATH)\map\battle.h" />
+    <ClInclude Include="$(SRC_PATH)\map\battleground.h" />
+    <ClInclude Include="$(SRC_PATH)\map\buyingstore.h" />
+    <ClInclude Include="$(SRC_PATH)\map\cashshop.h" />
+    <ClInclude Include="$(SRC_PATH)\map\channel.h" />
+    <ClInclude Include="$(SRC_PATH)\map\chat.h" />
+    <ClInclude Include="$(SRC_PATH)\map\chrif.h" />
+    <ClInclude Include="$(SRC_PATH)\map\clif.h" />
+    <ClInclude Include="$(SRC_PATH)\map\date.h" />
+    <ClInclude Include="$(SRC_PATH)\map\duel.h" />
+    <ClInclude Include="$(SRC_PATH)\map\elemental.h" />
+    <ClInclude Include="$(SRC_PATH)\map\guild.h" />
+    <ClInclude Include="$(SRC_PATH)\map\intif.h" />
+    <ClInclude Include="$(SRC_PATH)\map\itemdb.h" />
+    <ClInclude Include="$(SRC_PATH)\map\log.h" />
+    <ClInclude Include="$(SRC_PATH)\map\mail.h" />
+    <ClInclude Include="$(SRC_PATH)\map\map.h" />
+    <ClInclude Include="$(SRC_PATH)\map\mapreg.h" />
+    <ClInclude Include="$(SRC_PATH)\map\homunculus.h" />
+    <ClInclude Include="$(SRC_PATH)\map\instance.h" />
+    <ClInclude Include="$(SRC_PATH)\map\mercenary.h" />
+    <ClInclude Include="$(SRC_PATH)\map\mob.h" />
+    <ClInclude Include="$(SRC_PATH)\map\npc.h" />
+    <ClInclude Include="$(SRC_PATH)\map\party.h" />
+    <ClInclude Include="$(SRC_PATH)\map\path.h" />
+    <ClInclude Include="$(SRC_PATH)\map\pc.h" />
+    <ClInclude Include="$(SRC_PATH)\map\pc_groups.h" />
+    <ClInclude Include="$(SRC_PATH)\map\pet.h" />
+    <ClInclude Include="$(SRC_PATH)\map\quest.h" />
+    <ClInclude Include="$(SRC_PATH)\config\const.h" />
+    <ClInclude Include="$(SRC_PATH)\config\core.h" />
+    <ClInclude Include="$(SRC_PATH)\config\renewal.h" />
+    <ClInclude Include="$(SRC_PATH)\config\secure.h" />
+    <ClInclude Include="$(SRC_PATH)\config\classes\general.h" />
+    <ClInclude Include="$(SRC_PATH)\map\script.h" />
+    <ClInclude Include="$(SRC_PATH)\map\searchstore.h" />
+    <ClInclude Include="$(SRC_PATH)\map\skill.h" />
+    <ClInclude Include="$(SRC_PATH)\map\status.h" />
+    <ClInclude Include="$(SRC_PATH)\map\storage.h" />
+    <ClInclude Include="$(SRC_PATH)\map\trade.h" />
+    <ClInclude Include="$(SRC_PATH)\map\unit.h" />
+    <ClInclude Include="$(SRC_PATH)\map\vending.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\grammar.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\libconfig.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\scanctx.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\scanner.c" />
+    <ClCompile Include="$(ThirdParty_Path)\libconfig\strbuf.c" />
+    <ClCompile Include="$(ThirdParty_Path)\mt19937ar\mt19937ar.c" />
+    <ClCompile Include="$(SRC_PATH)\common\conf.c" />
+    <ClCompile Include="$(SRC_PATH)\common\core.c" />
+    <ClCompile Include="$(SRC_PATH)\common\db.c" />
+    <ClCompile Include="$(SRC_PATH)\common\des.c" />
+    <ClCompile Include="$(SRC_PATH)\common\ers.c" />
+    <ClCompile Include="$(SRC_PATH)\common\grfio.c" />
+    <ClCompile Include="$(SRC_PATH)\common\malloc.c" />
+    <ClCompile Include="$(SRC_PATH)\common\mapindex.c" />
+    <ClCompile Include="$(SRC_PATH)\common\md5calc.c" />
+    <ClCompile Include="$(SRC_PATH)\common\mempool.c" />
+    <ClCompile Include="$(SRC_PATH)\common\mutex.c" />
+    <ClCompile Include="$(SRC_PATH)\common\nullpo.c" />
+    <ClCompile Include="$(SRC_PATH)\common\raconf.c" />
+    <ClCompile Include="$(SRC_PATH)\common\random.c" />
+    <ClCompile Include="$(SRC_PATH)\common\showmsg.c" />
+    <ClCompile Include="$(SRC_PATH)\common\socket.c" />
+    <ClCompile Include="$(SRC_PATH)\common\sql.c" />
+    <ClCompile Include="$(SRC_PATH)\common\strlib.c" />
+    <ClCompile Include="$(SRC_PATH)\common\thread.c" />
+    <ClCompile Include="$(SRC_PATH)\common\timer.c" />
+    <ClCompile Include="$(SRC_PATH)\common\utils.c" />
+    <ClCompile Include="$(SRC_PATH)\common\cli.c" />
+    <ClCompile Include="$(SRC_PATH)\common\msg_conf.c" />
+    <ClCompile Include="$(SRC_PATH)\map\atcommand.c" />
+    <ClCompile Include="$(SRC_PATH)\map\battle.c" />
+    <ClCompile Include="$(SRC_PATH)\map\battleground.c" />
+    <ClCompile Include="$(SRC_PATH)\map\buyingstore.c" />
+    <ClCompile Include="$(SRC_PATH)\map\cashshop.c" />
+    <ClCompile Include="$(SRC_PATH)\map\channel.c" />
+    <ClCompile Include="$(SRC_PATH)\map\chat.c" />
+    <ClCompile Include="$(SRC_PATH)\map\chrif.c" />
+    <ClCompile Include="$(SRC_PATH)\map\clif.c" />
+    <ClCompile Include="$(SRC_PATH)\map\date.c" />
+    <ClCompile Include="$(SRC_PATH)\map\duel.c" />
+    <ClCompile Include="$(SRC_PATH)\map\elemental.c" />
+    <ClCompile Include="$(SRC_PATH)\map\guild.c" />
+    <ClCompile Include="$(SRC_PATH)\map\intif.c" />
+    <ClCompile Include="$(SRC_PATH)\map\itemdb.c" />
+    <ClCompile Include="$(SRC_PATH)\map\log.c" />
+    <ClCompile Include="$(SRC_PATH)\map\mail.c" />
+    <ClCompile Include="$(SRC_PATH)\map\map.c" />
+    <ClCompile Include="$(SRC_PATH)\map\mapreg.c" />
+    <ClCompile Include="$(SRC_PATH)\map\homunculus.c" />
+    <ClCompile Include="$(SRC_PATH)\map\instance.c" />
+    <ClCompile Include="$(SRC_PATH)\map\mercenary.c" />
+    <ClCompile Include="$(SRC_PATH)\map\mob.c" />
+    <ClCompile Include="$(SRC_PATH)\map\npc.c" />
+    <ClCompile Include="$(SRC_PATH)\map\npc_chat.c" />
+    <ClCompile Include="$(SRC_PATH)\map\party.c" />
+    <ClCompile Include="$(SRC_PATH)\map\path.c" />
+    <ClCompile Include="$(SRC_PATH)\map\pc.c" />
+    <ClCompile Include="$(SRC_PATH)\map\pc_groups.c" />
+    <ClCompile Include="$(SRC_PATH)\map\pet.c" />
+    <ClCompile Include="$(SRC_PATH)\map\quest.c" />
+    <ClCompile Include="$(SRC_PATH)\map\script.c" />
+    <ClCompile Include="$(SRC_PATH)\map\searchstore.c" />
+    <ClCompile Include="$(SRC_PATH)\map\skill.c" />
+    <ClCompile Include="$(SRC_PATH)\map\status.c" />
+    <ClCompile Include="$(SRC_PATH)\map\storage.c" />
+    <ClCompile Include="$(SRC_PATH)\map\trade.c" />
+    <ClCompile Include="$(SRC_PATH)\map\unit.c" />
+    <ClCompile Include="$(SRC_PATH)\map\vending.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\battle_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\battle_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\char_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\char_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\inter_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\inter_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\log_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\log_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\login_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\login_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\map_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\map_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\packet_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\packet_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\import-tmpl\script_conf.txt" DestinationFolder="$(Conf_Path)\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\import\script_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_chn_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_chn_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_eng_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_eng_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_frn_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_frn_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_grm_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_grm_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_idn_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_idn_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_mal_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_mal_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_por_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_por_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_rus_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_rus_conf.txt')" />
+    <Copy SourceFiles="$(Conf_Path)\msg_conf\import-tmpl\map_msg_spn_conf.txt" DestinationFolder="$(Conf_Path)\msg_conf\import\" ContinueOnError="true" Condition="!Exists('$(Conf_Path)\msg_conf\import\map_msg_spn_conf.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\abra_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\abra_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\attr_fix.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\attr_fix.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\castle_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\castle_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\create_arrow_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\create_arrow_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\elemental_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\elemental_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\elemental_skill_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\elemental_skill_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\exp_guild.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\exp_guild.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\exp_homun.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\exp_homun.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\guild_skill_tree.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\guild_skill_tree.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\homun_skill_tree.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\homun_skill_tree.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\homunculus_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\homunculus_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\instance_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\instance_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_avail.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_avail.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_buyingstore.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_buyingstore.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_cash_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_cash_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_combo_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_combo_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_delay.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_delay.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_group_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_group_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_noequip.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_noequip.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_nouse.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_nouse.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_stack.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_stack.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\item_trade.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\item_trade.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\job_basehpsp_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\job_basehpsp_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\job_db1.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\job_db1.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\job_db2.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\job_db2.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\job_exp.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\job_exp.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\job_param_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\job_param_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\level_penalty.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\level_penalty.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\magicmushroom_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\magicmushroom_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\map_cache.dat" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\map_cache.dat')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\map_index.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\map_index.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mercenary_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mercenary_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mercenary_skill_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mercenary_skill_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mob_avail.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mob_avail.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mob_chat_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mob_chat_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mob_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mob_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mob_item_ratio.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mob_item_ratio.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mob_race2_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mob_race2_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mob_random_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mob_random_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\mob_skill_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\mob_skill_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\packet_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\packet_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\pet_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\pet_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\produce_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\produce_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\quest_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\quest_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\refine_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\refine_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\size_fix.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\size_fix.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_cast_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_cast_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_castnodex_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_castnodex_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_changematerial_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_changematerial_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_copyable_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_copyable_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_damage_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_damage_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_improvise_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_improvise_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_nocast_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_nocast_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_nonearnpc_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_nonearnpc_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_require_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_require_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_tree.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_tree.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\skill_unit_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\skill_unit_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\spellbook_db.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\spellbook_db.txt')" />
+    <Copy SourceFiles="$(DB_Path)\import-tmpl\statpoint.txt" DestinationFolder="$(DB_Path)\import\" ContinueOnError="true" Condition="!Exists('$(DB_Path)\import\statpoint.txt')" />
+  </Target>
+</Project>

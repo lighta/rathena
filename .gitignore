@@ -13,16 +13,18 @@ Thumbs.db
 /*_fifo
 /*.exe
 /*.exe.*
-/*.ilk
 /*.log
 /*.ncb
 /*.opensdf
 /*.opt
 /*.pdb
 /*.pid
-/*.sdf
 /*.stackdump
-/*.suo
+*.ilk
+*.suo
+*.opensdf
+*.sdf
+*.user
 *.o
 *.a
 *.yml
@@ -101,38 +103,19 @@ Thumbs.db
 /tools/*.ilk
 /tools/*.pdb
 
-# /vcproj-13/
-/vcproj-13/char-server
-/vcproj-13/login-server
-/vcproj-13/mapcache
-/vcproj-13/map-server
-/vcproj-13/*.user
-
 # /vcproj-12/
-/vcproj-12/char-server
-/vcproj-12/login-server
-/vcproj-12/mapcache
-/vcproj-12/map-server
-/vcproj-12/*.user
+IDE/msproj/vcproj-12/build
+# /vcproj-13/
+IDE/msproj/vcproj-13/build
 
-# /vcproj-10/
-/vcproj-10/char-server
-/vcproj-10/login-server
-/vcproj-10/mapcache
-/vcproj-10/map-server
-/vcproj-10/*.user
+# Clion (todo, separate private then public conf)
+IDE/clion/.idea/.name
+IDE/clion/.idea/misc.xml
+IDE/clion/.idea/modules.xml
+IDE/clion/.idea/rathena.iml
+IDE/clion/.idea/vcs.xml
+IDE/clion/.idea/workspace.xml
 
-# /vcproj-9/
-/vcproj-9/*.user
-/vcproj-9/char-server
-/vcproj-9/login-server
-/vcproj-9/map-server
-/vcproj-9/mapcache
-/.idea/.name
-/.idea/misc.xml
-/.idea/modules.xml
-/.idea/rathena.iml
-/.idea/vcs.xml
-/.idea/workspace.xml
+# cmake
 /build/
 
