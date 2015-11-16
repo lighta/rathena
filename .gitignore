@@ -11,13 +11,12 @@ Thumbs.db
 
 # /
 /*_fifo
-/*.exe
-/*.exe.*
+*.exe
+*.exe.*
 /*.log
 /*.ncb
-/*.opensdf
 /*.opt
-/*.pdb
+*.pdb
 /*.pid
 /*.stackdump
 *.ilk

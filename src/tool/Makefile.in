@@ -21,7 +21,7 @@ all: mapcache
 
 mapcache: obj_all $(MAPCACHE_OBJ) $(COMMON_DIR_OBJ) $(LIBCONFIG_OBJ)
 	@echo "	LD	$@"
-	@@CC@ @LDFLAGS@ -o ../../mapcache@EXEEXT@ $(MAPCACHE_OBJ) $(COMMON_DIR_OBJ) $(LIBCONFIG_AR) @LIBS@
+	@@CC@ @LDFLAGS@ -o ../../bin/linux/mapcache@EXEEXT@ $(MAPCACHE_OBJ) $(COMMON_DIR_OBJ) $(LIBCONFIG_AR) @LIBS@
 
 clean:
 	@echo "	CLEAN	tool"

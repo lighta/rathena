@@ -60,7 +60,7 @@ set_target_properties( char-server PROPERTIES COMPILE_FLAGS "${DEFINITIONS}" )
 if( INSTALL_COMPONENT_RUNTIME )
 	cpack_add_component( Runtime_charserver DESCRIPTION "char-server" DISPLAY_NAME "char-server" GROUP Runtime )
 	install( TARGETS char-server
-		DESTINATION "."
+		DESTINATION "bin/linux/"
 		COMPONENT Runtime_charserver )
 endif( INSTALL_COMPONENT_RUNTIME )
 set( TARGET_LIST ${TARGET_LIST} char-server  CACHE INTERNAL "" )

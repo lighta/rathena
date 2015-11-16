@@ -37,7 +37,7 @@ set_target_properties( mapcache PROPERTIES COMPILE_FLAGS "${DEFINITIONS}" )
 if( INSTALL_COMPONENT_RUNTIME )
 	cpack_add_component( Runtime_mapcache DESCRIPTION "mapcache generator" DISPLAY_NAME "mapcache" GROUP Runtime )
 	install( TARGETS mapcache
-		DESTINATION "."
+		DESTINATION "bin/linux/"
 		COMPONENT Runtime_mapcache )
 endif( INSTALL_COMPONENT_RUNTIME )
 set( TARGET_LIST ${TARGET_LIST} mapcache  CACHE INTERNAL "" )

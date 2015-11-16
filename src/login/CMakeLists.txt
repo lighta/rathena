@@ -40,7 +40,7 @@ set_target_properties( login-server PROPERTIES COMPILE_FLAGS "${DEFINITIONS}" )
 if( INSTALL_COMPONENT_RUNTIME )
 	cpack_add_component( Runtime_loginserver DESCRIPTION "login-server" DISPLAY_NAME "login-server" GROUP Runtime )
 	install( TARGETS login-server
-		DESTINATION "."
+		DESTINATION "bin/linux/"
 		COMPONENT Runtime_loginserver )
 endif( INSTALL_COMPONENT_RUNTIME )
 set( TARGET_LIST ${TARGET_LIST} login-server  CACHE INTERNAL "" )

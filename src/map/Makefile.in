@@ -67,7 +67,7 @@ obj:
 
 map-server: obj $(MAP_DIR_OBJ) $(COMMON_AR) $(LIBCONFIG_AR)
 	@echo "	LD	@OMAP@@EXEEXT@"
-	@@CC@ @LDFLAGS@ -o ../../@OMAP@@EXEEXT@ $(MAP_DIR_OBJ) $(COMMON_AR) $(MT19937AR_OBJ) $(LIBCONFIG_AR) @LIBS@ @PCRE_LIBS@ @MYSQL_LIBS@
+	@@CC@ @LDFLAGS@ -o ../../bin/linux/@OMAP@@EXEEXT@ $(MAP_DIR_OBJ) $(COMMON_AR) $(MT19937AR_OBJ) $(LIBCONFIG_AR) @LIBS@ @PCRE_LIBS@ @MYSQL_LIBS@
 
 
 # map object files

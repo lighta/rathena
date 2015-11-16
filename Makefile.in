@@ -107,12 +107,12 @@ needs_mysql:
 	@exit 1
 
 install:
-	@sh ./install.sh
+	@sh ./bin/linux/install.sh
 
 bin-clean:
-	@sh ./uninstall.sh bin
+	@sh ./bin/linux/uninstall.sh bin
 
 uninstall:
-	@sh ./uninstall.sh all
+	@sh ./bin/linux/uninstall.sh all
 
 #####################################################################
