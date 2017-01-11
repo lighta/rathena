@@ -98,7 +98,7 @@ typedef struct ers_cache
 
 struct ers_instance_t {
 	// Interface to ERS
-	struct eri VTable;
+	struct s_eri VTable;
 
 	// Name, used for debugging purposes
 	const char *Name;

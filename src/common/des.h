@@ -6,10 +6,10 @@
 #include "cbasetypes.h"
 
 /// One 64-bit block.
-struct BIT64 { uint8_t b[8]; };
+struct s_BIT64 { uint8_t b[8]; };
 
 
-void des_decrypt_block(BIT64* block);
+void des_decrypt_block(s_BIT64* block);
 void des_decrypt(unsigned char* data, size_t size);
 
 #endif // _DES_H_

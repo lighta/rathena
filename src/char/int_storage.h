@@ -6,8 +6,8 @@
 
 #include "../common/cbasetypes.h"
 
-  struct storage_data;
-  struct guild_storage;
+  struct s_storage_data;
+  struct s_guild_storage;
 
   int inter_storage_sql_init(void);
   void inter_storage_sql_final(void);
@@ -16,9 +16,9 @@
 
   int inter_storage_parse_frommap(int fd);
 
-  int storage_fromsql(uint32 account_id, struct storage_data* p);
-  int storage_tosql(uint32 account_id, struct storage_data *p);
-  int guild_storage_tosql(int guild_id, struct guild_storage *p);
+  int storage_fromsql(uint32 account_id, struct s_storage_data* p);
+  int storage_tosql(uint32 account_id, struct s_storage_data *p);
+  int guild_storage_tosql(int guild_id, struct s_guild_storage *p);
 
 
 #endif /* _INT_STORAGE_SQL_H_ */

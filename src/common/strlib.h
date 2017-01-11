@@ -138,7 +138,6 @@ struct StringBuf
 	char *ptr_;
 	unsigned int max_;
 };
-typedef struct StringBuf StringBuf;
 
 StringBuf* StringBuf_Malloc(void);
 void StringBuf_Init(StringBuf* self);

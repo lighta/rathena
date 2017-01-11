@@ -40,13 +40,13 @@
 static char* msg_table[LOGIN_MAX_MSG];	/// Login Server messages_conf
 
 //definition of exported var declared in .h
-struct mmo_char_server ch_server[MAX_SERVERS];	/// char server data
-struct Login_Config login_config;				/// Configuration of login-serv
-DBMap* online_db;
-DBMap* auth_db;
+struct s_mmo_char_server ch_server[MAX_SERVERS];	/// char server data
+struct s_Login_Config login_config;				/// Configuration of login-serv
+s_DBMap* online_db;
+s_DBMap* auth_db;
 
 // account database
-AccountDB* accounts = NULL;
+s_AccountDB* accounts = NULL;
 // Advanced subnet check [LuzZza]
 struct s_subnet {
 	uint32 mask;
@@ -61,7 +61,7 @@ int login_fd; // login server file descriptor socket
 bool login_check_password(const char* md5key, int passwdenc, const char* passwd, const char* refpass);
 
 ///Accessors
-AccountDB* login_get_accounts_db(void){
+s_AccountDB* login_get_accounts_db(void){
 	return accounts;
 }
 
@@ -78,9 +78,9 @@ int parse_console(const char* buf){
  * @return : Data identified by the key to be put in the database
  * @see DBCreateData
  */
-DBData login_create_online_user(DBKey key, va_list args) {
-	struct online_login_data* p;
-	CREATE(p, struct online_login_data, 1);
+s_DBData login_create_online_user(u_DBKey key, va_list args) {
+	struct s_online_login_data* p;
+	CREATE(p, struct s_online_login_data, 1);
 	p->account_id = key.i;
 	p->char_server = -1;
 	p->waiting_disconnect = INVALID_TIMER;
@@ -94,9 +94,9 @@ DBData login_create_online_user(DBKey key, va_list args) {
  * @param account_id : aid connected
  * @return the new online_login_data for that user
  */
-struct online_login_data* login_add_online_user(int char_server, uint32 account_id){
-	struct online_login_data* p;
-	p = (struct online_login_data*)idb_ensure(online_db, account_id, login_create_online_user);
+struct s_online_login_data* login_add_online_user(int char_server, uint32 account_id){
+	struct s_online_login_data* p;
+	p = (struct s_online_login_data*)idb_ensure(online_db, account_id, login_create_online_user);
 	p->char_server = char_server;
 	if( p->waiting_disconnect != INVALID_TIMER ) {
 		delete_timer(p->waiting_disconnect, login_waiting_disconnect_timer);
@@ -112,8 +112,8 @@ struct online_login_data* login_add_online_user(int char_server, uint32 account_
  * @param account_id : aid to remove from db
  */
 void login_remove_online_user(uint32 account_id) {
-	struct online_login_data* p;
-	p = (struct online_login_data*)idb_get(online_db, account_id);
+	struct s_online_login_data* p;
+	p = (struct s_online_login_data*)idb_get(online_db, account_id);
 	if( p == NULL )
 		return;
 	if( p->waiting_disconnect != INVALID_TIMER )
@@ -134,7 +134,7 @@ void login_remove_online_user(uint32 account_id) {
  * @return :0
  */
 int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t data) {
-	struct online_login_data* p = (struct online_login_data*)idb_get(online_db, id);
+	struct s_online_login_data* p = (struct s_online_login_data*)idb_get(online_db, id);
 	if( p != NULL && p->waiting_disconnect == tid && p->account_id == (unsigned int)id ){
 		p->waiting_disconnect = INVALID_TIMER;
 		login_remove_online_user(id);
@@ -151,8 +151,8 @@ int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t 
  * @return : Value to be added up by the function that is applying this
  * @see DBApply
  */
-int login_online_db_setoffline(DBKey key, DBData *data, va_list ap) {
-	struct online_login_data* p = (struct online_login_data*)db_data2ptr(data);
+int login_online_db_setoffline(u_DBKey key, s_DBData *data, va_list ap) {
+	struct s_online_login_data* p = (struct s_online_login_data*)db_data2ptr(data);
 	int server = va_arg(ap, int);
 	if( server == -1 ) {
 		p->char_server = -1;
@@ -174,8 +174,8 @@ int login_online_db_setoffline(DBKey key, DBData *data, va_list ap) {
  * @return: Value to be added up by the function that is applying this
  * @see DBApply
  */
-static int login_online_data_cleanup_sub(DBKey key, DBData *data, va_list ap) {
-	struct online_login_data *character= (struct online_login_data*)db_data2ptr(data);
+static int login_online_data_cleanup_sub(u_DBKey key, s_DBData *data, va_list ap) {
+	struct s_online_login_data *character= (struct s_online_login_data*)db_data2ptr(data);
 	if (character->char_server == -2) //Unknown server.. set them offline
 		login_remove_online_user(character->account_id);
 	return 0;
@@ -211,7 +211,7 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
 	static int num_regs = 0; // registration counter
 	static unsigned int new_reg_tick = 0;
 	unsigned int tick = gettick();
-	struct mmo_account acc;
+	struct s_mmo_account acc;
 
 	//Account Registration Flood Protection by [Kevin]
 	if( new_reg_tick == 0 )
@@ -279,8 +279,8 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
  *	6: banned
  *	x: acc state (TODO document me deeper)
  */
-int login_mmo_auth(struct login_session_data* sd, bool isServer) {
-	struct mmo_account acc;
+int login_mmo_auth(struct s_login_session_data* sd, bool isServer) {
+	struct s_mmo_account acc;
 	int len;
 
 	char ip[16];
@@ -359,7 +359,7 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 	}
 
 	if( login_config.client_hash_check && !isServer ) {
-		struct client_hash_node *node = NULL;
+		struct s_client_hash_node *node = NULL;
 		bool match = false;
 
 		for( node = login_config.client_hash_nodes; node; node = node->next ) {
@@ -624,8 +624,8 @@ bool login_config_read(const char* cfgName, bool normal) {
 			char md5[33];
 
 			if (sscanf(w2, "%3d, %32s", &group, md5) == 2) {
-				struct client_hash_node *nnode;
-				CREATE(nnode, struct client_hash_node, 1);
+				struct s_client_hash_node *nnode;
+				CREATE(nnode, struct s_client_hash_node, 1);
 				if (strcmpi(md5, "disabled") == 0) {
 					nnode->hash[0] = '\0';
 				} else {
@@ -741,12 +741,12 @@ void login_set_defaults() {
  *  dealloc..., function called at exit of the login-serv
  */
 void do_final(void) {
-	struct client_hash_node *hn = login_config.client_hash_nodes;
-	AccountDB* db = accounts;
+	struct s_client_hash_node *hn = login_config.client_hash_nodes;
+	s_AccountDB* db = accounts;
 
 	while (hn)
 	{
-		struct client_hash_node *tmp = hn;
+		struct s_client_hash_node *tmp = hn;
 		hn = hn->next;
 		aFree(tmp);
 	}

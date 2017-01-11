@@ -22,9 +22,9 @@
  * @return Array of found entries. It has *count entries, and it is care of the
  *         caller to aFree() it afterwards.
  */
-struct quest *mapif_quests_fromsql(uint32 char_id, int *count) {
-	struct quest *questlog = NULL;
-	struct quest tmp_quest;
+struct s_quest *mapif_quests_fromsql(uint32 char_id, int *count) {
+	struct s_quest *questlog = NULL;
+	struct s_quest tmp_quest;
 	SqlStmt *stmt;
 
 	if( !count )
@@ -37,7 +37,7 @@ struct quest *mapif_quests_fromsql(uint32 char_id, int *count) {
 		return NULL;
 	}
 
-	memset(&tmp_quest, 0, sizeof(struct quest));
+	memset(&tmp_quest, 0, sizeof(struct s_quest));
 
 	if( SQL_ERROR == SqlStmt_Prepare(stmt, "SELECT `quest_id`, `state`, `time`, `count1`, `count2`, `count3` FROM `%s` WHERE `char_id`=? ", schema_config.quest_db)
 	||	SQL_ERROR == SqlStmt_BindParam(stmt, 0, SQLDT_INT, &char_id, 0)
@@ -59,7 +59,7 @@ struct quest *mapif_quests_fromsql(uint32 char_id, int *count) {
 	if( *count > 0 ) {
 		int i = 0;
 
-		questlog = (struct quest *)aCalloc(*count, sizeof(struct quest));
+		questlog = (struct s_quest *)aCalloc(*count, sizeof(struct s_quest));
 		while( SQL_SUCCESS == SqlStmt_NextRow(stmt) ) {
 			if( i >= *count ) //Sanity check, should never happen
 				break;
@@ -68,7 +68,7 @@ struct quest *mapif_quests_fromsql(uint32 char_id, int *count) {
 		if( i < *count ) {
 			//Should never happen. Compact array
 			*count = i;
-			questlog = (struct quest *)aRealloc(questlog, sizeof(struct quest) * i);
+			questlog = (struct s_quest *)aRealloc(questlog, sizeof(struct s_quest) * i);
 		}
 	}
 
@@ -100,7 +100,7 @@ bool mapif_quest_delete(uint32 char_id, int quest_id) {
  * @param qd      Quest data
  * @return false in case of errors, true otherwise
  */
-bool mapif_quest_add(uint32 char_id, struct quest qd) {
+bool mapif_quest_add(uint32 char_id, struct s_quest qd) {
 	if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s`(`quest_id`, `char_id`, `state`, `time`, `count1`, `count2`, `count3`) VALUES ('%d', '%d', '%d','%d', '%d', '%d', '%d')", schema_config.quest_db, qd.quest_id, char_id, qd.state, qd.time, qd.count[0], qd.count[1], qd.count[2]) )
 	{
 		Sql_ShowDebug(sql_handle);
@@ -117,7 +117,7 @@ bool mapif_quest_add(uint32 char_id, struct quest qd) {
  * @param qd      Quest data
  * @return false in case of errors, true otherwise
  */
-bool mapif_quest_update(uint32 char_id, struct quest qd) {
+bool mapif_quest_update(uint32 char_id, struct s_quest qd) {
 	if( SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `state`='%d', `count1`='%d', `count2`='%d', `count3`='%d' WHERE `quest_id` = '%d' AND `char_id` = '%d'", schema_config.quest_db, qd.state, qd.count[0], qd.count[1], qd.count[2], qd.quest_id, char_id) ) 
 	{
 		Sql_ShowDebug(sql_handle);
@@ -135,13 +135,13 @@ bool mapif_quest_update(uint32 char_id, struct quest qd) {
  * @see inter_parse_frommap
  */
 int mapif_parse_quest_save(int fd) {
-	int i, j, k, old_n, new_n = (RFIFOW(fd,2) - 8) / sizeof(struct quest);
+	int i, j, k, old_n, new_n = (RFIFOW(fd,2) - 8) / sizeof(struct s_quest);
 	uint32 char_id = RFIFOL(fd,4);
-	struct quest *old_qd = NULL, *new_qd = NULL;
+	struct s_quest *old_qd = NULL, *new_qd = NULL;
 	bool success = true;
 
 	if( new_n > 0 )
-		new_qd = (struct quest*)RFIFOP(fd,8);
+		new_qd = (struct s_quest*)RFIFOP(fd,8);
 
 	old_qd = mapif_quests_fromsql(char_id, &old_n);
 	for( i = 0; i < new_n; i++ ) {
@@ -154,8 +154,8 @@ int mapif_parse_quest_save(int fd) {
 
 			if( j < (--old_n) ) {
 				//Compact array
-				memmove(&old_qd[j], &old_qd[j + 1], sizeof(struct quest) * (old_n - j));
-				memset(&old_qd[old_n], 0, sizeof(struct quest));
+				memmove(&old_qd[j], &old_qd[j + 1], sizeof(struct s_quest) * (old_n - j));
+				memset(&old_qd[old_n], 0, sizeof(struct s_quest));
 			}
 		} else //Add new quests
 			success &= mapif_quest_add(char_id, new_qd[i]);
@@ -188,20 +188,20 @@ int mapif_parse_quest_save(int fd) {
  */
 int mapif_parse_quest_load(int fd) {
 	uint32 char_id = RFIFOL(fd,2);
-	struct quest *tmp_questlog = NULL;
+	struct s_quest *tmp_questlog = NULL;
 	int num_quests;
 
 	tmp_questlog = mapif_quests_fromsql(char_id, &num_quests);
 
-	WFIFOHEAD(fd,num_quests * sizeof(struct quest) + 8);
+	WFIFOHEAD(fd,num_quests * sizeof(struct s_quest) + 8);
 	WFIFOW(fd,0) = 0x3860;
-	WFIFOW(fd,2) = num_quests * sizeof(struct quest) + 8;
+	WFIFOW(fd,2) = num_quests * sizeof(struct s_quest) + 8;
 	WFIFOL(fd,4) = char_id;
 
 	if( num_quests > 0 )
-		memcpy(WFIFOP(fd,8), tmp_questlog, sizeof(struct quest) * num_quests);
+		memcpy(WFIFOP(fd,8), tmp_questlog, sizeof(struct s_quest) * num_quests);
 
-	WFIFOSET(fd,num_quests * sizeof(struct quest) + 8);
+	WFIFOSET(fd,num_quests * sizeof(struct s_quest) + 8);
 
 	if( tmp_questlog )
 		aFree(tmp_questlog);

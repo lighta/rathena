@@ -28,7 +28,7 @@ enum E_LOGINSERVER_ST {
 #define PASSWORDENC 3
 
 ///Struct of 1 client connected to login-serv
-struct login_session_data {
+struct s_login_session_data {
 	uint32 account_id;			///also GID
 	long login_id1;
 	long login_id2;
@@ -53,7 +53,7 @@ struct login_session_data {
 
 #define MAX_SERVERS 30 //max number of mapserv that could be attach
 ///Struct describing 1 char-serv attach to us
-struct mmo_char_server {
+struct s_mmo_char_server {
 	char name[20];	///char-serv name
 	int fd;			///char-serv socket (well actually file descriptor)
 	uint32 ip;		///char-serv IP
@@ -62,15 +62,15 @@ struct mmo_char_server {
 	uint16 type;	/// 0=normal, 1=maintenance, 2=over 18, 3=paying, 4=P2P
 	uint16 new_;	/// should display as 'new'?
 };
-extern struct mmo_char_server ch_server[MAX_SERVERS];
+extern struct s_mmo_char_server ch_server[MAX_SERVERS];
 
-struct client_hash_node {
+struct s_client_hash_node {
 	unsigned int group_id;			//inferior or egal group to apply restriction
 	uint8 hash[16];					///hash required for that groupid or below
-	struct client_hash_node *next;	///next entry
+	struct s_client_hash_node *next;	///next entry
 };
 
-struct Login_Config {
+struct s_Login_Config {
 	uint32 login_ip;                                /// the address to bind to
 	uint16 login_port;                              /// the port to bind to
 	unsigned int ipban_cleanup_interval;            /// interval (in seconds) to clean up expired IP bans
@@ -98,7 +98,7 @@ struct Login_Config {
 	int time_allowed;								/// registration interval in seconds
 
 	int client_hash_check;							/// flags for checking client md5
-	struct client_hash_node *client_hash_nodes;		/// linked list containing md5 hash for each gm group
+	struct s_client_hash_node *client_hash_nodes;		/// linked list containing md5 hash for each gm group
 	char loginconf_name[256];						/// name of main config file
 	char msgconf_name[256];							/// name of msg_conf config file
 	char lanconf_name[256];							/// name of lan config file
@@ -111,7 +111,7 @@ struct Login_Config {
 	} vip_sys;
 #endif
 };
-extern struct Login_Config login_config;
+extern struct s_Login_Config login_config;
 
 #define sex_num2str(num) ( (num ==  SEX_FEMALE  ) ? 'F' : (num ==  SEX_MALE  ) ? 'M' : 'S' )
 #define sex_str2num(str) ( (str == 'F' ) ?  SEX_FEMALE  : (str == 'M' ) ?  SEX_MALE  :  SEX_SERVER  )
@@ -125,16 +125,16 @@ void login_do_final_msg(void);
 bool login_config_read(const char* cfgName, bool normal);
 
 /// Online User Database [Wizputer]
-struct online_login_data {
+struct s_online_login_data {
 	uint32 account_id;
 	int waiting_disconnect;
 	int char_server;
 };
-extern DBMap* online_db; // uint32 account_id -> struct online_login_data*
+extern s_DBMap* online_db; // uint32 account_id -> struct online_login_data*
 
 /// Auth database
 #define AUTH_TIMEOUT 30000
-struct auth_node {
+struct s_auth_node {
 	uint32 account_id;
 	uint32 login_id1;
 	uint32 login_id2;
@@ -143,10 +143,10 @@ struct auth_node {
 	uint32 version;
 	uint8 clienttype;
 };
-extern DBMap* auth_db; // uint32 account_id -> struct auth_node*
+extern s_DBMap* auth_db; // uint32 account_id -> struct auth_node*
 
 ///Accessors
-AccountDB* login_get_accounts_db(void);
+s_AccountDB* login_get_accounts_db(void);
 
 /**
  * Sub function to create an online_login_data and save it to db.
@@ -155,7 +155,7 @@ AccountDB* login_get_accounts_db(void);
  * @return : Data identified by the key to be put in the database
  * @see DBCreateData
  */
-DBData login_create_online_user(DBKey key, va_list args);
+s_DBData login_create_online_user(u_DBKey key, va_list args);
 
 /**
  * Function to add a user in online_db.
@@ -165,7 +165,7 @@ DBData login_create_online_user(DBKey key, va_list args);
  * @param account_id: the account identifier
  * @return the new|registered online data
  */
-struct online_login_data* login_add_online_user(int char_server, uint32 account_id);
+struct s_online_login_data* login_add_online_user(int char_server, uint32 account_id);
 
 /**
  * Function to remove a user from online_db.
@@ -195,7 +195,7 @@ int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t 
  * @return : Value to be added up by the function that is applying this
  * @see DBApply
  */
-int login_online_db_setoffline(DBKey key, DBData *data, va_list ap);
+int login_online_db_setoffline(u_DBKey key, s_DBData *data, va_list ap);
 
 /**
  * Test to determine if an IP come from LAN or WAN.
@@ -233,6 +233,6 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
  *	6: banned
  *	x: acc state (TODO document me deeper)
  */
-int login_mmo_auth(struct login_session_data* sd, bool isServer);
+int login_mmo_auth(struct s_login_session_data* sd, bool isServer);
 
 #endif /* _LOGIN_H_ */

@@ -77,7 +77,7 @@ void do_final_path(){
  *------------------------------------------*/
 int path_blownpos(int16 m,int16 x0,int16 y0,int16 dx,int16 dy,int count)
 {
-	struct map_data *md;
+	struct s_map_data *md;
 
 	if( !map[m].cell )
 		return -1;
@@ -128,13 +128,13 @@ int path_blownpos(int16 m,int16 x0,int16 y0,int16 dx,int16 dy,int count)
 /*==========================================
  * is ranged attack from (x0,y0) to (x1,y1) possible?
  *------------------------------------------*/
-bool path_search_long(struct shootpath_data *spd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,cell_chk cell)
+bool path_search_long(struct s_shootpath_data *spd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,e_cell_chk cell)
 {
 	int dx, dy;
 	int wx = 0, wy = 0;
 	int weight;
-	struct map_data *md;
-	struct shootpath_data s_spd;
+	struct s_map_data *md;
+	struct s_shootpath_data s_spd;
 
 	if( spd == NULL )
 		spd = &s_spd; // use dummy output variable
@@ -265,11 +265,11 @@ static int add_path(struct node_heap *heap, struct path_node *tp, int16 x, int16
  *
  * Note: uses global g_open_set, therefore this method can't be called in parallel or recursivly.
  *------------------------------------------*/
-bool path_search(struct walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, cell_chk cell)
+bool path_search(struct s_walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int flag, e_cell_chk cell)
 {
 	register int i, x, y, dx = 0, dy = 0;
-	struct map_data *md;
-	struct walkpath_data s_wpd;
+	struct s_map_data *md;
+	struct s_walkpath_data s_wpd;
 
 	if (flag&2)
 		return path_search_long(NULL, m, x0, y0, x1, y1, cell);

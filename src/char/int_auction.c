@@ -19,18 +19,18 @@
 #include "int_auction.h"
 #include "int_mail.h"
 
-static DBMap* auction_db_ = NULL; // int auction_id -> struct auction_data*
+static s_DBMap* auction_db_ = NULL; // int auction_id -> struct s_auction_data*
 
-void auction_delete(struct auction_data *auction);
+void auction_delete(struct s_auction_data *auction);
 int auction_end_timer(int tid, unsigned int tick, int id, intptr_t data);
 
 int auction_count(int char_id, bool buy)
 {
 	int i = 0;
-	struct auction_data *auction;
-	DBIterator *iter = db_iterator(auction_db_);
+	struct s_auction_data *auction;
+	s_DBIterator *iter = db_iterator(auction_db_);
 
-	for( auction = (struct auction_data *)dbi_first(iter); dbi_exists(iter); auction = (struct auction_data *)dbi_next(iter) )
+	for( auction = (struct s_auction_data *)dbi_first(iter); dbi_exists(iter); auction = (struct s_auction_data *)dbi_next(iter) )
 	{
 		if( (buy && auction->buyer_id == char_id) || (!buy && auction->seller_id == char_id) )
 			i++;
@@ -40,7 +40,7 @@ int auction_count(int char_id, bool buy)
 	return i;
 }
 
-void auction_save(struct auction_data *auction)
+void auction_save(struct s_auction_data *auction)
 {
 	int j;
 	StringBuf buf;
@@ -75,7 +75,7 @@ void auction_save(struct auction_data *auction)
 	StringBuf_Destroy(&buf);
 }
 
-unsigned int auction_create(struct auction_data *auction)
+unsigned int auction_create(struct s_auction_data *auction)
 {
 	int j;
 	StringBuf buf;
@@ -118,7 +118,7 @@ unsigned int auction_create(struct auction_data *auction)
 	}
 	else
 	{
-		struct auction_data *auction_;
+		struct s_auction_data *auction_;
 		unsigned int tick = auction->hours * 3600000;
 
 		auction->item.amount = 1;
@@ -129,8 +129,8 @@ unsigned int auction_create(struct auction_data *auction)
 		auction->auction_end_timer = add_timer( gettick() + tick , auction_end_timer, auction->auction_id, 0);
 		ShowInfo("New Auction %u | time left %u ms | By %s.\n", auction->auction_id, tick, auction->seller_name);
 
-		CREATE(auction_, struct auction_data, 1);
-		memcpy(auction_, auction, sizeof(struct auction_data));
+		CREATE(auction_, struct s_auction_data, 1);
+		memcpy(auction_, auction, sizeof(struct s_auction_data));
 		idb_put(auction_db_, auction_->auction_id, auction_);
 	}
 
@@ -152,8 +152,8 @@ void mapif_Auction_message(int char_id, unsigned char result)
 
 int auction_end_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct auction_data *auction;
-	if( (auction = (struct auction_data *)idb_get(auction_db_, id)) != NULL )
+	struct s_auction_data *auction;
+	if( (auction = (struct s_auction_data *)idb_get(auction_db_, id)) != NULL )
 	{
 		if( auction->buyer_id )
 		{
@@ -173,7 +173,7 @@ int auction_end_timer(int tid, unsigned int tick, int id, intptr_t data)
 	return 0;
 }
 
-void auction_delete(struct auction_data *auction)
+void auction_delete(struct s_auction_data *auction)
 {
 	unsigned int auction_id = auction->auction_id;
 
@@ -213,9 +213,9 @@ void inter_auctions_fromsql(void)
 
 	while( SQL_SUCCESS == Sql_NextRow(sql_handle) )
 	{
-		struct item *item;
-		struct auction_data *auction;
-		CREATE(auction, struct auction_data, 1);
+		struct s_item *item;
+		struct s_auction_data *auction;
+		CREATE(auction, struct s_auction_data, 1);
 		Sql_GetData(sql_handle, 0, &data, NULL); auction->auction_id = atoi(data);
 		Sql_GetData(sql_handle, 1, &data, NULL); auction->seller_id = atoi(data);
 		Sql_GetData(sql_handle, 2, &data, NULL); safestrncpy(auction->seller_name, data, NAME_LENGTH);
@@ -268,7 +268,7 @@ void inter_auctions_fromsql(void)
 
 void mapif_Auction_sendlist(int fd, int char_id, short count, short pages, unsigned char *buf)
 {
-	int len = (sizeof(struct auction_data) * count) + 12;
+	int len = (sizeof(struct s_auction_data) * count) + 12;
 
 	WFIFOHEAD(fd, len);
 	WFIFOW(fd,0) = 0x3850;
@@ -283,17 +283,17 @@ void mapif_Auction_sendlist(int fd, int char_id, short count, short pages, unsig
 void mapif_parse_Auction_requestlist(int fd)
 {
 	char searchtext[NAME_LENGTH];
-	int char_id = RFIFOL(fd,4), len = sizeof(struct auction_data);
+	int char_id = RFIFOL(fd,4), len = sizeof(struct s_auction_data);
 	int price = RFIFOL(fd,10);
 	short type = RFIFOW(fd,8), page = max(1,RFIFOW(fd,14));
-	unsigned char buf[5 * sizeof(struct auction_data)];
-	DBIterator *iter = db_iterator(auction_db_);
-	struct auction_data *auction;
+	unsigned char buf[5 * sizeof(struct s_auction_data)];
+	s_DBIterator *iter = db_iterator(auction_db_);
+	struct s_auction_data *auction;
 	short i = 0, j = 0, pages = 1;
 
 	memcpy(searchtext, RFIFOP(fd,16), NAME_LENGTH);
 
-	for( auction = static_cast<auction_data *>(dbi_first(iter)); dbi_exists(iter); auction = static_cast<auction_data *>(dbi_next(iter)) )
+	for( auction = static_cast<s_auction_data *>(dbi_first(iter)); dbi_exists(iter); auction = static_cast<s_auction_data *>(dbi_next(iter)) )
 	{
 		if( (type == 0 && auction->type != IT_ARMOR && auction->type != IT_PETARMOR) ||
 			(type == 1 && auction->type != IT_WEAPON) ||
@@ -323,24 +323,24 @@ void mapif_parse_Auction_requestlist(int fd)
 	mapif_Auction_sendlist(fd, char_id, j, pages, buf);
 }
 
-void mapif_Auction_register(int fd, struct auction_data *auction)
+void mapif_Auction_register(int fd, struct s_auction_data *auction)
 {
-	int len = sizeof(struct auction_data) + 4;
+	int len = sizeof(struct s_auction_data) + 4;
 
 	WFIFOHEAD(fd,len);
 	WFIFOW(fd,0) = 0x3851;
 	WFIFOW(fd,2) = len;
-	memcpy(WFIFOP(fd,4), auction, sizeof(struct auction_data));
+	memcpy(WFIFOP(fd,4), auction, sizeof(struct s_auction_data));
 	WFIFOSET(fd,len);
 }
 
 void mapif_parse_Auction_register(int fd)
 {
-	struct auction_data auction;
-	if( RFIFOW(fd,2) != sizeof(struct auction_data) + 4 )
+	struct s_auction_data auction;
+	if( RFIFOW(fd,2) != sizeof(struct s_auction_data) + 4 )
 		return;
 
-	memcpy(&auction, RFIFOP(fd,4), sizeof(struct auction_data));
+	memcpy(&auction, RFIFOP(fd,4), sizeof(struct s_auction_data));
 	if( auction_count(auction.seller_id, false) < 5 )
 		auction.auction_id = auction_create(&auction);
 
@@ -359,9 +359,9 @@ void mapif_Auction_cancel(int fd, int char_id, unsigned char result)
 void mapif_parse_Auction_cancel(int fd)
 {
 	int char_id = RFIFOL(fd,2), auction_id = RFIFOL(fd,6);
-	struct auction_data *auction;
+	struct s_auction_data *auction;
 
-	if( (auction = (struct auction_data *)idb_get(auction_db_, auction_id)) == NULL )
+	if( (auction = (struct s_auction_data *)idb_get(auction_db_, auction_id)) == NULL )
 	{
 		mapif_Auction_cancel(fd, char_id, 1); // Bid Number is Incorrect
 		return;
@@ -397,9 +397,9 @@ void mapif_Auction_close(int fd, int char_id, unsigned char result)
 void mapif_parse_Auction_close(int fd)
 {
 	int char_id = RFIFOL(fd,2), auction_id = RFIFOL(fd,6);
-	struct auction_data *auction;
+	struct s_auction_data *auction;
 
-	if( (auction = (struct auction_data *)idb_get(auction_db_, auction_id)) == NULL )
+	if( (auction = (struct s_auction_data *)idb_get(auction_db_, auction_id)) == NULL )
 	{
 		mapif_Auction_close(fd, char_id, 2); // Bid Number is Incorrect
 		return;
@@ -441,9 +441,9 @@ void mapif_parse_Auction_bid(int fd)
 {
 	int char_id = RFIFOL(fd,4), bid = RFIFOL(fd,12);
 	unsigned int auction_id = RFIFOL(fd,8);
-	struct auction_data *auction;
+	struct s_auction_data *auction;
 
-	if( (auction = (struct auction_data *)idb_get(auction_db_, auction_id)) == NULL || auction->price >= bid || auction->seller_id == char_id )
+	if( (auction = (struct s_auction_data *)idb_get(auction_db_, auction_id)) == NULL || auction->price >= bid || auction->seller_id == char_id )
 	{
 		mapif_Auction_bid(fd, char_id, bid, 0); // You have failed to bid in the auction
 		return;

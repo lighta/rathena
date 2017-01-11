@@ -13,7 +13,7 @@
 #include "inter.h"
 #include "int_mercenary.h"
 
-bool mercenary_owner_fromsql(uint32 char_id, struct mmo_charstatus *status)
+bool mercenary_owner_fromsql(uint32 char_id, struct s_mmo_charstatus *status)
 {
 	char* data;
 
@@ -41,7 +41,7 @@ bool mercenary_owner_fromsql(uint32 char_id, struct mmo_charstatus *status)
 	return true;
 }
 
-bool mercenary_owner_tosql(uint32 char_id, struct mmo_charstatus *status)
+bool mercenary_owner_tosql(uint32 char_id, struct s_mmo_charstatus *status)
 {
 	if( SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`char_id`, `merc_id`, `arch_calls`, `arch_faith`, `spear_calls`, `spear_faith`, `sword_calls`, `sword_faith`) VALUES ('%d', '%d', '%d', '%d', '%d', '%d', '%d', '%d')",
 		schema_config.mercenary_owner_db, char_id, status->mer_id, status->arch_calls, status->arch_faith, status->spear_calls, status->spear_faith, status->sword_calls, status->sword_faith) )

@@ -547,11 +547,11 @@ void mempool_node_put(pmempool p, void *data){
 }//end: mempool_node_put()
 
 
-mempool_stats mempool_get_stats(pmempool pool){
-	mempool_stats stats;
+s_mempool_stats mempool_get_stats(pmempool pool){
+	s_mempool_stats stats;
 	
 	// initialize all with zeros
-	memset(&stats, 0x00, sizeof(mempool_stats));
+	memset(&stats, 0x00, sizeof(s_mempool_stats));
 	
 	stats.num_nodes_total	= pool->num_nodes_total;
 	stats.num_nodes_free	= pool->num_nodes_free;

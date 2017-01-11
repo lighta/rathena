@@ -23,19 +23,19 @@
 #include "log.h"
 #include "quest.h"
 
-static DBMap *questdb;
-struct quest_db quest_dummy;
+static s_DBMap *questdb;
+struct s_quest_db quest_dummy;
 
-static void questdb_free_sub(struct quest_db *quest, bool free);
+static void questdb_free_sub(struct s_quest_db *quest, bool free);
 
 /**
  * Searches a quest by ID.
  * @param quest_id : ID to lookup
  * @return Quest entry (equals to &quest_dummy if the ID is invalid)
  */
-struct quest_db *quest_search(int quest_id)
+struct s_quest_db *quest_search(int quest_id)
 {
-	struct quest_db *quest = (struct quest_db *)idb_get(questdb, quest_id);
+	struct s_quest_db *quest = (struct s_quest_db *)idb_get(questdb, quest_id);
 	if (!quest)
 		return &quest_dummy;
 	return quest;
@@ -46,7 +46,7 @@ struct quest_db *quest_search(int quest_id)
  * @param sd : Player's data
  * @return 0 in case of success, nonzero otherwise (i.e. the player has no quests)
  */
-int quest_pc_login(struct map_session_data *sd)
+int quest_pc_login(struct s_map_session_data *sd)
 {
 #if PACKETVER < 20141022
 	int i;
@@ -75,10 +75,10 @@ int quest_pc_login(struct map_session_data *sd)
  * @param quest_id : ID of the quest to add.
  * @return 0 in case of success, nonzero otherwise
  */
-int quest_add(struct map_session_data *sd, int quest_id)
+int quest_add(struct s_map_session_data *sd, int quest_id)
 {
 	int n;
-	struct quest_db *qi = quest_search(quest_id);
+	struct s_quest_db *qi = quest_search(quest_id);
 
 	if( qi == &quest_dummy ) {
 		ShowError("quest_add: quest %d not found in DB.\n", quest_id);
@@ -94,13 +94,13 @@ int quest_add(struct map_session_data *sd, int quest_id)
 
 	sd->num_quests++;
 	sd->avail_quests++;
-	RECREATE(sd->quest_log, struct quest, sd->num_quests);
+	RECREATE(sd->quest_log, struct s_quest, sd->num_quests);
 
 	//The character has some completed quests, make room before them so that they will stay at the end of the array
 	if( sd->avail_quests != sd->num_quests )
-		memmove(&sd->quest_log[n + 1], &sd->quest_log[n], sizeof(struct quest) * (sd->num_quests-sd->avail_quests));
+		memmove(&sd->quest_log[n + 1], &sd->quest_log[n], sizeof(struct s_quest) * (sd->num_quests-sd->avail_quests));
 
-	memset(&sd->quest_log[n], 0, sizeof(struct quest));
+	memset(&sd->quest_log[n], 0, sizeof(struct s_quest));
 
 	sd->quest_log[n].quest_id = qi->id;
 	if( qi->time )
@@ -125,10 +125,10 @@ int quest_add(struct map_session_data *sd, int quest_id)
  * @param qid2 : New quest to add
  * @return 0 in case of success, nonzero otherwise
  */
-int quest_change(struct map_session_data *sd, int qid1, int qid2)
+int quest_change(struct s_map_session_data *sd, int qid1, int qid2)
 {
 	int i;
-	struct quest_db *qi = quest_search(qid2);
+	struct s_quest_db *qi = quest_search(qid2);
 
 	if( qi == &quest_dummy ) {
 		ShowError("quest_change: quest %d not found in DB.\n", qid2);
@@ -151,7 +151,7 @@ int quest_change(struct map_session_data *sd, int qid1, int qid2)
 		return -1;
 	}
 
-	memset(&sd->quest_log[i], 0, sizeof(struct quest));
+	memset(&sd->quest_log[i], 0, sizeof(struct s_quest));
 	sd->quest_log[i].quest_id = qi->id;
 
 	if( qi->time )
@@ -177,7 +177,7 @@ int quest_change(struct map_session_data *sd, int qid1, int qid2)
  * @param quest_id : ID of the quest to remove
  * @return 0 in case of success, nonzero otherwise
  */
-int quest_delete(struct map_session_data *sd, int quest_id)
+int quest_delete(struct s_map_session_data *sd, int quest_id)
 {
 	int i;
 
@@ -192,13 +192,13 @@ int quest_delete(struct map_session_data *sd, int quest_id)
 		sd->avail_quests--;
 
 	if( i < --sd->num_quests ) //Compact the array
-		memmove(&sd->quest_log[i], &sd->quest_log[i + 1], sizeof(struct quest) * (sd->num_quests - i));
+		memmove(&sd->quest_log[i], &sd->quest_log[i + 1], sizeof(struct s_quest) * (sd->num_quests - i));
 
 	if( sd->num_quests == 0 ) {
 		aFree(sd->quest_log);
 		sd->quest_log = NULL;
 	} else
-		RECREATE(sd->quest_log, struct quest, sd->num_quests);
+		RECREATE(sd->quest_log, struct s_quest, sd->num_quests);
 
 	sd->save_quest = true;
 
@@ -217,13 +217,13 @@ int quest_delete(struct map_session_data *sd, int quest_id)
  *   int Party ID
  *   int Mob ID
  */
-int quest_update_objective_sub(struct block_list *bl, va_list ap)
+int quest_update_objective_sub(struct s_block_list *bl, va_list ap)
 {
-	struct map_session_data *sd;
+	struct s_map_session_data *sd;
 	int mob_id, party_id;
 
 	nullpo_ret(bl);
-	nullpo_ret(sd = (struct map_session_data *)bl);
+	nullpo_ret(sd = (struct s_map_session_data *)bl);
 
 	party_id = va_arg(ap,int);
 	mob_id = va_arg(ap,int);
@@ -243,12 +243,12 @@ int quest_update_objective_sub(struct block_list *bl, va_list ap)
  * @param sd : Character's data
  * @param mob_id : Monster ID
  */
-void quest_update_objective(struct map_session_data *sd, int mob_id)
+void quest_update_objective(struct s_map_session_data *sd, int mob_id)
 {
 	int i, j;
 
 	for( i = 0; i < sd->avail_quests; i++ ) {
-		struct quest_db *qi = NULL;
+		struct s_quest_db *qi = NULL;
 
 		if( sd->quest_log[i].state == Q_COMPLETE ) // Skip complete quests
 			continue;
@@ -265,8 +265,8 @@ void quest_update_objective(struct map_session_data *sd, int mob_id)
 
 		// process quest-granted extra drop bonuses
 		for (j = 0; j < qi->dropitem_count; j++) {
-			struct quest_dropitem *dropitem = &qi->dropitem[j];
-			struct item item;
+			struct s_quest_dropitem *dropitem = &qi->dropitem[j];
+			struct s_item item;
 			int temp;
 
 			if (dropitem->mob_id != 0 && dropitem->mob_id != mob_id)
@@ -303,7 +303,7 @@ void quest_update_objective(struct map_session_data *sd, int mob_id)
  * @return 0 in case of success, nonzero otherwise
  * @author [Inkfish]
  */
-int quest_update_status(struct map_session_data *sd, int quest_id, enum quest_state status)
+int quest_update_status(struct s_map_session_data *sd, int quest_id, enum e_quest_state status)
 {
 	int i;
 
@@ -323,11 +323,11 @@ int quest_update_status(struct map_session_data *sd, int quest_id, enum quest_st
 
 	// The quest is complete, so it needs to be moved to the completed quests block at the end of the array.
 	if( i < (--sd->avail_quests) ) {
-		struct quest tmp_quest;
+		struct s_quest tmp_quest;
 
-		memcpy(&tmp_quest, &sd->quest_log[i], sizeof(struct quest));
-		memcpy(&sd->quest_log[i], &sd->quest_log[sd->avail_quests], sizeof(struct quest));
-		memcpy(&sd->quest_log[sd->avail_quests], &tmp_quest, sizeof(struct quest));
+		memcpy(&tmp_quest, &sd->quest_log[i], sizeof(struct s_quest));
+		memcpy(&sd->quest_log[i], &sd->quest_log[sd->avail_quests], sizeof(struct s_quest));
+		memcpy(&sd->quest_log[sd->avail_quests], &tmp_quest, sizeof(struct s_quest));
 	}
 
 	clif_quest_delete(sd, quest_id);
@@ -352,7 +352,7 @@ int quest_update_status(struct map_session_data *sd, int quest_id, enum quest_st
  *              1 if the quest's timeout has expired
  *              0 otherwise
  */
-int quest_check(struct map_session_data *sd, int quest_id, enum quest_check_type type)
+int quest_check(struct s_map_session_data *sd, int quest_id, enum e_quest_check_type type)
 {
 	int i;
 
@@ -370,7 +370,7 @@ int quest_check(struct map_session_data *sd, int quest_id, enum quest_check_type
 		case HUNTING:
 			if( sd->quest_log[i].state == Q_INACTIVE || sd->quest_log[i].state == Q_ACTIVE ) {
 				int j;
-				struct quest_db *qi = quest_search(sd->quest_log[i].quest_id);
+				struct s_quest_db *qi = quest_search(sd->quest_log[i].quest_id);
 
 				ARR_FIND(0, qi->objectives_count, j, sd->quest_log[i].count[j] < qi->objectives[j].count);
 				if( j == qi->objectives_count )
@@ -413,7 +413,7 @@ void quest_read_txtdb(void)
 		}
 
 		while(fgets(line, sizeof(line), fp)) {
-			struct quest_db *quest = NULL;
+			struct s_quest_db *quest = NULL;
 			char *str[19], *p;
 			int quest_id = 0;
 			uint8 i;
@@ -448,8 +448,8 @@ void quest_read_txtdb(void)
 				continue;
 			}
 
-			if (!(quest = (struct quest_db *)idb_get(questdb, quest_id)))
-				CREATE(quest, struct quest_db, 1);
+			if (!(quest = (struct s_quest_db *)idb_get(questdb, quest_id)))
+				CREATE(quest, struct s_quest_db, 1);
 			else {
 				if (quest->objectives) {
 					aFree(quest->objectives);
@@ -474,7 +474,7 @@ void quest_read_txtdb(void)
 					ShowWarning("quest_read_txtdb: Invalid monster as objective '%d' in line %d.\n", mob_id, ln);
 					continue;
 				}
-				RECREATE(quest->objectives, struct quest_objective, quest->objectives_count+1);
+				RECREATE(quest->objectives, struct s_quest_objective, quest->objectives_count+1);
 				quest->objectives[quest->objectives_count].mob = mob_id;
 				quest->objectives[quest->objectives_count].count = (uint16)atoi(str[2 * i + 3]);
 				quest->objectives_count++;
@@ -489,7 +489,7 @@ void quest_read_txtdb(void)
 					ShowWarning("quest_read_txtdb: Invalid item reward '%d' (mob %d, optional) in line %d.\n", nameid, mob_id, ln);
 					continue;
 				}
-				RECREATE(quest->dropitem, struct quest_dropitem, quest->dropitem_count+1);
+				RECREATE(quest->dropitem, struct s_quest_dropitem, quest->dropitem_count+1);
 				quest->dropitem[quest->dropitem_count].mob_id = mob_id;
 				quest->dropitem[quest->dropitem_count].nameid = nameid;
 				quest->dropitem[quest->dropitem_count].count = 1;
@@ -527,7 +527,7 @@ static void quest_read_db(void)
  * @param sd : Character's data
  * @param ap : Ignored
  */
-int quest_reload_check_sub(struct map_session_data *sd, va_list ap)
+int quest_reload_check_sub(struct s_map_session_data *sd, va_list ap)
 {
 	int i, j;
 
@@ -535,7 +535,7 @@ int quest_reload_check_sub(struct map_session_data *sd, va_list ap)
 
 	j = 0;
 	for( i = 0; i < sd->num_quests; i++ ) {
-		struct quest_db *qi = quest_search(sd->quest_log[i].quest_id);
+		struct s_quest_db *qi = quest_search(sd->quest_log[i].quest_id);
 
 		if( qi == &quest_dummy ) { //Remove no longer existing entries
 			if( sd->quest_log[i].state != Q_COMPLETE ) //And inform the client if necessary
@@ -545,7 +545,7 @@ int quest_reload_check_sub(struct map_session_data *sd, va_list ap)
 
 		if( i != j ) {
 			//Move entries if there's a gap to fill
-			memcpy(&sd->quest_log[j], &sd->quest_log[i], sizeof(struct quest));
+			memcpy(&sd->quest_log[j], &sd->quest_log[i], sizeof(struct s_quest));
 		}
 
 		j++;
@@ -563,7 +563,7 @@ int quest_reload_check_sub(struct map_session_data *sd, va_list ap)
  * @param quest
  * @param free Will free quest from memory
  **/
-static void questdb_free_sub(struct quest_db *quest, bool free)
+static void questdb_free_sub(struct s_quest_db *quest, bool free)
 {
 	if (quest->objectives) {
 		aFree(quest->objectives);
@@ -584,9 +584,9 @@ static void questdb_free_sub(struct quest_db *quest, bool free)
 /**
  * Clears the quest database for shutdown or reload.
  */
-static int questdb_free(DBKey key, DBData *data, va_list ap)
+static int questdb_free(u_DBKey key, s_DBData *data, va_list ap)
 {
-	struct quest_db *quest = (struct quest_db *)db_data2ptr(data);
+	struct s_quest_db *quest = (struct s_quest_db *)db_data2ptr(data);
 
 	if (!quest)
 		return 0;

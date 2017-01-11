@@ -8,7 +8,7 @@ typedef struct mempool* pmempool;
 typedef void (*memPoolOnNodeAllocationProc)(void *ptr);
 typedef void (*memPoolOnNodeDeallocationProc)(void *ptr);
 
-typedef struct mempool_stats{
+typedef struct s_mempool_stats{
 	int64	num_nodes_total;
 	int64	num_nodes_free;
 	int64	num_nodes_used;
@@ -19,7 +19,7 @@ typedef struct mempool_stats{
 	int64	peak_nodes_used;
 	
 	int64	num_bytes_total;
-} mempool_stats;
+} s_mempool_stats;
 
 
 // 
@@ -94,7 +94,7 @@ void mempool_node_put(pmempool pool, void *node);
  *
  * @return stats struct
  */
-mempool_stats mempool_get_stats(pmempool pool);
+s_mempool_stats mempool_get_stats(pmempool pool);
 
 
 #endif

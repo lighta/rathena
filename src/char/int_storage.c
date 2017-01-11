@@ -17,19 +17,19 @@
 #define STORAGE_MEMINC	16
 
 /// Save storage data to sql
-int storage_tosql(int account_id, struct storage_data* p)
+int storage_tosql(int account_id, struct s_storage_data* p)
 {
 	char_memitemdata_to_sql(p->items, MAX_STORAGE, account_id, TABLE_STORAGE);
 	return 0;
 }
 
 /// Load storage data to mem
-int storage_fromsql(uint32 account_id, struct storage_data* p)
+int storage_fromsql(uint32 account_id, struct s_storage_data* p)
 {
 	StringBuf buf;
 	int i, j;
 
-	memset(p, 0, sizeof(struct storage_data)); //clean up memory
+	memset(p, 0, sizeof(struct s_storage_data)); //clean up memory
 	p->storage_amount = 0;
 
 	// storage {`account_id`/`id`/`nameid`/`amount`/`equip`/`identify`/`refine`/`attribute`/`card0`/`card1`/`card2`/`card3`/`option_id0`/`option_val0`/`option_parm0`/`option_id1`/`option_val1`/`option_parm1`/`option_id2`/`option_val2`/`option_parm2`/`option_id3`/`option_val3`/`option_parm3`/`option_id4`/`option_val4`/`option_parm4`}
@@ -51,7 +51,7 @@ int storage_fromsql(uint32 account_id, struct storage_data* p)
 
 	for( i = 0; i < MAX_STORAGE && SQL_SUCCESS == Sql_NextRow(sql_handle); ++i )
 	{
-		struct item* item;
+		struct s_item* item;
 		char* data;
 		item = &p->items[i];
 		Sql_GetData(sql_handle, 0, &data, NULL); item->id = atoi(data);
@@ -81,7 +81,7 @@ int storage_fromsql(uint32 account_id, struct storage_data* p)
 }
 
 /// Save guild_storage data to sql
-int guild_storage_tosql(int guild_id, struct guild_storage* p)
+int guild_storage_tosql(int guild_id, struct s_guild_storage* p)
 {
 	char_memitemdata_to_sql(p->items, MAX_GUILD_STORAGE, guild_id, TABLE_GUILD_STORAGE);
 	ShowInfo ("guild storage save to DB - guild: %d\n", guild_id);
@@ -89,12 +89,12 @@ int guild_storage_tosql(int guild_id, struct guild_storage* p)
 }
 
 /// Load guild_storage data to mem
-int guild_storage_fromsql(int guild_id, struct guild_storage* p)
+int guild_storage_fromsql(int guild_id, struct s_guild_storage* p)
 {
 	StringBuf buf;
 	int i, j;
 
-	memset(p, 0, sizeof(struct guild_storage)); //clean up memory
+	memset(p, 0, sizeof(struct s_guild_storage)); //clean up memory
 	p->storage_amount = 0;
 	p->guild_id = guild_id;
 
@@ -117,7 +117,7 @@ int guild_storage_fromsql(int guild_id, struct guild_storage* p)
 
 	for( i = 0; i < MAX_GUILD_STORAGE && SQL_SUCCESS == Sql_NextRow(sql_handle); ++i )
 	{
-		struct item* item;
+		struct s_item* item;
 		char* data;
 		item = &p->items[i];
 		Sql_GetData(sql_handle, 0, &data, NULL); item->id = atoi(data);
@@ -181,13 +181,13 @@ int mapif_load_guild_storage(int fd,uint32 account_id,int guild_id, char flag)
 		Sql_ShowDebug(sql_handle);
 	else if( Sql_NumRows(sql_handle) > 0 )
 	{// guild exists
-		WFIFOHEAD(fd, sizeof(struct guild_storage)+13);
+		WFIFOHEAD(fd, sizeof(struct s_guild_storage)+13);
 		WFIFOW(fd,0) = 0x3818;
-		WFIFOW(fd,2) = sizeof(struct guild_storage)+13;
+		WFIFOW(fd,2) = sizeof(struct s_guild_storage)+13;
 		WFIFOL(fd,4) = account_id;
 		WFIFOL(fd,8) = guild_id;
 		WFIFOB(fd,12) = flag; //1 open storage, 0 don't open
-		guild_storage_fromsql(guild_id, (struct guild_storage*)WFIFOP(fd,13));
+		guild_storage_fromsql(guild_id, (struct s_guild_storage*)WFIFOP(fd,13));
 		WFIFOSET(fd, WFIFOW(fd,2));
 		return 0;
 	}
@@ -231,9 +231,9 @@ int mapif_parse_SaveGuildStorage(int fd)
 	guild_id = RFIFOL(fd,8);
 	len = RFIFOW(fd,2);
 
-	if( sizeof(struct guild_storage) != len - 12 )
+	if( sizeof(struct s_guild_storage) != len - 12 )
 	{
-		ShowError("inter storage: data size error %d != %d\n", sizeof(struct guild_storage), len - 12);
+		ShowError("inter storage: data size error %d != %d\n", sizeof(struct s_guild_storage), len - 12);
 	}
 	else
 	{
@@ -242,7 +242,7 @@ int mapif_parse_SaveGuildStorage(int fd)
 		else if( Sql_NumRows(sql_handle) > 0 )
 		{// guild exists
 			Sql_FreeResult(sql_handle);
-			guild_storage_tosql(guild_id, (struct guild_storage*)RFIFOP(fd,12));
+			guild_storage_tosql(guild_id, (struct s_guild_storage*)RFIFOP(fd,12));
 			mapif_save_guild_storage_ack(fd, RFIFOL(fd,4), guild_id, 0);
 			return 0;
 		}
@@ -279,8 +279,8 @@ void mapif_itembound_ack(int fd, int account_id, int guild_id)
 * @param count
 * @author [Cydh]
 */
-void mapif_itembound_store2gstorage(int fd, int guild_id, struct item items[], unsigned short count) {
-	int size = 8 + sizeof(struct item) * MAX_INVENTORY, i;
+void mapif_itembound_store2gstorage(int fd, int guild_id, struct s_item items[], unsigned short count) {
+	int size = 8 + sizeof(struct s_item) * MAX_INVENTORY, i;
 
 	WFIFOHEAD(fd, size);
 	WFIFOW(fd, 0) = 0x3857;
@@ -289,7 +289,7 @@ void mapif_itembound_store2gstorage(int fd, int guild_id, struct item items[], u
 	for (i = 0; i < count && i < MAX_INVENTORY; i++) {
 		if (!&items[i])
 			continue;
-		memcpy(WFIFOP(fd, 8 + (i * sizeof(struct item))), &items[i], sizeof(struct item));
+		memcpy(WFIFOP(fd, 8 + (i * sizeof(struct s_item))), &items[i], sizeof(struct s_item));
 	}
 	WFIFOW(fd, 4) = i;
 	WFIFOSET(fd, size);
@@ -305,7 +305,7 @@ int mapif_parse_itembound_retrieve(int fd)
 	StringBuf buf;
 	SqlStmt* stmt;
 	unsigned short i = 0, count = 0;
-	struct item item, items[MAX_INVENTORY];
+	struct s_item item, items[MAX_INVENTORY];
 	int j, guild_id = RFIFOW(fd,10);
 	uint32 char_id = RFIFOL(fd,2), account_id = RFIFOL(fd,6);
 
@@ -351,7 +351,7 @@ int mapif_parse_itembound_retrieve(int fd)
 	}
 	memset(&items, 0, sizeof(items));
 	while( SQL_SUCCESS == SqlStmt_NextRow(stmt) )
-		memcpy(&items[count++], &item, sizeof(struct item));
+		memcpy(&items[count++], &item, sizeof(struct s_item));
 	Sql_FreeResult(sql_handle);
 
 	ShowInfo("Found '" CL_WHITE "%d" CL_RESET "' guild bound item(s) from CID = " CL_WHITE "%d" CL_RESET ", AID = %d, Guild ID = " CL_WHITE "%d" CL_RESET ".\n", count, char_id, account_id, guild_id);

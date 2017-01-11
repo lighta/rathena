@@ -23,7 +23,7 @@
 #define VARNAME_LEN 64
 
 struct raconf {
-	DBMap *db;
+	s_DBMap *db;
 };
 
 
@@ -404,7 +404,7 @@ praconf raconf_parse(const char *file_name){
 		return NULL;
 	}
 
-	rc->db = strdb_alloc((DBOptions)(DB_OPT_BASE | DB_OPT_DUP_KEY), 98);	
+	rc->db = strdb_alloc((e_DBOptions)(DB_OPT_BASE | DB_OPT_DUP_KEY), 98);	
 	//
 	
 	if(configParse(rc, file_name) != true){
@@ -416,7 +416,7 @@ praconf raconf_parse(const char *file_name){
 
 
 void raconf_destroy(praconf rc){
-	DBIterator *iter;
+	s_DBIterator *iter;
 	struct conf_value *v;
 	
 	// Clear all entrys in db.

@@ -7,7 +7,7 @@
 #include "../common/cbasetypes.h"
 #include "../common/db.h"
 
-struct mapreg_save {
+struct s_mapreg_save {
 	int64 uid;         ///< Unique ID
 	union {
 		int i;         ///< Numeric value
@@ -17,7 +17,7 @@ struct mapreg_save {
 	bool save;         ///< Whether a save operation is pending
 };
 
-extern struct reg_db regs;
+extern struct s_reg_db regs;
 extern bool skip_insert;
 
 void mapreg_reload(void);
@@ -29,6 +29,6 @@ int mapreg_readreg(int64 uid);
 char* mapreg_readregstr(int64 uid);
 bool mapreg_setreg(int64 uid, int val);
 bool mapreg_setregstr(int64 uid, const char* str);
-int mapreg_destroyreg(DBKey key, DBData *data, va_list ap);
+int mapreg_destroyreg(u_DBKey key, s_DBData *data, va_list ap);
 
 #endif /* _MAPREG_H_ */

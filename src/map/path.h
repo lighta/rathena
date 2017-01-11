@@ -5,25 +5,25 @@
 #define _PATH_H_
 
 #include "../common/cbasetypes.h"
-enum cell_chk : uint8;
+enum e_cell_chk : uint8;
 
 #define MOVE_COST 10
 #define MOVE_DIAGONAL_COST 14
 
 #define MAX_WALKPATH 32
 
-struct walkpath_data {
+struct s_walkpath_data {
 	unsigned char path_len,path_pos;
 	unsigned char path[MAX_WALKPATH];
 };
 
-struct shootpath_data {
+struct s_shootpath_data {
 	int rx,ry,len;
 	int x[MAX_WALKPATH];
 	int y[MAX_WALKPATH];
 };
 
-enum directions : int8 {
+enum e_directions : int8 {
 	DIR_CENTER = -1,
 	DIR_NORTH = 0,
 	DIR_NORTHWEST = 1,
@@ -56,10 +56,10 @@ enum directions : int8 {
 int path_blownpos(int16 m,int16 x0,int16 y0,int16 dx,int16 dy,int count);
 
 // tries to find a walkable path
-bool path_search(struct walkpath_data *wpd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,int flag,cell_chk cell);
+bool path_search(struct s_walkpath_data *wpd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,int flag,e_cell_chk cell);
 
 // tries to find a shootable path
-bool path_search_long(struct shootpath_data *spd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,cell_chk cell);
+bool path_search_long(struct s_shootpath_data *spd,int16 m,int16 x0,int16 y0,int16 x1,int16 y1,e_cell_chk cell);
 
 // distance related functions
 bool check_distance(int dx, int dy, int distance);

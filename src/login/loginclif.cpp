@@ -46,13 +46,13 @@ static void logclif_sent_auth_result(int fd,char result){
  * Auth successful, inform client and create a temp auth_node.
  * @param sd: player session
  */
-static void logclif_auth_ok(struct login_session_data* sd) {
+static void logclif_auth_ok(struct s_login_session_data* sd) {
 	int fd = sd->fd;
 	uint32 ip = session[fd]->client_addr;
 
 	uint8 server_num, n;
 	uint32 subnet_char_ip;
-	struct auth_node* node;
+	struct s_auth_node* node;
 	int i;
 
 	if( runflag != LOGINSERVER_ST_RUNNING ){
@@ -84,7 +84,7 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 	}
 
 	{
-		struct online_login_data* data = (struct online_login_data*)idb_get(online_db, sd->account_id);
+		struct s_online_login_data* data = (struct s_online_login_data*)idb_get(online_db, sd->account_id);
 		if( data )
 		{// account is already marked as online!
 			if( data->char_server > -1 )
@@ -139,7 +139,7 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 	WFIFOSET(fd,47+32*server_num);
 
 	// create temporary auth entry
-	CREATE(node, struct auth_node, 1);
+	CREATE(node, struct s_auth_node, 1);
 	node->account_id = sd->account_id;
 	node->login_id1 = sd->login_id1;
 	node->login_id2 = sd->login_id2;
@@ -149,7 +149,7 @@ static void logclif_auth_ok(struct login_session_data* sd) {
 	node->clienttype = sd->clienttype;
 	idb_put(auth_db, sd->account_id, node);
 	{
-		struct online_login_data* data;
+		struct s_online_login_data* data;
 		// mark client as 'online'
 		data = login_add_online_user(-1, sd->account_id);
 		// schedule deletion of this node
@@ -185,7 +185,7 @@ static void logclif_auth_ok(struct login_session_data* sd) {
     104 = This character is being deleted. Login is temporarily unavailable for the time being
      default = Unknown Error.
  */
-static void logclif_auth_failed(struct login_session_data* sd, int result) {
+static void logclif_auth_failed(struct s_login_session_data* sd, int result) {
 	int fd = sd->fd;
 	uint32 ip = session[fd]->client_addr;
 
@@ -210,8 +210,8 @@ static void logclif_auth_failed(struct login_session_data* sd, int result) {
 		if( result != 6 )
 			memset(WFIFOP(fd,6), '\0', 20);
 		else { // 6 = Your are Prohibited to log in until %s
-			struct mmo_account acc;
-			AccountDB* accounts = login_get_accounts_db();
+			struct s_mmo_account acc;
+			s_AccountDB* accounts = login_get_accounts_db();
 			time_t unban_time = ( accounts->load_str(accounts, &acc, sd->userid) ) ? acc.unban_time : 0;
 			timestamp2string(WFIFOCP(fd,6), 20, unban_time, login_config.date_format);
 		}
@@ -225,8 +225,8 @@ static void logclif_auth_failed(struct login_session_data* sd, int result) {
 		if( result != 6 )
 			memset(WFIFOP(fd,3), '\0', 20);
 		else { // 6 = Your are Prohibited to log in until %s
-			struct mmo_account acc;
-			AccountDB* accounts = login_get_accounts_db();
+			struct s_mmo_account acc;
+			s_AccountDB* accounts = login_get_accounts_db();
 			time_t unban_time = ( accounts->load_str(accounts, &acc, sd->userid) ) ? acc.unban_time : 0;
 			timestamp2string(WFIFOCP(fd,3), 20, unban_time, login_config.date_format);
 		}
@@ -254,7 +254,7 @@ static int logclif_parse_keepalive(int fd){
  * @param fd: fd to parse from (client fd)
  * @return 0 not enough info transmitted, 1 success
  */
-static int logclif_parse_updclhash(int fd, struct login_session_data *sd){
+static int logclif_parse_updclhash(int fd, struct s_login_session_data *sd){
 	if (RFIFOREST(fd) < 18)
 		return 0;
 	sd->has_client_hash = 1;
@@ -279,7 +279,7 @@ static int logclif_parse_updclhash(int fd, struct login_session_data *sd){
  * @param fd: fd to parse from (client fd)
  * @return 0 failure, 1 success
  */
-static int logclif_parse_reqauth(int fd, struct login_session_data *sd, int command, char* ip){
+static int logclif_parse_reqauth(int fd, struct s_login_session_data *sd, int command, char* ip){
 	size_t packet_len = RFIFOREST(fd);
 
 	if( (command == 0x0064 && packet_len < 55)
@@ -375,7 +375,7 @@ static int logclif_parse_reqauth(int fd, struct login_session_data *sd, int comm
  * @param sd: client session
  * @return 1 success
  */
-static int logclif_parse_reqkey(int fd, struct login_session_data *sd){
+static int logclif_parse_reqkey(int fd, struct s_login_session_data *sd){
 	RFIFOSKIP(fd,2);
 	{
 		memset(sd->md5key, '\0', sizeof(sd->md5key));
@@ -399,7 +399,7 @@ static int logclif_parse_reqkey(int fd, struct login_session_data *sd){
  * @param ip: ipv4 address (client)
  * @return 0 packet received too shirt, 1 success
  */
-static int logclif_parse_reqcharconnec(int fd, struct login_session_data *sd, char* ip){
+static int logclif_parse_reqcharconnec(int fd, struct s_login_session_data *sd, char* ip){
 	if (RFIFOREST(fd) < 86)
 		return 0;
 	else {
@@ -473,7 +473,7 @@ static int logclif_parse_reqcharconnec(int fd, struct login_session_data *sd, ch
  * @return 0=invalid session,marked for disconnection,unknow packet, banned..; 1=success
  */
 int logclif_parse(int fd) {
-	struct login_session_data* sd = (struct login_session_data*)session[fd]->session_data;
+	struct s_login_session_data* sd = (struct s_login_session_data*)session[fd]->session_data;
 
 	char ip[16];
 	uint32 ipl = session[fd]->client_addr;
@@ -501,8 +501,8 @@ int logclif_parse(int fd) {
 			return 0;
 		}
 		// create a session for this new connection
-		CREATE(session[fd]->session_data, struct login_session_data, 1);
-		sd = (struct login_session_data*)session[fd]->session_data;
+		CREATE(session[fd]->session_data, struct s_login_session_data, 1);
+		sd = (struct s_login_session_data*)session[fd]->session_data;
 		sd->fd = fd;
 	}
 

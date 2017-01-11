@@ -7,7 +7,7 @@
 #include "../common/cbasetypes.h"
 
 //Party Flags on what to save/delete.
-enum {
+enum e_PartySaveWhatFlag {
   PS_CREATE = 0x01, //Create a new party entry (index holds leader's info) 
   PS_BASIC = 0x02, //Update basic party info.
   PS_LEADER = 0x04, //Update party's leader

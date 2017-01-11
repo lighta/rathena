@@ -74,12 +74,12 @@ extern "C" {
  * @see #DBReleaser
  * @see #db_custom_release(DBRelease)
  */
-typedef enum DBRelease {
+typedef enum e_DBRelease {
 	DB_RELEASE_NOTHING = 0x0,
 	DB_RELEASE_KEY     = 0x1,
 	DB_RELEASE_DATA    = 0x2,
 	DB_RELEASE_BOTH    = DB_RELEASE_KEY|DB_RELEASE_DATA,
-} DBRelease;
+} e_DBRelease;
 
 /**
  * Supported types of database.
@@ -100,14 +100,14 @@ typedef enum DBRelease {
  * @see #db_default_release(DBType,DBOptions)
  * @see #db_alloc(const char *,int,DBType,DBOptions,unsigned short)
  */
-typedef enum DBType {
+typedef enum e_DBType {
 	DB_INT,
 	DB_UINT,
 	DB_STRING,
 	DB_ISTRING,
 	DB_INT64,
 	DB_UINT64,
-} DBType;
+} e_DBType;
 
 /**
  * Bitfield of options that define the behavior of the database.
@@ -130,7 +130,7 @@ typedef enum DBType {
  * @see #db_default_release(DBType,DBOptions)
  * @see #db_alloc(const char *,int,DBType,DBOptions,unsigned short)
  */
-typedef enum DBOptions {
+enum e_DBOptions {
 	DB_OPT_BASE            = 0x00,
 	DB_OPT_DUP_KEY         = 0x01,
 	DB_OPT_RELEASE_KEY     = 0x02,
@@ -138,7 +138,7 @@ typedef enum DBOptions {
 	DB_OPT_RELEASE_BOTH    = DB_OPT_RELEASE_KEY|DB_OPT_RELEASE_DATA,
 	DB_OPT_ALLOW_NULL_KEY  = 0x08,
 	DB_OPT_ALLOW_NULL_DATA = 0x10,
-} DBOptions;
+};
 
 /**
  * Union of key types used by the database.
@@ -151,13 +151,13 @@ typedef enum DBOptions {
  * @see DBMap#put
  * @see DBMap#remove
  */
-typedef union DBKey {
+typedef union u_DBKey {
 	int i;
 	unsigned int ui;
 	const char *str;
 	int64 i64;
 	uint64 ui64;
-} DBKey;
+} u_DBKey;
 
 /**
  * Supported types of database data.
@@ -167,11 +167,11 @@ typedef union DBKey {
  * @public
  * @see #DBData
  */
-typedef enum DBDataType {
+typedef enum e_DBDataType {
 	DB_DATA_INT,
 	DB_DATA_UINT,
 	DB_DATA_PTR,
-} DBDataType;
+} e_DBDataType;
 
 /**
  * Struct for data types used by the database.
@@ -182,14 +182,14 @@ typedef enum DBDataType {
  * @param u.ptr Data of void* type
  * @public
  */
-typedef struct DBData {
-	DBDataType type;
+typedef struct s_DBData {
+	e_DBDataType type;
 	union {
 		int i;
 		unsigned int ui;
 		void *ptr;
 	} u;
-} DBData;
+} s_DBData;
 
 /**
  * Format of functions that create the data for the key when the entry doesn't
@@ -201,7 +201,7 @@ typedef struct DBData {
  * @see DBMap#vensure
  * @see DBMap#ensure
  */
-typedef DBData (*DBCreateData)(DBKey key, va_list args);
+typedef s_DBData (*DBCreateData)(u_DBKey key, va_list args);
 
 /**
  * Format of functions to be applied to an unspecified quantity of entries of
@@ -218,7 +218,7 @@ typedef DBData (*DBCreateData)(DBKey key, va_list args);
  * @see DBMap#vdestroy
  * @see DBMap#destroy
  */
-typedef int (*DBApply)(DBKey key, DBData *data, va_list args);
+typedef int (*DBApply)(u_DBKey key, s_DBData *data, va_list args);
 
 /**
  * Format of functions that match database entries.
@@ -231,7 +231,7 @@ typedef int (*DBApply)(DBKey key, DBData *data, va_list args);
  * @public
  * @see DBMap#getall
  */
-typedef int (*DBMatcher)(DBKey key, DBData data, va_list args);
+typedef int (*DBMatcher)(u_DBKey key, s_DBData data, va_list args);
 
 /**
  * Format of the comparators used internally by the database system.
@@ -245,7 +245,7 @@ typedef int (*DBMatcher)(DBKey key, DBData data, va_list args);
  * @public
  * @see #db_default_cmp(DBType)
  */
-typedef int (*DBComparator)(DBKey key1, DBKey key2, unsigned short maxlen);
+typedef int (*DBComparator)(u_DBKey key1, u_DBKey key2, unsigned short maxlen);
 
 /**
  * Format of the hashers used internally by the database system.
@@ -257,7 +257,7 @@ typedef int (*DBComparator)(DBKey key1, DBKey key2, unsigned short maxlen);
  * @public
  * @see #db_default_hash(DBType)
  */
-typedef uint64 (*DBHasher)(DBKey key, unsigned short maxlen);
+typedef uint64 (*DBHasher)(u_DBKey key, unsigned short maxlen);
 
 /**
  * Format of the releaser used by the database system.
@@ -271,7 +271,7 @@ typedef uint64 (*DBHasher)(DBKey key, unsigned short maxlen);
  * @see #db_default_releaser(DBType,DBOptions)
  * @see #db_custom_release(DBRelease)
  */
-typedef void (*DBReleaser)(DBKey key, DBData data, DBRelease which);
+typedef void (*DBReleaser)(u_DBKey key, s_DBData data, e_DBRelease which);
 
 
 /**
@@ -283,7 +283,7 @@ typedef void (*DBReleaser)(DBKey key, DBData data, DBRelease which);
  * @public
  * @see #DBMap
  */
-struct DBIterator
+struct s_DBIterator
 {
 
 	/**
@@ -295,7 +295,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*first)(DBIterator* self, DBKey* out_key);
+	s_DBData* (*first)(s_DBIterator* self, u_DBKey* out_key);
 
 	/**
 	 * Fetches the last entry in the database.
@@ -306,7 +306,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*last)(DBIterator* self, DBKey* out_key);
+	s_DBData* (*last)(s_DBIterator* self, u_DBKey* out_key);
 
 	/**
 	 * Fetches the next entry in the database.
@@ -317,7 +317,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*next)(DBIterator* self, DBKey* out_key);
+	s_DBData* (*next)(s_DBIterator* self, u_DBKey* out_key);
 
 	/**
 	 * Fetches the previous entry in the database.
@@ -328,7 +328,7 @@ struct DBIterator
 	 * @return Data of the entry
 	 * @protected
 	 */
-	DBData* (*prev)(DBIterator* self, DBKey* out_key);
+	s_DBData* (*prev)(s_DBIterator* self, u_DBKey* out_key);
 
 	/**
 	 * Returns true if the fetched entry exists.
@@ -338,7 +338,7 @@ struct DBIterator
 	 * @return true is the entry exists
 	 * @protected
 	 */
-	bool (*exists)(DBIterator* self);
+	bool (*exists)(s_DBIterator* self);
 
 	/**
 	 * Removes the current entry from the database.
@@ -351,14 +351,14 @@ struct DBIterator
 	 * @protected
 	 * @see DBMap#remove
 	 */
-	int (*remove)(DBIterator* self, DBData *out_data);
+	int (*remove)(s_DBIterator* self, s_DBData *out_data);
 
 	/**
 	 * Destroys this iterator and unlocks the database.
 	 * @param self Iterator
 	 * @protected
 	 */
-	void (*destroy)(DBIterator* self);
+	void (*destroy)(s_DBIterator* self);
 
 };
 
@@ -368,7 +368,7 @@ struct DBIterator
  * @public
  * @see #db_alloc(const char*,int,DBType,DBOptions,unsigned short)
  */
-struct DBMap {
+struct s_DBMap {
 
 	/**
 	 * Returns a new iterator for this database.
@@ -379,7 +379,7 @@ struct DBMap {
 	 * @return New iterator
 	 * @protected
 	 */
-	DBIterator* (*iterator)(DBMap* self);
+	s_DBIterator* (*iterator)(s_DBMap* self);
 
 	/**
 	 * Returns true if the entry exists.
@@ -388,7 +388,7 @@ struct DBMap {
 	 * @return true is the entry exists
 	 * @protected
 	 */
-	bool (*exists)(DBMap* self, DBKey key);
+	bool (*exists)(s_DBMap* self, u_DBKey key);
 
 	/**
 	 * Get the data of the entry identified by the key.
@@ -397,7 +397,7 @@ struct DBMap {
 	 * @return Data of the entry or NULL if not found
 	 * @protected
 	 */
-	DBData* (*get)(DBMap* self, DBKey key);
+	s_DBData* (*get)(s_DBMap* self, u_DBKey key);
 
 	/**
 	 * Just calls {@link DBMap#vgetall}.
@@ -416,7 +416,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vgetall(DBMap*,void **,unsigned int,DBMatcher,va_list)
 	 */
-	unsigned int (*getall)(DBMap* self, DBData** buf, unsigned int max, DBMatcher match, ...);
+	unsigned int (*getall)(s_DBMap* self, s_DBData** buf, unsigned int max, DBMatcher match, ...);
 
 	/**
 	 * Get the data of the entries matched by <code>match</code>.
@@ -434,7 +434,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#getall(DBMap*,void **,unsigned int,DBMatcher,...)
 	 */
-	unsigned int (*vgetall)(DBMap* self, DBData** buf, unsigned int max, DBMatcher match, va_list args);
+	unsigned int (*vgetall)(s_DBMap* self, s_DBData** buf, unsigned int max, DBMatcher match, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vensure}.
@@ -449,7 +449,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vensure(DBMap*,DBKey,DBCreateData,va_list)
 	 */
-	DBData* (*ensure)(DBMap* self, DBKey key, DBCreateData create, ...);
+	s_DBData* (*ensure)(s_DBMap* self, u_DBKey key, DBCreateData create, ...);
 
 	/**
 	 * Get the data of the entry identified by the key.
@@ -463,7 +463,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#ensure(DBMap*,DBKey,DBCreateData,...)
 	 */
-	DBData* (*vensure)(DBMap* self, DBKey key, DBCreateData create, va_list args);
+	s_DBData* (*vensure)(s_DBMap* self, u_DBKey key, DBCreateData create, va_list args);
 
 	/**
 	 * Put the data identified by the key in the database.
@@ -476,7 +476,7 @@ struct DBMap {
 	 * @return 1 if if the entry already exists, 0 otherwise
 	 * @protected
 	 */
-	int (*put)(DBMap* self, DBKey key, DBData data, DBData *out_data);
+	int (*put)(s_DBMap* self, u_DBKey key, s_DBData data, s_DBData *out_data);
 
 	/**
 	 * Remove an entry from the database.
@@ -488,7 +488,7 @@ struct DBMap {
 	 * @return 1 if if the entry already exists, 0 otherwise
 	 * @protected
 	 */
-	int (*remove)(DBMap* self, DBKey key, DBData *out_data);
+	int (*remove)(s_DBMap* self, u_DBKey key, s_DBData *out_data);
 
 	/**
 	 * Just calls {@link DBMap#vforeach}.
@@ -501,7 +501,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vforeach(DBMap*,DBApply,va_list)
 	 */
-	int (*foreach)(DBMap* self, DBApply func, ...);
+	int (*foreach)(s_DBMap* self, DBApply func, ...);
 
 	/**
 	 * Apply <code>func</code> to every entry in the database.
@@ -513,7 +513,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#foreach(DBMap*,DBApply,...)
 	 */
-	int (*vforeach)(DBMap* self, DBApply func, va_list args);
+	int (*vforeach)(s_DBMap* self, DBApply func, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vclear}.
@@ -528,7 +528,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vclear(DBMap*,DBApply,va_list)
 	 */
-	int (*clear)(DBMap* self, DBApply func, ...);
+	int (*clear)(s_DBMap* self, DBApply func, ...);
 
 	/**
 	 * Removes all entries from the database.
@@ -542,7 +542,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#clear(DBMap*,DBApply,...)
 	 */
-	int (*vclear)(DBMap* self, DBApply func, va_list args);
+	int (*vclear)(s_DBMap* self, DBApply func, va_list args);
 
 	/**
 	 * Just calls {@link DBMap#vdestroy}.
@@ -559,7 +559,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#vdestroy(DBMap*,DBApply,va_list)
 	 */
-	int (*destroy)(DBMap* self, DBApply func, ...);
+	int (*destroy)(s_DBMap* self, DBApply func, ...);
 
 	/**
 	 * Finalize the database, feeing all the memory it uses.
@@ -574,7 +574,7 @@ struct DBMap {
 	 * @protected
 	 * @see DBMap#destroy(DBMap*,DBApply,...)
 	 */
-	int (*vdestroy)(DBMap* self, DBApply func, va_list args);
+	int (*vdestroy)(s_DBMap* self, DBApply func, va_list args);
 
 	/**
 	 * Return the size of the database (number of items in the database).
@@ -582,7 +582,7 @@ struct DBMap {
 	 * @return Size of the database
 	 * @protected
 	 */
-	unsigned int (*size)(DBMap* self);
+	unsigned int (*size)(s_DBMap* self);
 
 	/**
 	 * Return the type of the database.
@@ -590,7 +590,7 @@ struct DBMap {
 	 * @return Type of the database
 	 * @protected
 	 */
-	DBType (*type)(DBMap* self);
+	e_DBType (*type)(s_DBMap* self);
 
 	/**
 	 * Return the options of the database.
@@ -598,7 +598,7 @@ struct DBMap {
 	 * @return Options of the database
 	 * @protected
 	 */
-	DBOptions (*options)(DBMap* self);
+	e_DBOptions (*options)(s_DBMap* self);
 
 };
 
@@ -733,7 +733,7 @@ struct DBMap {
  * @see #DBOptions
  * @see #db_default_release(DBType,DBOptions)
  */
-DBOptions db_fix_options(DBType type, DBOptions options);
+e_DBOptions db_fix_options(e_DBType type, e_DBOptions options);
 
 /**
  * Returns the default comparator for the type of database.
@@ -743,7 +743,7 @@ DBOptions db_fix_options(DBType type, DBOptions options);
  * @see #DBType
  * @see #DBComparator
  */
-DBComparator db_default_cmp(DBType type);
+DBComparator db_default_cmp(e_DBType type);
 
 /**
  * Returns the default hasher for the specified type of database.
@@ -753,7 +753,7 @@ DBComparator db_default_cmp(DBType type);
  * @see #DBType
  * @see #DBHasher
  */
-DBHasher db_default_hash(DBType type);
+DBHasher db_default_hash(e_DBType type);
 
 /**
  * Returns the default releaser for the specified type of database with the
@@ -770,7 +770,7 @@ DBHasher db_default_hash(DBType type);
  * @see #db_fix_options(DBType,DBOptions)
  * @see #db_custom_release(DBRelease)
  */
-DBReleaser db_default_release(DBType type, DBOptions options);
+DBReleaser db_default_release(e_DBType type, e_DBOptions options);
 
 /**
  * Returns the releaser that behaves as <code>which</code> specifies.
@@ -781,7 +781,7 @@ DBReleaser db_default_release(DBType type, DBOptions options);
  * @see #DBReleaser
  * @see #db_default_release(DBType,DBOptions)
  */
-DBReleaser db_custom_release(DBRelease which);
+DBReleaser db_custom_release(e_DBRelease which);
 
 /**
  * Allocate a new database of the specified type.
@@ -804,7 +804,7 @@ DBReleaser db_custom_release(DBRelease which);
  * @see #db_default_release(DBType,DBOptions)
  * @see #db_fix_options(DBType,DBOptions)
  */
-DBMap* db_alloc(const char *file, const char *func, int line, DBType type, DBOptions options, unsigned short maxlen);
+s_DBMap* db_alloc(const char *file, const char *func, int line, e_DBType type, e_DBOptions options, unsigned short maxlen);
 
 /**
  * Manual cast from 'int' to the union DBKey.
@@ -812,7 +812,7 @@ DBMap* db_alloc(const char *file, const char *func, int line, DBType type, DBOpt
  * @return The key as a DBKey union
  * @public
  */
-DBKey db_i2key(int key);
+u_DBKey db_i2key(int key);
 
 /**
  * Manual cast from 'unsigned int' to the union DBKey.
@@ -820,7 +820,7 @@ DBKey db_i2key(int key);
  * @return The key as a DBKey union
  * @public
  */
-DBKey db_ui2key(unsigned int key);
+u_DBKey db_ui2key(unsigned int key);
 
 /**
  * Manual cast from 'unsigned char *' to the union DBKey.
@@ -828,7 +828,7 @@ DBKey db_ui2key(unsigned int key);
  * @return The key as a DBKey union
  * @public
  */
-DBKey db_str2key(const char *key);
+u_DBKey db_str2key(const char *key);
 
 /**
  * Manual cast from 'int64' to the union DBKey.
@@ -836,7 +836,7 @@ DBKey db_str2key(const char *key);
  * @return The key as a DBKey union
  * @public
  */
-DBKey db_i642key(int64 key);
+u_DBKey db_i642key(int64 key);
 
 /**
  * Manual cast from 'uint64' to the union DBKey.
@@ -844,7 +844,7 @@ DBKey db_i642key(int64 key);
  * @return The key as a DBKey union
  * @public
  */
-DBKey db_ui642key(uint64 key);
+u_DBKey db_ui642key(uint64 key);
 
 /**
  * Manual cast from 'int' to the struct DBData.
@@ -852,7 +852,7 @@ DBKey db_ui642key(uint64 key);
  * @return The data as a DBData struct
  * @public
  */
-DBData db_i2data(int data);
+s_DBData db_i2data(int data);
 
 /**
  * Manual cast from 'unsigned int' to the struct DBData.
@@ -860,7 +860,7 @@ DBData db_i2data(int data);
  * @return The data as a DBData struct
  * @public
  */
-DBData db_ui2data(unsigned int data);
+s_DBData db_ui2data(unsigned int data);
 
 /**
  * Manual cast from 'void *' to the struct DBData.
@@ -868,7 +868,7 @@ DBData db_ui2data(unsigned int data);
  * @return The data as a DBData struct
  * @public
  */
-DBData db_ptr2data(void *data);
+s_DBData db_ptr2data(void *data);
 
 /**
  * Gets int type data from struct DBData.
@@ -877,7 +877,7 @@ DBData db_ptr2data(void *data);
  * @return Integer value of the data.
  * @public
  */
-int db_data2i(DBData *data);
+int db_data2i(s_DBData *data);
 
 /**
  * Gets unsigned int type data from struct DBData.
@@ -886,7 +886,7 @@ int db_data2i(DBData *data);
  * @return Unsigned int value of the data.
  * @public
  */
-unsigned int db_data2ui(DBData *data);
+unsigned int db_data2ui(s_DBData *data);
 
 /**
  * Gets void* type data from struct DBData.
@@ -895,7 +895,7 @@ unsigned int db_data2ui(DBData *data);
  * @return Void* value of the data.
  * @public
  */
-void* db_data2ptr(DBData *data);
+void* db_data2ptr(s_DBData *data);
 
 /**
  * Initialize the database system.
@@ -913,22 +913,22 @@ void db_init(void);
 void db_final(void);
 
 // Link DB System - From jAthena
-struct linkdb_node {
-	struct linkdb_node *next;
-	struct linkdb_node *prev;
+struct s_linkdb_node {
+	struct s_linkdb_node *next;
+	struct s_linkdb_node *prev;
 	void               *key;
 	void               *data;
 };
 
 typedef void (*LinkDBFunc)(void* key, void* data, va_list args);
 
-void  linkdb_insert  (struct linkdb_node** head, void *key, void* data); // Doesn't take into account duplicate keys
-void  linkdb_replace (struct linkdb_node** head, void *key, void* data); // Takes into account duplicate keys
-void* linkdb_search  (struct linkdb_node** head, void *key);
-void* linkdb_erase   (struct linkdb_node** head, void *key);
-void  linkdb_final   (struct linkdb_node** head);
-void  linkdb_vforeach(struct linkdb_node** head, LinkDBFunc func, va_list ap);
-void  linkdb_foreach (struct linkdb_node** head, LinkDBFunc func, ...);
+void  linkdb_insert  (struct s_linkdb_node** head, void *key, void* data); // Doesn't take into account duplicate keys
+void  linkdb_replace (struct s_linkdb_node** head, void *key, void* data); // Takes into account duplicate keys
+void* linkdb_search  (struct s_linkdb_node** head, void *key);
+void* linkdb_erase   (struct s_linkdb_node** head, void *key);
+void  linkdb_final   (struct s_linkdb_node** head);
+void  linkdb_vforeach(struct s_linkdb_node** head, LinkDBFunc func, va_list ap);
+void  linkdb_foreach (struct s_linkdb_node** head, LinkDBFunc func, ...);
 
 
 

@@ -10,16 +10,16 @@
 
 #define MAX_BG_MEMBERS 30
 
-struct battleground_member_data {
+struct s_battleground_member_data {
 	unsigned short x, y;
-	struct map_session_data *sd;
+	struct s_map_session_data *sd;
 	unsigned afk : 1;
 };
 
-struct battleground_data {
+struct s_battleground_data {
 	unsigned int bg_id;
 	unsigned char count;
-	struct battleground_member_data members[MAX_BG_MEMBERS];
+	struct s_battleground_member_data members[MAX_BG_MEMBERS];
 	// BG Cementery
 	unsigned short mapindex, x, y;
 	// Logout Event
@@ -30,17 +30,17 @@ struct battleground_data {
 void do_init_battleground(void);
 void do_final_battleground(void);
 
-struct battleground_data* bg_team_search(int bg_id);
-int bg_send_dot_remove(struct map_session_data *sd);
-int bg_team_get_id(struct block_list *bl);
-struct map_session_data* bg_getavailablesd(struct battleground_data *bg);
+struct s_battleground_data* bg_team_search(int bg_id);
+int bg_send_dot_remove(struct s_map_session_data *sd);
+int bg_team_get_id(struct s_block_list *bl);
+struct s_map_session_data* bg_getavailablesd(struct s_battleground_data *bg);
 
 int bg_create(unsigned short mapindex, short rx, short ry, const char *ev, const char *dev);
-int bg_team_join(int bg_id, struct map_session_data *sd);
+int bg_team_join(int bg_id, struct s_map_session_data *sd);
 int bg_team_delete(int bg_id);
-int bg_team_leave(struct map_session_data *sd, int flag);
+int bg_team_leave(struct s_map_session_data *sd, int flag);
 int bg_team_warp(int bg_id, unsigned short mapindex, short x, short y);
-int bg_member_respawn(struct map_session_data *sd);
-int bg_send_message(struct map_session_data *sd, const char *mes, int len);
+int bg_member_respawn(struct s_map_session_data *sd);
+int bg_send_message(struct s_map_session_data *sd, const char *mes, int len);
 
 #endif /* _BATTLEGROUND_H_ */

@@ -35,8 +35,8 @@ struct GroupSettings {
 int pc_group_max; /* known number of groups */
 
 static config_t pc_group_config;
-static DBMap* pc_group_db; // id -> GroupSettings
-static DBMap* pc_groupname_db; // name -> GroupSettings
+static s_DBMap* pc_group_db; // id -> GroupSettings
+static s_DBMap* pc_groupname_db; // name -> GroupSettings
 
 /**
  * @retval NULL if not found
@@ -73,7 +73,7 @@ static void read_config(void)
 
 	if (groups != NULL) {
 		GroupSettings *group_settings = NULL;
-		DBIterator *iter = NULL;
+		s_DBIterator *iter = NULL;
 		int i, loop = 0;
 
 		group_count = config_setting_length(groups);
@@ -276,7 +276,7 @@ static void read_config(void)
 
 	
 	if( ( pc_group_max = group_count ) ) {
-		DBIterator *iter = db_iterator(pc_group_db);
+		s_DBIterator *iter = db_iterator(pc_group_db);
 		GroupSettings *group_settings = NULL;
 		int* group_ids = (int*)aMalloc( pc_group_max * sizeof(int) );
 		int i = 0;
@@ -309,7 +309,7 @@ static void destroy_config(void)
  * COMMAND_ATCOMMAND (1) being index 0, COMMAND_CHARCOMMAND (2) being index 1.
  * @private
  */
-static inline int AtCommandType2idx(atCommandType type) { return (type-1); }
+static inline int AtCommandType2idx(e_atCommandType type) { return (type-1); }
 
 /**
  * Checks if player group can use @/#command
@@ -317,7 +317,7 @@ static inline int AtCommandType2idx(atCommandType type) { return (type-1); }
  * @param command Command name without @/# and params
  * @param type enum AtCommanndType { COMMAND_ATCOMMAND = 1, COMMAND_CHARCOMMAND = 2 }
  */
-bool pc_group_can_use_command(int group_id, const char *command, atCommandType type)
+bool pc_group_can_use_command(int group_id, const char *command, e_atCommandType type)
 {
 	int result = 0;
 	config_setting_t *commands = NULL;
@@ -348,7 +348,7 @@ bool pc_group_can_use_command(int group_id, const char *command, atCommandType t
  * Load permission for player based on group id
  * @param sd Player
  */
-void pc_group_pc_load(struct map_session_data * sd) {
+void pc_group_pc_load(struct s_map_session_data * sd) {
 	GroupSettings *group = NULL;
 	if ((group = id2group(sd->group_id)) == NULL) {
 		ShowWarning("pc_group_pc_load: %s (AID:%d) logged in with unknown group id (%d)! kicking...\n",
@@ -451,7 +451,7 @@ void do_final_pc_groups(void)
  * @public
  */
 void pc_groups_reload(void) {
-	struct map_session_data* sd = NULL;
+	struct s_map_session_data* sd = NULL;
 	struct s_mapiterator* iter;
 
 	do_final_pc_groups();

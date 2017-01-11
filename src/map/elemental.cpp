@@ -39,7 +39,7 @@ bool elemental_class(int class_) {
 	return (bool)(elemental_search_index(class_) > -1);
 }
 
-struct view_data * elemental_get_viewdata(int class_) {
+struct s_view_data * elemental_get_viewdata(int class_) {
 	int i = elemental_search_index(class_);
 	if( i < 0 )
 		return 0;
@@ -47,7 +47,7 @@ struct view_data * elemental_get_viewdata(int class_) {
 	return &elemental_db[i].vd;
 }
 
-int elemental_create(struct map_session_data *sd, int class_, unsigned int lifetime) {
+int elemental_create(struct s_map_session_data *sd, int class_, unsigned int lifetime) {
 	struct s_elemental ele;
 	struct s_elemental_db *db;
 	int i;
@@ -128,7 +128,7 @@ int elemental_create(struct map_session_data *sd, int class_, unsigned int lifet
 	return 1;
 }
 
-int elemental_get_lifetime(struct elemental_data *ed) {
+int elemental_get_lifetime(struct s_elemental_data *ed) {
 	const struct TimerData * td;
 	if( ed == NULL || ed->summon_timer == INVALID_TIMER )
 		return 0;
@@ -137,7 +137,7 @@ int elemental_get_lifetime(struct elemental_data *ed) {
 	return (td != NULL) ? DIFF_TICK(td->tick, gettick()) : 0;
 }
 
-int elemental_save(struct elemental_data *ed) {
+int elemental_save(struct s_elemental_data *ed) {
 	ed->elemental.mode = static_cast<int>(ed->battle_status.mode);
 	ed->elemental.hp = ed->battle_status.hp;
 	ed->elemental.sp = ed->battle_status.sp;
@@ -156,8 +156,8 @@ int elemental_save(struct elemental_data *ed) {
 }
 
 static int elemental_summon_end(int tid, unsigned int tick, int id, intptr_t data) {
-	struct map_session_data *sd;
-	struct elemental_data *ed;
+	struct s_map_session_data *sd;
+	struct s_elemental_data *ed;
 
 	if( (sd = map_id2sd(id)) == NULL )
 		return 1;
@@ -175,15 +175,15 @@ static int elemental_summon_end(int tid, unsigned int tick, int id, intptr_t dat
 	return 0;
 }
 
-void elemental_summon_stop(struct elemental_data *ed) {
+void elemental_summon_stop(struct s_elemental_data *ed) {
 	nullpo_retv(ed);
 	if( ed->summon_timer != INVALID_TIMER )
 		delete_timer(ed->summon_timer, elemental_summon_end);
 	ed->summon_timer = INVALID_TIMER;
 }
 
-int elemental_delete(struct elemental_data *ed) {
-	struct map_session_data *sd;
+int elemental_delete(struct s_elemental_data *ed) {
+	struct s_map_session_data *sd;
 
 	nullpo_ret(ed);
 
@@ -202,7 +202,7 @@ int elemental_delete(struct elemental_data *ed) {
 	return unit_remove_map(&ed->bl, CLR_OUTSIGHT);
 }
 
-void elemental_summon_init(struct elemental_data *ed) {
+void elemental_summon_init(struct s_elemental_data *ed) {
 	if( ed->summon_timer == INVALID_TIMER )
 		ed->summon_timer = add_timer(gettick() + ed->elemental.life_time, elemental_summon_end, ed->master->bl.id, 0);
 
@@ -216,8 +216,8 @@ void elemental_summon_init(struct elemental_data *ed) {
  * @return 0:failed, 1:sucess
  */
 int elemental_data_received(struct s_elemental *ele, bool flag) {
-	struct map_session_data *sd;
-	struct elemental_data *ed;
+	struct s_map_session_data *sd;
+	struct s_elemental_data *ed;
 	struct s_elemental_db *db;
 	int i = elemental_search_index(ele->class_);
 
@@ -231,7 +231,7 @@ int elemental_data_received(struct s_elemental *ele, bool flag) {
 
 	db = &elemental_db[i];
 	if( !sd->ed ) {	// Initialize it after first summon.
-		sd->ed = ed = (struct elemental_data*)aCalloc(1,sizeof(struct elemental_data));
+		sd->ed = ed = (struct s_elemental_data*)aCalloc(1,sizeof(struct s_elemental_data));
 		ed->bl.type = BL_ELEM;
 		ed->bl.id = npc_get_new_npc_id();
 		ed->master = sd;
@@ -276,9 +276,9 @@ int elemental_data_received(struct s_elemental *ele, bool flag) {
 	return 1;
 }
 
-int elemental_clean_single_effect(struct elemental_data *ed, uint16 skill_id) {
-	struct block_list *bl;
-	sc_type type = status_skill2sc(skill_id);
+int elemental_clean_single_effect(struct s_elemental_data *ed, uint16 skill_id) {
+	struct s_block_list *bl;
+	e_sc_type type = status_skill2sc(skill_id);
 
 	nullpo_ret(ed);
 
@@ -309,7 +309,7 @@ int elemental_clean_single_effect(struct elemental_data *ed, uint16 skill_id) {
 			case SC_CIRCLE_OF_FIRE_OPTION:
 			case SC_TIDAL_WEAPON_OPTION:
 				if( bl ) status_change_end(bl,type,INVALID_TIMER);	// Master
-				status_change_end(&ed->bl,(sc_type)(type-1),INVALID_TIMER);	// Elemental Spirit
+				status_change_end(&ed->bl,(e_sc_type)(type-1),INVALID_TIMER);	// Elemental Spirit
 				break;
 			case SC_ZEPHYR:
 				if( bl ) status_change_end(bl,type,INVALID_TIMER);
@@ -323,8 +323,8 @@ int elemental_clean_single_effect(struct elemental_data *ed, uint16 skill_id) {
 	return 1;
 }
 
-int elemental_clean_effect(struct elemental_data *ed) {
-	struct map_session_data *sd;
+int elemental_clean_effect(struct s_elemental_data *ed) {
+	struct s_map_session_data *sd;
 
 	nullpo_ret(ed);
 
@@ -383,8 +383,8 @@ int elemental_clean_effect(struct elemental_data *ed) {
 	return 1;
 }
 
-int elemental_action(struct elemental_data *ed, struct block_list *bl, unsigned int tick) {
-	struct skill_condition req;
+int elemental_action(struct s_elemental_data *ed, struct s_block_list *bl, unsigned int tick) {
+	struct s_skill_condition req;
 	uint16 skill_id, skill_lv;
 	int i;
 
@@ -438,7 +438,7 @@ int elemental_action(struct elemental_data *ed, struct block_list *bl, unsigned 
 	req = elemental_skill_get_requirements(skill_id, skill_lv);
 
 	if(req.hp || req.sp){
-		struct map_session_data *sd = BL_CAST(BL_PC, battle_get_master(&ed->bl));
+		struct s_map_session_data *sd = BL_CAST(BL_PC, battle_get_master(&ed->bl));
 		if( sd ){
 			if( sd->skill_id_old != SO_EL_ACTION && //regardless of remaining HP/SP it can be cast
 				(status_get_hp(&ed->bl) < req.hp || status_get_sp(&ed->bl) < req.sp) )
@@ -464,8 +464,8 @@ int elemental_action(struct elemental_data *ed, struct block_list *bl, unsigned 
  * Action that elemental perform after changing mode.
  * Activates one of the skills of the new mode.
  *-------------------------------------------------------------*/
-int elemental_change_mode_ack(struct elemental_data *ed, enum elemental_skillmode skill_mode) {
-	struct block_list *bl = &ed->master->bl;
+int elemental_change_mode_ack(struct s_elemental_data *ed, enum e_elemental_skillmode skill_mode) {
+	struct s_block_list *bl = &ed->master->bl;
 	uint16 skill_id, skill_lv;
 	int i;
 
@@ -506,8 +506,8 @@ int elemental_change_mode_ack(struct elemental_data *ed, enum elemental_skillmod
 /*===============================================================
  * Change elemental mode.
  *-------------------------------------------------------------*/
-int elemental_change_mode(struct elemental_data *ed, MonsterMode mode) {
-	enum elemental_skillmode skill_mode;
+int elemental_change_mode(struct s_elemental_data *ed, e_MonsterMode mode) {
+	enum e_elemental_skillmode skill_mode;
 
 	nullpo_ret(ed);
 
@@ -518,7 +518,7 @@ int elemental_change_mode(struct elemental_data *ed, MonsterMode mode) {
 	if(ed->elemental.mode != static_cast<int>(mode) ) elemental_clean_effect(ed);
 
         ed->elemental.mode = static_cast<int>(mode);
-	ed->battle_status.mode = (MonsterMode) mode;
+	ed->battle_status.mode = (e_MonsterMode) mode;
 
 	// Normalize elemental mode to elemental skill mode.
 	if( mode == EL_MODE_AGGRESSIVE ) skill_mode = EL_SKILLMODE_AGGRESSIVE;	// Aggressive spirit mode -> Aggressive spirit skill.
@@ -532,7 +532,7 @@ int elemental_change_mode(struct elemental_data *ed, MonsterMode mode) {
 	return 1;
 }
 
-void elemental_heal(struct elemental_data *ed, int hp, int sp) {
+void elemental_heal(struct s_elemental_data *ed, int hp, int sp) {
 	if (ed->master == NULL)
 		return;
 	if( hp )
@@ -541,12 +541,12 @@ void elemental_heal(struct elemental_data *ed, int hp, int sp) {
 		clif_elemental_updatestatus(ed->master, SP_SP);
 }
 
-int elemental_dead(struct elemental_data *ed) {
+int elemental_dead(struct s_elemental_data *ed) {
 	elemental_delete(ed);
 	return 0;
 }
 
-int elemental_unlocktarget(struct elemental_data *ed) {
+int elemental_unlocktarget(struct s_elemental_data *ed) {
 	nullpo_ret(ed);
 
 	ed->target_id = 0;
@@ -555,14 +555,14 @@ int elemental_unlocktarget(struct elemental_data *ed) {
 	return 0;
 }
 
-bool elemental_skillnotok(uint16 skill_id, struct elemental_data *ed) {
+bool elemental_skillnotok(uint16 skill_id, struct s_elemental_data *ed) {
 	uint16 idx = skill_get_index(skill_id);
 	nullpo_retr(1,ed);
 	return idx == 0 ? false : skill_isNotOk(skill_id,ed->master); // return false or check if it,s ok for master as well
 }
 
-struct skill_condition elemental_skill_get_requirements(uint16 skill_id, uint16 skill_lv){
-	struct skill_condition req;
+struct s_skill_condition elemental_skill_get_requirements(uint16 skill_id, uint16 skill_lv){
+	struct s_skill_condition req;
 	uint16 idx = skill_get_index(skill_id);
 
 	memset(&req,0,sizeof(req));
@@ -578,8 +578,8 @@ struct skill_condition elemental_skill_get_requirements(uint16 skill_id, uint16 
 	return req;
 }
 
-int elemental_set_target( struct map_session_data *sd, struct block_list *bl ) {
-	struct elemental_data *ed = sd->ed;
+int elemental_set_target( struct s_map_session_data *sd, struct s_block_list *bl ) {
+	struct s_elemental_data *ed = sd->ed;
 
 	nullpo_ret(ed);
 	nullpo_ret(bl);
@@ -596,15 +596,15 @@ int elemental_set_target( struct map_session_data *sd, struct block_list *bl ) {
 	return 1;
 }
 
-static int elemental_ai_sub_timer_activesearch(struct block_list *bl, va_list ap) {
-	struct elemental_data *ed;
-	struct block_list **target;
+static int elemental_ai_sub_timer_activesearch(struct s_block_list *bl, va_list ap) {
+	struct s_elemental_data *ed;
+	struct s_block_list **target;
 	int dist;
 
 	nullpo_ret(bl);
 
-	ed = va_arg(ap,struct elemental_data *);
-	target = va_arg(ap,struct block_list**);
+	ed = va_arg(ap,struct s_elemental_data *);
+	target = va_arg(ap,struct s_block_list**);
 
 	//If can't seek yet, not an enemy, or you can't attack it, skip.
 	if( (*target) == bl || !status_check_skilluse(&ed->bl, bl, 0, 0) )
@@ -632,10 +632,10 @@ static int elemental_ai_sub_timer_activesearch(struct block_list *bl, va_list ap
 	return 0;
 }
 
-static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_data *sd, unsigned int tick) {
-	struct block_list *target = NULL;
+static int elemental_ai_sub_timer(struct s_elemental_data *ed, struct s_map_session_data *sd, unsigned int tick) {
+	struct s_block_list *target = NULL;
 	int master_dist, view_range;
-	MonsterMode mode;
+	e_MonsterMode mode;
 
 	nullpo_ret(ed);
 	nullpo_ret(sd);
@@ -742,7 +742,7 @@ static int elemental_ai_sub_timer(struct elemental_data *ed, struct map_session_
 	return 0;
 }
 
-static int elemental_ai_sub_foreachclient(struct map_session_data *sd, va_list ap) {
+static int elemental_ai_sub_foreachclient(struct s_map_session_data *sd, va_list ap) {
 	unsigned int tick = va_arg(ap,unsigned int);
 	if(sd->status.ele_id && sd->ed)
 		elemental_ai_sub_timer(sd->ed,sd,tick);
@@ -762,7 +762,7 @@ static int elemental_ai_timer(int tid, unsigned int tick, int id, intptr_t data)
 static bool read_elementaldb_sub(char* str[], int columns, int current) {
 	uint16 class_ = atoi(str[0]), i, ele;
 	struct s_elemental_db *db;
-	struct status_data *status;
+	struct s_status_data *status;
 
 	//Find the ID, already exist or not in elemental_db
 	ARR_FIND(0,elemental_count,i,elemental_db[i].class_ == class_);

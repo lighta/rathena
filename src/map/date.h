@@ -4,6 +4,7 @@
 #ifndef _DATE_H_
 #define _DATE_H_
 
+
 int date_get_year(void);
 int date_get_month(void);
 int date_get_day(void);

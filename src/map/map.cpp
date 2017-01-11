@@ -85,30 +85,30 @@ char log_db_db[32] = "log";
 Sql* logmysql_handle;
 
 // DBMap declaration
-static DBMap* id_db=NULL; /// int id -> struct block_list*
-static DBMap* pc_db=NULL; /// int id -> struct map_session_data*
-static DBMap* mobid_db=NULL; /// int id -> struct mob_data*
-static DBMap* bossid_db=NULL; /// int id -> struct mob_data* (MVP db)
-static DBMap* map_db=NULL; /// unsigned int mapindex -> struct map_data*
-static DBMap* nick_db=NULL; /// uint32 char_id -> struct charid2nick* (requested names of offline characters)
-static DBMap* charid_db=NULL; /// uint32 char_id -> struct map_session_data*
-static DBMap* regen_db=NULL; /// int id -> struct block_list* (status_natural_heal processing)
-static DBMap* map_msg_db=NULL;
+static s_DBMap* id_db=NULL; /// int id -> struct s_block_list*
+static s_DBMap* pc_db=NULL; /// int id -> struct s_map_session_data*
+static s_DBMap* mobid_db=NULL; /// int id -> struct s_mob_data*
+static s_DBMap* bossid_db=NULL; /// int id -> struct s_mob_data* (MVP db)
+static s_DBMap* map_db=NULL; /// unsigned int mapindex -> struct map_data*
+static s_DBMap* nick_db=NULL; /// uint32 char_id -> struct charid2nick* (requested names of offline characters)
+static s_DBMap* charid_db=NULL; /// uint32 char_id -> struct s_map_session_data*
+static s_DBMap* regen_db=NULL; /// int id -> struct s_block_list* (status_natural_heal processing)
+static s_DBMap* map_msg_db=NULL;
 
 static int map_users=0;
 
 #define BLOCK_SIZE 8
 #define block_free_max 1048576
-struct block_list *block_free[block_free_max];
+struct s_block_list *block_free[block_free_max];
 static int block_free_count = 0, block_free_lock = 0;
 
 #define BL_LIST_MAX 1048576
-static struct block_list *bl_list[BL_LIST_MAX];
+static struct s_block_list *bl_list[BL_LIST_MAX];
 static int bl_list_count = 0;
 
 #define MAP_MAX_MSG 1500
 
-struct map_data map[MAX_MAP_PER_SERVER];
+struct s_map_data map[MAX_MAP_PER_SERVER];
 int map_num = 0;
 int map_port=0;
 
@@ -195,7 +195,7 @@ int map_usercount(void)
 /*==========================================
  * Attempt to free a map blocklist
  *------------------------------------------*/
-int map_freeblock (struct block_list *bl)
+int map_freeblock (struct s_block_list *bl)
 {
 	nullpo_retr(block_free_lock, bl);
 	if (block_free_lock == 0 || block_free_count >= block_free_max)
@@ -258,14 +258,14 @@ int map_freeblock_timer(int tid, unsigned int tick, int id, intptr_t data)
  * Handling of map_bl[]
  * The address of bl_heal is set in bl->prev
  *------------------------------------------*/
-static struct block_list bl_head;
+static struct s_block_list bl_head;
 
 #ifdef CELL_NOSTACK
 /*==========================================
  * These pair of functions update the counter of how many objects
  * lie on a tile.
  *------------------------------------------*/
-static void map_addblcell(struct block_list *bl)
+static void map_addblcell(struct s_block_list *bl)
 {
 	if( bl->m<0 || bl->x<0 || bl->x>=map[bl->m].xs || bl->y<0 || bl->y>=map[bl->m].ys || !(bl->type&BL_CHAR) )
 		return;
@@ -273,7 +273,7 @@ static void map_addblcell(struct block_list *bl)
 	return;
 }
 
-static void map_delblcell(struct block_list *bl)
+static void map_delblcell(struct s_block_list *bl)
 {
 	if( bl->m <0 || bl->x<0 || bl->x>=map[bl->m].xs || bl->y<0 || bl->y>=map[bl->m].ys || !(bl->type&BL_CHAR) )
 		return;
@@ -285,7 +285,7 @@ static void map_delblcell(struct block_list *bl)
  * Adds a block to the map.
  * Returns 0 on success, 1 on failure (illegal coordinates).
  *------------------------------------------*/
-int map_addblock(struct block_list* bl)
+int map_addblock(struct s_block_list* bl)
 {
 	int16 m, x, y;
 	int pos;
@@ -335,7 +335,7 @@ int map_addblock(struct block_list* bl)
 /*==========================================
  * Removes a block from the map.
  *------------------------------------------*/
-int map_delblock(struct block_list* bl)
+int map_delblock(struct s_block_list* bl)
 {
 	int pos;
 	nullpo_ret(bl);
@@ -383,10 +383,10 @@ int map_delblock(struct block_list* bl)
  * @param tick : when this was scheduled
  * @return 0:success, 1:fail
  */
-int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
+int map_moveblock(struct s_block_list *bl, int x1, int y1, unsigned int tick)
 {
 	int x0 = bl->x, y0 = bl->y;
-	struct status_change *sc = NULL;
+	struct s_status_change *sc = NULL;
 	int moveblock = ( x0/BLOCK_SIZE != x1/BLOCK_SIZE || y0/BLOCK_SIZE != y1/BLOCK_SIZE);
 
 	if (!bl->prev) {
@@ -435,7 +435,7 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 		skill_unit_move(bl,tick,3);
 
 		if( bl->type == BL_PC && ((TBL_PC*)bl)->shadowform_id ) {//Shadow Form Target Moving
-			struct block_list *d_bl;
+			struct s_block_list *d_bl;
 			if( (d_bl = map_id2bl(((TBL_PC*)bl)->shadowform_id)) == NULL || !check_distance_bl(bl,d_bl,10) ) {
 				if( d_bl )
 					status_change_end(d_bl,SC__SHADOWFORM,INVALID_TIMER);
@@ -460,7 +460,7 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 					skill_unit_move_unit_group(skill_id2group(sc->data[SC_STEALTHFIELD_MASTER]->val2), bl->m, x1-x0, y1-y0);
 
 				if( sc->data[SC__SHADOWFORM] ) {//Shadow Form Caster Moving
-					struct block_list *d_bl;
+					struct s_block_list *d_bl;
 					if( (d_bl = map_id2bl(sc->data[SC__SHADOWFORM]->val2)) == NULL || !check_distance_bl(bl,d_bl,10) )
 						status_change_end(bl,SC__SHADOWFORM,INVALID_TIMER);
 				}
@@ -502,7 +502,7 @@ int map_moveblock(struct block_list *bl, int x1, int y1, unsigned int tick)
 int map_count_oncell(int16 m, int16 x, int16 y, int type, int flag)
 {
 	int bx,by;
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int count = 0;
 
 	if (x < 0 || y < 0 || (x >= map[m].xs) || (y >= map[m].ys))
@@ -515,7 +515,7 @@ int map_count_oncell(int16 m, int16 x, int16 y, int type, int flag)
 		for( bl = map[m].block[bx+by*map[m].bxs] ; bl != NULL ; bl = bl->next )
 			if(bl->x == x && bl->y == y && bl->type&type) {
 				if(flag&1) {
-					struct unit_data *ud = unit_bl2ud(bl);
+					struct s_unit_data *ud = unit_bl2ud(bl);
 					if(!ud || ud->walktimer == INVALID_TIMER)
 						count++;
 				} else {
@@ -527,7 +527,7 @@ int map_count_oncell(int16 m, int16 x, int16 y, int type, int flag)
 		for( bl = map[m].block_mob[bx+by*map[m].bxs] ; bl != NULL ; bl = bl->next )
 			if(bl->x == x && bl->y == y) {
 				if(flag&1) {
-					struct unit_data *ud = unit_bl2ud(bl);
+					struct s_unit_data *ud = unit_bl2ud(bl);
 					if(!ud || ud->walktimer == INVALID_TIMER)
 						count++;
 				} else {
@@ -542,10 +542,10 @@ int map_count_oncell(int16 m, int16 x, int16 y, int type, int flag)
  * Looks for a skill unit on a given cell
  * flag&1: runs battle_check_target check based on unit->group->target_flag
  */
-struct skill_unit* map_find_skill_unit_oncell(struct block_list* target,int16 x,int16 y,uint16 skill_id,struct skill_unit* out_unit, int flag) {
+struct s_skill_unit* map_find_skill_unit_oncell(struct s_block_list* target,int16 x,int16 y,uint16 skill_id,struct s_skill_unit* out_unit, int flag) {
 	int16 m,bx,by;
-	struct block_list *bl;
-	struct skill_unit *unit;
+	struct s_block_list *bl;
+	struct s_skill_unit *unit;
 	m = target->m;
 
 	if (x < 0 || y < 0 || (x >= map[m].xs) || (y >= map[m].ys))
@@ -559,7 +559,7 @@ struct skill_unit* map_find_skill_unit_oncell(struct block_list* target,int16 x,
 		if (bl->x != x || bl->y != y || bl->type != BL_SKILL)
 			continue;
 
-		unit = (struct skill_unit *) bl;
+		unit = (struct s_skill_unit *) bl;
 		if( unit == out_unit || !unit->alive || !unit->group || unit->group->skill_id != skill_id )
 			continue;
 		if( !(flag&1) || battle_check_target(&unit->bl,target,unit->group->target_flag) > 0 )
@@ -571,11 +571,11 @@ struct skill_unit* map_find_skill_unit_oncell(struct block_list* target,int16 x,
 /*==========================================
  * Adapted from foreachinarea for an easier invocation. [Skotlex]
  *------------------------------------------*/
-int map_foreachinrange(int (*func)(struct block_list*,va_list), struct block_list* center, int16 range, int type, ...)
+int map_foreachinrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int type, ...)
 {
 	int bx, by, m;
 	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	int x0, x1, y0, y1;
 	va_list ap;
@@ -636,11 +636,11 @@ int map_foreachinrange(int (*func)(struct block_list*,va_list), struct block_lis
 /*==========================================
  * Same as foreachinrange, but there must be a shoot-able range between center and target to be counted in. [Skotlex]
  *------------------------------------------*/
-int map_foreachinshootrange(int (*func)(struct block_list*,va_list),struct block_list* center, int16 range, int type,...)
+int map_foreachinshootrange(int (*func)(struct s_block_list*,va_list),struct s_block_list* center, int16 range, int type,...)
 {
 	int bx, by, m;
 	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	int x0, x1, y0, y1;
 	va_list ap;
@@ -707,11 +707,11 @@ int map_foreachinshootrange(int (*func)(struct block_list*,va_list),struct block
  * Apply *func with ... arguments for the range.
  * @type = BL_PC/BL_MOB etc..
  *------------------------------------------*/
-int map_foreachinarea(int (*func)(struct block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+int map_foreachinarea(int (*func)(struct s_block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
 {
 	int bx, by;
 	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
 
@@ -768,11 +768,11 @@ int map_foreachinarea(int (*func)(struct block_list*,va_list), int16 m, int16 x0
 * @param y1: North end of area
 * @param type: Type of bl to search for
 *------------------------------------------*/
-int map_foreachinshootarea(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+int map_foreachinshootarea(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
 {
 	int bx, by, cx, cy;
 	int returnCount = 0;	//total sum of returned values of func()
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
 
@@ -831,11 +831,11 @@ int map_foreachinshootarea(int(*func)(struct block_list*, va_list), int16 m, int
 /*==========================================
  * Adapted from forcountinarea for an easier invocation. [pakpil]
  *------------------------------------------*/
-int map_forcountinrange(int (*func)(struct block_list*,va_list), struct block_list* center, int16 range, int count, int type, ...)
+int map_forcountinrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int count, int type, ...)
 {
 	int bx, by, m;
 	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	int x0, x1, y0, y1;
 	va_list ap;
@@ -893,11 +893,11 @@ int map_forcountinrange(int (*func)(struct block_list*,va_list), struct block_li
 	bl_list_count = blockcount;
 	return returnCount;	//[Skotlex]
 }
-int map_forcountinarea(int (*func)(struct block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int count, int type, ...)
+int map_forcountinarea(int (*func)(struct s_block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int count, int type, ...)
 {
 	int bx, by;
 	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
 
@@ -952,11 +952,11 @@ int map_forcountinarea(int (*func)(struct block_list*,va_list), int16 m, int16 x
  * Move bl and do func* with va_list while moving.
  * Movement is set by dx dy which are distance in x and y
  *------------------------------------------*/
-int map_foreachinmovearea(int (*func)(struct block_list*,va_list), struct block_list* center, int16 range, int16 dx, int16 dy, int type, ...)
+int map_foreachinmovearea(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int16 dx, int16 dy, int type, ...)
 {
 	int bx, by, m;
 	int returnCount = 0;  //total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	int16 x0, x1, y0, y1;
 	va_list ap;
@@ -1076,11 +1076,11 @@ int map_foreachinmovearea(int (*func)(struct block_list*,va_list), struct block_
 //			 which only checks the exact single x/y passed to it rather than an
 //			 area radius - may be more useful in some instances)
 //
-int map_foreachincell(int (*func)(struct block_list*,va_list), int16 m, int16 x, int16 y, int type, ...)
+int map_foreachincell(int (*func)(struct s_block_list*,va_list), int16 m, int16 x, int16 y, int type, ...)
 {
 	int bx, by;
 	int returnCount = 0;  //total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
 
@@ -1119,7 +1119,7 @@ int map_foreachincell(int (*func)(struct block_list*,va_list), int16 m, int16 x,
 /*============================================================
 * For checking a path between two points (x0, y0) and (x1, y1)
 *------------------------------------------------------------*/
-int map_foreachinpath(int (*func)(struct block_list*,va_list),int16 m,int16 x0,int16 y0,int16 x1,int16 y1,int16 range,int length, int type,...)
+int map_foreachinpath(int (*func)(struct s_block_list*,va_list),int16 m,int16 x0,int16 y0,int16 x1,int16 y1,int16 range,int length, int type,...)
 {
 	int returnCount = 0;  //total sum of returned values of func() [Skotlex]
 //////////////////////////////////////////////////////////////
@@ -1157,7 +1157,7 @@ int map_foreachinpath(int (*func)(struct block_list*,va_list),int16 m,int16 x0,i
 
 	//Generic map_foreach* variables.
 	int i, blockcount = bl_list_count;
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int bx, by;
 	//method specific variables
 	int magnitude2, len_limit; //The square of the magnitude
@@ -1311,12 +1311,12 @@ int map_foreachinpath(int (*func)(struct block_list*,va_list),int16 m,int16 x0,i
 * @param offset: Moves the whole path, half-length for diagonal paths
 * @param type: Type of bl to search for
 *------------------------------------------*/
-int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int16 range, int length, int offset, int type, ...)
+int map_foreachindir(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int16 range, int length, int offset, int type, ...)
 {
 	int returnCount = 0;  //Total sum of returned values of func()
 
 	int i, blockcount = bl_list_count;
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int bx, by;
 	int mx0, mx1, my0, my1, rx, ry;
 	uint8 dir = map_calc_dir_xy(x0, y0, x1, y1, 6);
@@ -1457,11 +1457,11 @@ int map_foreachindir(int(*func)(struct block_list*, va_list), int16 m, int16 x0,
 }
 
 // Copy of map_foreachincell, but applied to the whole map. [Skotlex]
-int map_foreachinmap(int (*func)(struct block_list*,va_list), int16 m, int type,...)
+int map_foreachinmap(int (*func)(struct s_block_list*,va_list), int16 m, int type,...)
 {
 	int b, bsize;
 	int returnCount = 0;  //total sum of returned values of func() [Skotlex]
-	struct block_list *bl;
+	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	va_list ap;
 
@@ -1535,7 +1535,7 @@ int map_get_new_object_id(void)
  *------------------------------------------*/
 int map_clearflooritem_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct flooritem_data* fitem = (struct flooritem_data*)idb_get(id_db, id);
+	struct s_flooritem_data* fitem = (struct s_flooritem_data*)idb_get(id_db, id);
 
 	if (fitem == NULL || fitem->bl.type != BL_ITEM || (fitem->cleartimer != tid)) {
 		ShowError("map_clearflooritem_timer : error\n");
@@ -1556,8 +1556,8 @@ int map_clearflooritem_timer(int tid, unsigned int tick, int id, intptr_t data)
 /*
  * clears a single bl item out of the map.
  */
-void map_clearflooritem(struct block_list *bl) {
-	struct flooritem_data* fitem = (struct flooritem_data*)bl;
+void map_clearflooritem(struct s_block_list *bl) {
+	struct s_flooritem_data* fitem = (struct s_flooritem_data*)bl;
 
 	if( fitem->cleartimer != INVALID_TIMER )
 		delete_timer(fitem->cleartimer,map_clearflooritem_timer);
@@ -1601,7 +1601,7 @@ int map_searchrandfreecell(int16 m,int16 *x,int16 *y,int stack) {
 }
 
 
-static int map_count_sub(struct block_list *bl,va_list ap)
+static int map_count_sub(struct s_block_list *bl,va_list ap)
 {
 	return 1;
 }
@@ -1618,7 +1618,7 @@ static int map_count_sub(struct block_list *bl,va_list ap)
  * &2 = the target should be able to walk to the target tile.
  * &4 = there shouldn't be any players around the target tile (use the no_spawn_on_player setting)
  *------------------------------------------*/
-int map_search_freecell(struct block_list *src, int16 m, int16 *x,int16 *y, int16 rx, int16 ry, int flag)
+int map_search_freecell(struct s_block_list *src, int16 m, int16 *x,int16 *y, int16 rx, int16 ry, int flag)
 {
 	int tries, spawn=0;
 	int bx, by;
@@ -1776,10 +1776,10 @@ bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag)
  * @param mob_id: Monster ID if dropped by monster
  * @return 0:failure, x:item_gid [MIN_FLOORITEM;MAX_FLOORITEM]==[2;START_ACCOUNT_NUM]
  *------------------------------------------*/
-int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id)
+int map_addflooritem(struct s_item *item, int amount, int16 m, int16 x, int16 y, int first_charid, int second_charid, int third_charid, int flags, unsigned short mob_id)
 {
 	int r;
-	struct flooritem_data *fitem = NULL;
+	struct s_flooritem_data *fitem = NULL;
 
 	nullpo_ret(item);
 
@@ -1790,7 +1790,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 		return 0;
 	r = rnd();
 
-	CREATE(fitem, struct flooritem_data, 1);
+	CREATE(fitem, struct s_flooritem_data, 1);
 	fitem->bl.type=BL_ITEM;
 	fitem->bl.prev = fitem->bl.next = NULL;
 	fitem->bl.m=m;
@@ -1827,7 +1827,7 @@ int map_addflooritem(struct item *item, int amount, int16 m, int16 x, int16 y, i
 /**
  * @see DBCreateData
  */
-static DBData create_charid2nick(DBKey key, va_list args)
+static s_DBData create_charid2nick(u_DBKey key, va_list args)
 {
 	struct charid2nick *p;
 	CREATE(p, struct charid2nick, 1);
@@ -1847,7 +1847,7 @@ void map_addnickdb(int charid, const char* nick)
 	safestrncpy(p->nick, nick, sizeof(p->nick));
 
 	while( p->requests ) {
-		struct map_session_data* sd;
+		struct s_map_session_data* sd;
 		struct charid_request* req;
 		req = p->requests;
 		p->requests = req->next;
@@ -1863,14 +1863,14 @@ void map_addnickdb(int charid, const char* nick)
 void map_delnickdb(int charid, const char* name)
 {
 	struct charid2nick* p;
-	DBData data;
+	s_DBData data;
 
 	if (!nick_db->remove(nick_db, db_i2key(charid), &data) || (p = (struct charid2nick*)db_data2ptr(&data)) == NULL)
 		return;
 
 	while( p->requests ) {
 		struct charid_request* req;
-		struct map_session_data* sd;
+		struct s_map_session_data* sd;
 		req = p->requests;
 		p->requests = req->next;
 		sd = map_charid2sd(req->charid);
@@ -1884,11 +1884,11 @@ void map_delnickdb(int charid, const char* name)
 /// Notifies sd of the nick of charid.
 /// Uses the name in the character if online.
 /// Uses the name in nick_db if offline.
-void map_reqnickdb(struct map_session_data * sd, int charid)
+void map_reqnickdb(struct s_map_session_data * sd, int charid)
 {
 	struct charid2nick* p;
 	struct charid_request* req;
-	struct map_session_data* tsd;
+	struct s_map_session_data* tsd;
 
 	nullpo_retv(sd);
 
@@ -1915,7 +1915,7 @@ void map_reqnickdb(struct map_session_data * sd, int charid)
 /*==========================================
  * add bl to id_db
  *------------------------------------------*/
-void map_addiddb(struct block_list *bl)
+void map_addiddb(struct s_block_list *bl)
 {
 	nullpo_retv(bl);
 
@@ -1943,7 +1943,7 @@ void map_addiddb(struct block_list *bl)
 /*==========================================
  * remove bl from id_db
  *------------------------------------------*/
-void map_deliddb(struct block_list *bl)
+void map_deliddb(struct s_block_list *bl)
 {
 	nullpo_retv(bl);
 
@@ -1968,11 +1968,11 @@ void map_deliddb(struct block_list *bl)
 /*==========================================
  * Standard call when a player connection is closed.
  *------------------------------------------*/
-int map_quit(struct map_session_data *sd) {
+int map_quit(struct s_map_session_data *sd) {
 	int i;
 
 	if(!sd->state.active) { //Removing a player that is not active.
-		struct auth_node *node = chrif_search(sd->status.account_id);
+		struct s_auth_node *node = chrif_search(sd->status.account_id);
 		if (node && node->char_id == sd->status.char_id &&
 			node->state != ST_LOGOUT)
 			//Except when logging out, clear the auth-connect data immediately.
@@ -2092,7 +2092,7 @@ int map_quit(struct map_session_data *sd) {
 
 	if( map[sd->bl.m].instance_id ) { // Avoid map conflicts and warnings on next login
 		int16 m;
-		struct point *pt;
+		struct s_point *pt;
 		if( map[sd->bl.m].save.map )
 			pt = &map[sd->bl.m].save;
 		else
@@ -2126,43 +2126,43 @@ int map_quit(struct map_session_data *sd) {
 /*==========================================
  * Lookup, id to session (player,mob,npc,homon,merc..)
  *------------------------------------------*/
-struct map_session_data * map_id2sd(int id){
+struct s_map_session_data * map_id2sd(int id){
 	if (id <= 0) return NULL;
-	return (struct map_session_data*)idb_get(pc_db,id);
+	return (struct s_map_session_data*)idb_get(pc_db,id);
 }
 
-struct mob_data * map_id2md(int id){
+struct s_mob_data * map_id2md(int id){
 	if (id <= 0) return NULL;
-	return (struct mob_data*)idb_get(mobid_db,id);
+	return (struct s_mob_data*)idb_get(mobid_db,id);
 }
 
-struct npc_data * map_id2nd(int id){
-	struct block_list* bl = map_id2bl(id);
+struct s_npc_data * map_id2nd(int id){
+	struct s_block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_NPC, bl);
 }
 
-struct homun_data* map_id2hd(int id){
-	struct block_list* bl = map_id2bl(id);
+struct s_homun_data* map_id2hd(int id){
+	struct s_block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_HOM, bl);
 }
 
-struct mercenary_data* map_id2mc(int id){
-	struct block_list* bl = map_id2bl(id);
+struct s_mercenary_data* map_id2mc(int id){
+	struct s_block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_MER, bl);
 }
 
-struct pet_data* map_id2pd(int id){
-	struct block_list* bl = map_id2bl(id);
+struct s_pet_data* map_id2pd(int id){
+	struct s_block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_PET, bl);
 }
 
-struct elemental_data* map_id2ed(int id) {
-	struct block_list* bl = map_id2bl(id);
+struct s_elemental_data* map_id2ed(int id) {
+	struct s_block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_ELEM, bl);
 }
 
-struct chat_data* map_id2cd(int id){
-	struct block_list* bl = map_id2bl(id);
+struct s_chat_data* map_id2cd(int id){
+	struct s_block_list* bl = map_id2bl(id);
 	return BL_CAST(BL_CHAT, bl);
 }
 
@@ -2170,7 +2170,7 @@ struct chat_data* map_id2cd(int id){
 const char* map_charid2nick(int charid)
 {
 	struct charid2nick *p;
-	struct map_session_data* sd;
+	struct s_map_session_data* sd;
 
 	sd = map_charid2sd(charid);
 	if( sd )
@@ -2184,10 +2184,10 @@ const char* map_charid2nick(int charid)
 	return NULL;
 }
 
-/// Returns the struct map_session_data of the charid or NULL if the char is not online.
-struct map_session_data* map_charid2sd(int charid)
+/// Returns the struct s_map_session_data of the charid or NULL if the char is not online.
+struct s_map_session_data* map_charid2sd(int charid)
 {
-	return (struct map_session_data*)uidb_get(charid_db, charid);
+	return (struct s_map_session_data*)uidb_get(charid_db, charid);
 }
 
 /*==========================================
@@ -2195,10 +2195,10 @@ struct map_session_data* map_charid2sd(int charid)
  * (without sensitive case if necessary)
  * return map_session_data pointer or NULL
  *------------------------------------------*/
-struct map_session_data * map_nick2sd(const char *nick)
+struct s_map_session_data * map_nick2sd(const char *nick)
 {
-	struct map_session_data* sd;
-	struct map_session_data* found_sd;
+	struct s_map_session_data* sd;
+	struct s_map_session_data* found_sd;
 	struct s_mapiterator* iter;
 	size_t nicklen;
 	int qty = 0;
@@ -2244,8 +2244,8 @@ struct map_session_data * map_nick2sd(const char *nick)
 /*==========================================
  * Looksup id_db DBMap and returns BL pointer of 'id' or NULL if not found
  *------------------------------------------*/
-struct block_list * map_id2bl(int id) {
-	return (struct block_list*)idb_get(id_db,id);
+struct s_block_list * map_id2bl(int id) {
+	return (struct s_block_list*)idb_get(id_db,id);
 }
 
 /**
@@ -2258,14 +2258,14 @@ bool map_blid_exists( int id ) {
 /*==========================================
  * Convex Mirror
  *------------------------------------------*/
-struct mob_data * map_getmob_boss(int16 m)
+struct s_mob_data * map_getmob_boss(int16 m)
 {
-	DBIterator* iter;
-	struct mob_data *md = NULL;
+	s_DBIterator* iter;
+	struct s_mob_data *md = NULL;
 	bool found = false;
 
 	iter = db_iterator(bossid_db);
-	for( md = (struct mob_data*)dbi_first(iter); dbi_exists(iter); md = (struct mob_data*)dbi_next(iter) )
+	for( md = (struct s_mob_data*)dbi_first(iter); dbi_exists(iter); md = (struct s_mob_data*)dbi_next(iter) )
 	{
 		if( md->bl.m == m )
 		{
@@ -2278,21 +2278,21 @@ struct mob_data * map_getmob_boss(int16 m)
 	return (found)? md : NULL;
 }
 
-struct mob_data * map_id2boss(int id)
+struct s_mob_data * map_id2boss(int id)
 {
 	if (id <= 0) return NULL;
-	return (struct mob_data*)idb_get(bossid_db,id);
+	return (struct s_mob_data*)idb_get(bossid_db,id);
 }
 
 /// Applies func to all the players in the db.
 /// Stops iterating if func returns -1.
-void map_foreachpc(int (*func)(struct map_session_data* sd, va_list args), ...)
+void map_foreachpc(int (*func)(struct s_map_session_data* sd, va_list args), ...)
 {
-	DBIterator* iter;
-	struct map_session_data* sd;
+	s_DBIterator* iter;
+	struct s_map_session_data* sd;
 
 	iter = db_iterator(pc_db);
-	for( sd = (struct map_session_data*)dbi_first(iter); dbi_exists(iter); sd = (struct map_session_data*)dbi_next(iter) )
+	for( sd = (struct s_map_session_data*)dbi_first(iter); dbi_exists(iter); sd = (struct s_map_session_data*)dbi_next(iter) )
 	{
 		va_list args;
 		int ret;
@@ -2308,13 +2308,13 @@ void map_foreachpc(int (*func)(struct map_session_data* sd, va_list args), ...)
 
 /// Applies func to all the mobs in the db.
 /// Stops iterating if func returns -1.
-void map_foreachmob(int (*func)(struct mob_data* md, va_list args), ...)
+void map_foreachmob(int (*func)(struct s_mob_data* md, va_list args), ...)
 {
-	DBIterator* iter;
-	struct mob_data* md;
+	s_DBIterator* iter;
+	struct s_mob_data* md;
 
 	iter = db_iterator(mobid_db);
-	for( md = (struct mob_data*)dbi_first(iter); dbi_exists(iter); md = (struct mob_data*)dbi_next(iter) )
+	for( md = (struct s_mob_data*)dbi_first(iter); dbi_exists(iter); md = (struct s_mob_data*)dbi_next(iter) )
 	{
 		va_list args;
 		int ret;
@@ -2330,17 +2330,17 @@ void map_foreachmob(int (*func)(struct mob_data* md, va_list args), ...)
 
 /// Applies func to all the npcs in the db.
 /// Stops iterating if func returns -1.
-void map_foreachnpc(int (*func)(struct npc_data* nd, va_list args), ...)
+void map_foreachnpc(int (*func)(struct s_npc_data* nd, va_list args), ...)
 {
-	DBIterator* iter;
-	struct block_list* bl;
+	s_DBIterator* iter;
+	struct s_block_list* bl;
 
 	iter = db_iterator(id_db);
-	for( bl = (struct block_list*)dbi_first(iter); dbi_exists(iter); bl = (struct block_list*)dbi_next(iter) )
+	for( bl = (struct s_block_list*)dbi_first(iter); dbi_exists(iter); bl = (struct s_block_list*)dbi_next(iter) )
 	{
 		if( bl->type == BL_NPC )
 		{
-			struct npc_data* nd = (struct npc_data*)bl;
+			struct s_npc_data* nd = (struct s_npc_data*)bl;
 			va_list args;
 			int ret;
 
@@ -2356,13 +2356,13 @@ void map_foreachnpc(int (*func)(struct npc_data* nd, va_list args), ...)
 
 /// Applies func to everything in the db.
 /// Stops iterating if func returns -1.
-void map_foreachregen(int (*func)(struct block_list* bl, va_list args), ...)
+void map_foreachregen(int (*func)(struct s_block_list* bl, va_list args), ...)
 {
-	DBIterator* iter;
-	struct block_list* bl;
+	s_DBIterator* iter;
+	struct s_block_list* bl;
 
 	iter = db_iterator(regen_db);
-	for( bl = (struct block_list*)dbi_first(iter); dbi_exists(iter); bl = (struct block_list*)dbi_next(iter) )
+	for( bl = (struct s_block_list*)dbi_first(iter); dbi_exists(iter); bl = (struct s_block_list*)dbi_next(iter) )
 	{
 		va_list args;
 		int ret;
@@ -2378,13 +2378,13 @@ void map_foreachregen(int (*func)(struct block_list* bl, va_list args), ...)
 
 /// Applies func to everything in the db.
 /// Stops iterating if func returns -1.
-void map_foreachiddb(int (*func)(struct block_list* bl, va_list args), ...)
+void map_foreachiddb(int (*func)(struct s_block_list* bl, va_list args), ...)
 {
-	DBIterator* iter;
-	struct block_list* bl;
+	s_DBIterator* iter;
+	struct s_block_list* bl;
 
 	iter = db_iterator(id_db);
-	for( bl = (struct block_list*)dbi_first(iter); dbi_exists(iter); bl = (struct block_list*)dbi_next(iter) )
+	for( bl = (struct s_block_list*)dbi_first(iter); dbi_exists(iter); bl = (struct s_block_list*)dbi_next(iter) )
 	{
 		va_list args;
 		int ret;
@@ -2404,7 +2404,7 @@ struct s_mapiterator
 {
 	enum e_mapitflags flags;// flags for special behaviour
 	enum bl_type types;// what bl types to return
-	DBIterator* dbi;// database iterator
+	s_DBIterator* dbi;// database iterator
 };
 
 /// Returns true if the block_list matches the description in the iterator.
@@ -2454,13 +2454,13 @@ void mapit_free(struct s_mapiterator* mapit)
 ///
 /// @param mapit Iterator
 /// @return first block_list or NULL
-struct block_list* mapit_first(struct s_mapiterator* mapit)
+struct s_block_list* mapit_first(struct s_mapiterator* mapit)
 {
-	struct block_list* bl;
+	struct s_block_list* bl;
 
 	nullpo_retr(NULL,mapit);
 
-	for( bl = (struct block_list*)dbi_first(mapit->dbi); bl != NULL; bl = (struct block_list*)dbi_next(mapit->dbi) )
+	for( bl = (struct s_block_list*)dbi_first(mapit->dbi); bl != NULL; bl = (struct s_block_list*)dbi_next(mapit->dbi) )
 	{
 		if( MAPIT_MATCHES(mapit,bl) )
 			break;// found match
@@ -2473,13 +2473,13 @@ struct block_list* mapit_first(struct s_mapiterator* mapit)
 ///
 /// @param mapit Iterator
 /// @return last block_list or NULL
-struct block_list* mapit_last(struct s_mapiterator* mapit)
+struct s_block_list* mapit_last(struct s_mapiterator* mapit)
 {
-	struct block_list* bl;
+	struct s_block_list* bl;
 
 	nullpo_retr(NULL,mapit);
 
-	for( bl = (struct block_list*)dbi_last(mapit->dbi); bl != NULL; bl = (struct block_list*)dbi_prev(mapit->dbi) )
+	for( bl = (struct s_block_list*)dbi_last(mapit->dbi); bl != NULL; bl = (struct s_block_list*)dbi_prev(mapit->dbi) )
 	{
 		if( MAPIT_MATCHES(mapit,bl) )
 			break;// found match
@@ -2492,15 +2492,15 @@ struct block_list* mapit_last(struct s_mapiterator* mapit)
 ///
 /// @param mapit Iterator
 /// @return next block_list or NULL
-struct block_list* mapit_next(struct s_mapiterator* mapit)
+struct s_block_list* mapit_next(struct s_mapiterator* mapit)
 {
-	struct block_list* bl;
+	struct s_block_list* bl;
 
 	nullpo_retr(NULL,mapit);
 
 	for( ; ; )
 	{
-		bl = (struct block_list*)dbi_next(mapit->dbi);
+		bl = (struct s_block_list*)dbi_next(mapit->dbi);
 		if( bl == NULL )
 			break;// end
 		if( MAPIT_MATCHES(mapit,bl) )
@@ -2515,15 +2515,15 @@ struct block_list* mapit_next(struct s_mapiterator* mapit)
 ///
 /// @param mapit Iterator
 /// @return previous block_list or NULL
-struct block_list* mapit_prev(struct s_mapiterator* mapit)
+struct s_block_list* mapit_prev(struct s_mapiterator* mapit)
 {
-	struct block_list* bl;
+	struct s_block_list* bl;
 
 	nullpo_retr(NULL,mapit);
 
 	for( ; ; )
 	{
-		bl = (struct block_list*)dbi_prev(mapit->dbi);
+		bl = (struct s_block_list*)dbi_prev(mapit->dbi);
 		if( bl == NULL )
 			break;// end
 		if( MAPIT_MATCHES(mapit,bl) )
@@ -2547,7 +2547,7 @@ bool mapit_exists(struct s_mapiterator* mapit)
 /*==========================================
  * Add npc-bl to id_db, basically register npc to map
  *------------------------------------------*/
-bool map_addnpc(int16 m,struct npc_data *nd)
+bool map_addnpc(int16 m,struct s_npc_data *nd)
 {
 	nullpo_ret(nd);
 
@@ -2600,7 +2600,7 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
 	}
 
 	// Copy the map
-	memcpy(&map[dst_m], &map[src_m], sizeof(struct map_data));
+	memcpy(&map[dst_m], &map[src_m], sizeof(struct s_map_data));
 
 	strcpy(iname,name);
 
@@ -2617,8 +2617,8 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
 	// Mimic questinfo
 	if( map[src_m].qi_count ) {
 		map[dst_m].qi_count = map[src_m].qi_count;
-		CREATE( map[dst_m].qi_data, struct questinfo, map[dst_m].qi_count );
-		memcpy( map[dst_m].qi_data, map[src_m].qi_data, map[dst_m].qi_count * sizeof(struct questinfo) );
+		CREATE( map[dst_m].qi_data, struct s_questinfo, map[dst_m].qi_count );
+		memcpy( map[dst_m].qi_data, map[src_m].qi_data, map[dst_m].qi_count * sizeof(struct s_questinfo) );
 	}
 
 	map[dst_m].m = dst_m;
@@ -2631,12 +2631,12 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
 
 	// Reallocate cells
 	num_cell = map[dst_m].xs * map[dst_m].ys;
-	CREATE( map[dst_m].cell, struct mapcell, num_cell );
-	memcpy( map[dst_m].cell, map[src_m].cell, num_cell * sizeof(struct mapcell) );
+	CREATE( map[dst_m].cell, struct s_mapcell, num_cell );
+	memcpy( map[dst_m].cell, map[src_m].cell, num_cell * sizeof(struct s_mapcell) );
 
-	size = map[dst_m].bxs * map[dst_m].bys * sizeof(struct block_list*);
-	map[dst_m].block = (struct block_list **)aCalloc(1,size);
-	map[dst_m].block_mob = (struct block_list **)aCalloc(1,size);
+	size = map[dst_m].bxs * map[dst_m].bys * sizeof(struct s_block_list*);
+	map[dst_m].block = (struct s_block_list **)aCalloc(1,size);
+	map[dst_m].block_mob = (struct s_block_list **)aCalloc(1,size);
 
 	map[dst_m].index = mapindex_addmap(-1, map[dst_m].name);
 	map[dst_m].channel = NULL;
@@ -2650,12 +2650,12 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
 /*==========================================
  * Set player to save point when they leave
  *------------------------------------------*/
-static int map_instancemap_leave(struct block_list *bl, va_list ap)
+static int map_instancemap_leave(struct s_block_list *bl, va_list ap)
 {
-	struct map_session_data* sd;
+	struct s_map_session_data* sd;
 
 	nullpo_retr(0, bl);
-	nullpo_retr(0, sd = (struct map_session_data *)bl);
+	nullpo_retr(0, sd = (struct s_map_session_data *)bl);
 
 	pc_setpos(sd, sd->status.save_point.map, sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT);
 
@@ -2665,16 +2665,16 @@ static int map_instancemap_leave(struct block_list *bl, va_list ap)
 /*==========================================
  * Remove all units from instance
  *------------------------------------------*/
-static int map_instancemap_clean(struct block_list *bl, va_list ap)
+static int map_instancemap_clean(struct s_block_list *bl, va_list ap)
 {
 	nullpo_retr(0, bl);
 	switch(bl->type) {
 		/*case BL_PC:
 		// BL_PET, BL_HOM, BL_MER, and BL_ELEM are moved when BL_PC warped out in map_instancemap_leave
-			map_quit((struct map_session_data *) bl);
+			map_quit((struct s_map_session_data *) bl);
 			break;*/
 		case BL_NPC:
-			npc_unload((struct npc_data *)bl,true);
+			npc_unload((struct s_npc_data *)bl,true);
 			break;
 		case BL_MOB:
 			unit_free(bl,CLR_OUTSIGHT);
@@ -2683,7 +2683,7 @@ static int map_instancemap_clean(struct block_list *bl, va_list ap)
 			map_clearflooritem(bl);
 			break;
 		case BL_SKILL:
-			skill_delunit((struct skill_unit *) bl);
+			skill_delunit((struct s_skill_unit *) bl);
 			break;
 	}
 
@@ -2727,7 +2727,7 @@ int map_delinstancemap(int m)
  *-----------------------------------------*/
 // Stores the spawn data entry in the mob list.
 // Returns the index of successful, or -1 if the list was full.
-int map_addmobtolist(unsigned short m, struct spawn_data *spawn)
+int map_addmobtolist(unsigned short m, struct s_spawn_data *spawn)
 {
 	size_t i;
 	ARR_FIND( 0, MAX_MOB_LIST_PER_MAP, i, map[m].moblist[i] == NULL );
@@ -2761,9 +2761,9 @@ void map_spawnmobs(int16 m)
 	}
 }
 
-int map_removemobs_sub(struct block_list *bl, va_list ap)
+int map_removemobs_sub(struct s_block_list *bl, va_list ap)
 {
-	struct mob_data *md = (struct mob_data *)bl;
+	struct s_mob_data *md = (struct s_mob_data *)bl;
 	nullpo_ret(md);
 
 	//When not to remove mob:
@@ -2833,7 +2833,7 @@ void map_removemobs(int16 m)
 const char* map_mapid2mapname(int m)
 {
 	if (map[m].instance_id) { // Instance map check
-		struct instance_data *im = &instance_data[map[m].instance_id];
+		struct s_instance_data *im = &instance_data[map[m].instance_id];
 
 		if (!im) // This shouldn't happen but if it does give them the map we intended to give
 			return map[m].name;
@@ -2867,12 +2867,12 @@ int16 map_mapname2mapid(const char* name)
  *------------------------------------------*/
 int16 map_mapindex2mapid(unsigned short mapindex)
 {
-	struct map_data *md=NULL;
+	struct s_map_data *md=NULL;
 
 	if (!mapindex)
 		return -1;
 
-	md = (struct map_data*)uidb_get(map_db,(unsigned int)mapindex);
+	md = (struct s_map_data*)uidb_get(map_db,(unsigned int)mapindex);
 	if(md==NULL || md->cell==NULL)
 		return -1;
 	return md->m;
@@ -2916,7 +2916,7 @@ int map_check_dir(int s_dir,int t_dir)
 /*==========================================
  * Returns the direction of the given cell, relative to 'src'
  *------------------------------------------*/
-uint8 map_calc_dir(struct block_list* src, int16 x, int16 y)
+uint8 map_calc_dir(struct s_block_list* src, int16 x, int16 y)
 {
 	uint8 dir = 0;
 
@@ -2974,7 +2974,7 @@ uint8 map_calc_dir_xy(int16 srcx, int16 srcy, int16 x, int16 y, uint8 srcdir) {
  * Randomizes target cell x,y to a random walkable cell that
  * has the same distance from object as given coordinates do. [Skotlex]
  *------------------------------------------*/
-int map_random_dir(struct block_list *bl, int16 *x, int16 *y)
+int map_random_dir(struct s_block_list *bl, int16 *x, int16 *y)
 {
 	short xi = *x-bl->x;
 	short yi = *y-bl->y;
@@ -3003,10 +3003,10 @@ int map_random_dir(struct block_list *bl, int16 *x, int16 *y)
 }
 
 // gat system
-inline static struct mapcell map_gat2cell(int gat) {
-	struct mapcell cell;
+inline static struct s_mapcell map_gat2cell(int gat) {
+	struct s_mapcell cell;
 
-	memset(&cell,0,sizeof(struct mapcell));
+	memset(&cell,0,sizeof(struct s_mapcell));
 
 	switch( gat ) {
 		case 0: cell.walkable = 1; cell.shootable = 1; cell.water = 0; break; // walkable ground
@@ -3024,7 +3024,7 @@ inline static struct mapcell map_gat2cell(int gat) {
 	return cell;
 }
 
-static int map_cell2gat(struct mapcell cell)
+static int map_cell2gat(struct s_mapcell cell)
 {
 	if( cell.walkable == 1 && cell.shootable == 1 && cell.water == 0 ) return 0;
 	if( cell.walkable == 0 && cell.shootable == 0 && cell.water == 0 ) return 1;
@@ -3038,14 +3038,14 @@ static int map_cell2gat(struct mapcell cell)
 /*==========================================
  * Confirm if celltype in (m,x,y) match the one given in cellchk
  *------------------------------------------*/
-int map_getcell(int16 m,int16 x,int16 y,cell_chk cellchk)
+int map_getcell(int16 m,int16 x,int16 y,e_cell_chk cellchk)
 {
 	return (m < 0 || m >= MAX_MAP_PER_SERVER) ? 0 : map_getcellp(&map[m],x,y,cellchk);
 }
 
-int map_getcellp(struct map_data* m,int16 x,int16 y,cell_chk cellchk)
+int map_getcellp(struct s_map_data* m,int16 x,int16 y,e_cell_chk cellchk)
 {
-	struct mapcell cell;
+	struct s_mapcell cell;
 
 	nullpo_ret(m);
 
@@ -3120,7 +3120,7 @@ int map_getcellp(struct map_data* m,int16 x,int16 y,cell_chk cellchk)
  * 'cell' - which flag to modify
  * 'flag' - true = on, false = off
  *------------------------------------------*/
-void map_setcell(int16 m, int16 x, int16 y, cell_t cell, bool flag)
+void map_setcell(int16 m, int16 x, int16 y, e_cell_t cell, bool flag)
 {
 	int j;
 
@@ -3150,7 +3150,7 @@ void map_setcell(int16 m, int16 x, int16 y, cell_t cell, bool flag)
 void map_setgatcell(int16 m, int16 x, int16 y, int gat)
 {
 	int j;
-	struct mapcell cell;
+	struct s_mapcell cell;
 
 	if( m < 0 || m >= map_num || x < 0 || x >= map[m].xs || y < 0 || y >= map[m].ys )
 		return;
@@ -3166,7 +3166,7 @@ void map_setgatcell(int16 m, int16 x, int16 y, int gat)
 /*==========================================
  * Invisible Walls
  *------------------------------------------*/
-static DBMap* iwall_db;
+static s_DBMap* iwall_db;
 
 void map_iwall_nextxy(int16 x, int16 y, int8 dir, int pos, int16 *x1, int16 *y1)
 {
@@ -3187,20 +3187,20 @@ void map_iwall_nextxy(int16 x, int16 y, int8 dir, int pos, int16 *x1, int16 *y1)
 
 bool map_iwall_set(int16 m, int16 x, int16 y, int size, int8 dir, bool shootable, const char* wall_name)
 {
-	struct iwall_data *iwall;
+	struct s_iwall_data *iwall;
 	int i;
 	int16 x1 = 0, y1 = 0;
 
 	if( size < 1 || !wall_name )
 		return false;
 
-	if( (iwall = (struct iwall_data *)strdb_get(iwall_db, wall_name)) != NULL )
+	if( (iwall = (struct s_iwall_data *)strdb_get(iwall_db, wall_name)) != NULL )
 		return false; // Already Exists
 
 	if( map_getcell(m, x, y, CELL_CHKNOREACH) )
 		return false; // Starting cell problem
 
-	CREATE(iwall, struct iwall_data, 1);
+	CREATE(iwall, struct s_iwall_data, 1);
 	iwall->m = m;
 	iwall->x = x;
 	iwall->y = y;
@@ -3230,9 +3230,9 @@ bool map_iwall_set(int16 m, int16 x, int16 y, int size, int8 dir, bool shootable
 	return true;
 }
 
-void map_iwall_get(struct map_session_data *sd) {
-	struct iwall_data *iwall;
-	DBIterator* iter;
+void map_iwall_get(struct s_map_session_data *sd) {
+	struct s_iwall_data *iwall;
+	s_DBIterator* iter;
 	int16 x1, y1;
 	int i;
 
@@ -3240,7 +3240,7 @@ void map_iwall_get(struct map_session_data *sd) {
 		return;
 
 	iter = db_iterator(iwall_db);
-	for( iwall = (struct iwall_data *)dbi_first(iter); dbi_exists(iter); iwall = (struct iwall_data *)dbi_next(iter) ) {
+	for( iwall = (struct s_iwall_data *)dbi_first(iter); dbi_exists(iter); iwall = (struct s_iwall_data *)dbi_next(iter) ) {
 		if( iwall->m != sd->bl.m )
 			continue;
 
@@ -3254,10 +3254,10 @@ void map_iwall_get(struct map_session_data *sd) {
 
 void map_iwall_remove(const char *wall_name)
 {
-	struct iwall_data *iwall;
+	struct s_iwall_data *iwall;
 	int16 i, x1, y1;
 
-	if( (iwall = (struct iwall_data *)strdb_get(iwall_db, wall_name)) == NULL )
+	if( (iwall = (struct s_iwall_data *)strdb_get(iwall_db, wall_name)) == NULL )
 		return; // Nothing to do
 
 	for( i = 0; i < iwall->size; i++ ) {
@@ -3276,7 +3276,7 @@ void map_iwall_remove(const char *wall_name)
 /**
  * @see DBCreateData
  */
-static DBData create_map_data_other_server(DBKey key, va_list args)
+static s_DBData create_map_data_other_server(u_DBKey key, va_list args)
 {
 	struct map_data_other_server *mdos;
 	unsigned short mapindex = (unsigned short)key.ui;
@@ -3311,7 +3311,7 @@ int map_setipport(unsigned short mapindex, uint32 ip, uint16 port)
  * Delete all the other maps server management
  * @see DBApply
  */
-int map_eraseallipport_sub(DBKey key, DBData *data, va_list va)
+int map_eraseallipport_sub(u_DBKey key, s_DBData *data, va_list va)
 {
 	struct map_data_other_server *mdos = (struct map_data_other_server *)db_data2ptr(data);
 	if(mdos->cell == NULL) {
@@ -3381,7 +3381,7 @@ static char *map_init_mapcache(FILE *fp)
  * Map cache reading
  * [Shinryo]: Optimized some behaviour to speed this up
  *==========================================*/
-int map_readfromcache(struct map_data *m, char *buffer, char *decode_buffer)
+int map_readfromcache(struct s_map_data *m, char *buffer, char *decode_buffer)
 {
 	int i;
 	struct map_cache_main_header *header = (struct map_cache_main_header *)buffer;
@@ -3416,7 +3416,7 @@ int map_readfromcache(struct map_data *m, char *buffer, char *decode_buffer)
 		// TO-DO: Maybe handle the scenario, if the decoded buffer isn't the same size as expected? [Shinryo]
 		decode_zip(decode_buffer, &size, p+sizeof(struct map_cache_map_info), info->len);
 
-		CREATE(m->cell, struct mapcell, size);
+		CREATE(m->cell, struct s_mapcell, size);
 
 
 		for( xy = 0; xy < size; ++xy )
@@ -3541,7 +3541,7 @@ int map_waterheight(char* mapname)
 /*==================================
  * .GAT format
  *----------------------------------*/
-int map_readgat (struct map_data* m)
+int map_readgat (struct s_map_data* m)
 {
 	char filename[256];
 	uint8* gat;
@@ -3557,7 +3557,7 @@ int map_readgat (struct map_data* m)
 	m->xs = *(int32*)(gat+6);
 	m->ys = *(int32*)(gat+10);
 	num_cells = m->xs * m->ys;
-	CREATE(m->cell, struct mapcell, num_cells);
+	CREATE(m->cell, struct s_mapcell, num_cells);
 
 	water_height = map_waterheight(m->name);
 
@@ -3584,12 +3584,12 @@ int map_readgat (struct map_data* m)
 /*======================================
  * Add/Remove map to the map_db
  *--------------------------------------*/
-void map_addmap2db(struct map_data *m)
+void map_addmap2db(struct s_map_data *m)
 {
 	uidb_put(map_db, (unsigned int)m->index, m);
 }
 
-void map_removemapdb(struct map_data *m)
+void map_removemapdb(struct s_map_data *m)
 {
 	uidb_remove(map_db, (unsigned int)m->index);
 }
@@ -3698,9 +3698,9 @@ int map_readallmaps (void)
 		map[i].bxs = (map[i].xs + BLOCK_SIZE - 1) / BLOCK_SIZE;
 		map[i].bys = (map[i].ys + BLOCK_SIZE - 1) / BLOCK_SIZE;
 
-		size = map[i].bxs * map[i].bys * sizeof(struct block_list*);
-		map[i].block = (struct block_list**)aCalloc(size, 1);
-		map[i].block_mob = (struct block_list**)aCalloc(size, 1);
+		size = map[i].bxs * map[i].bys * sizeof(struct s_block_list*);
+		map[i].block = (struct s_block_list**)aCalloc(size, 1);
+		map[i].block_mob = (struct s_block_list**)aCalloc(size, 1);
 	}
 
 	// intialization and configuration-dependent adjustments of mapflags
@@ -3738,9 +3738,9 @@ int parse_console(const char* buf){
 	int16 x = 0;
 	int16 y = 0;
 	int n;
-	struct map_session_data sd;
+	struct s_map_session_data sd;
 
-	memset(&sd, 0, sizeof(struct map_session_data));
+	memset(&sd, 0, sizeof(struct s_map_session_data));
 	strcpy(sd.status.name, "console");
 
 	if( ( n = sscanf(buf, "%63[^:]:%63[^:]:%63s %6hd %6hd[^\n]", type, command, mapname, &x, &y) ) < 5 ){
@@ -4136,7 +4136,7 @@ int log_sql_init(void)
 	return 0;
 }
 
-struct questinfo *map_add_questinfo(int m, struct questinfo *qi) {
+struct s_questinfo *map_add_questinfo(int m, struct s_questinfo *qi) {
 	unsigned short i;
 
 	/* duplicate, override */
@@ -4146,7 +4146,7 @@ struct questinfo *map_add_questinfo(int m, struct questinfo *qi) {
 	}
 
 	if( i == map[m].qi_count )
-		RECREATE(map[m].qi_data, struct questinfo, ++map[m].qi_count);
+		RECREATE(map[m].qi_data, struct s_questinfo, ++map[m].qi_count);
 	else { // clear previous criteria on override
 		if (map[m].qi_data[i].jobid)
 			aFree(map[m].qi_data[i].jobid);
@@ -4158,15 +4158,15 @@ struct questinfo *map_add_questinfo(int m, struct questinfo *qi) {
 		map[m].qi_data[i].req_count = 0;
 	}
 
-	memcpy(&map[m].qi_data[i], qi, sizeof(struct questinfo));
+	memcpy(&map[m].qi_data[i], qi, sizeof(struct s_questinfo));
 	return &map[m].qi_data[i];
 }
 
-bool map_remove_questinfo(int m, struct npc_data *nd) {
+bool map_remove_questinfo(int m, struct s_npc_data *nd) {
 	unsigned short i, c;
 
 	for(i = 0; i < map[m].qi_count; i++) {
-		struct questinfo *qi = &map[m].qi_data[i];
+		struct s_questinfo *qi = &map[m].qi_data[i];
 		if( qi->nd == nd ) {
 			if (qi->jobid)
 				aFree(qi->jobid);
@@ -4184,7 +4184,7 @@ bool map_remove_questinfo(int m, struct npc_data *nd) {
 
 	// Move next data to empty slot
 	for(i = 0, c = 0; i < map[m].qi_count; i++) {
-		struct questinfo *qi = &map[m].qi_data[i];
+		struct s_questinfo *qi = &map[m].qi_data[i];
 		if (!qi || !qi->nd)
 			continue;
 
@@ -4201,7 +4201,7 @@ bool map_remove_questinfo(int m, struct npc_data *nd) {
 		map[m].qi_data = NULL;
 	}
 	else
-		RECREATE(map[m].qi_data, struct questinfo, map[m].qi_count);
+		RECREATE(map[m].qi_data, struct s_questinfo, map[m].qi_count);
 
 	return true;
 }
@@ -4224,11 +4224,11 @@ static void map_free_questinfo(int m) {
 	map[m].qi_count = 0;
 }
 
-struct questinfo *map_has_questinfo(int m, struct npc_data *nd, int quest_id) {
+struct s_questinfo *map_has_questinfo(int m, struct s_npc_data *nd, int quest_id) {
 	unsigned short i;
 
 	for (i = 0; i < map[m].qi_count; i++) {
-		struct questinfo *qi = &map[m].qi_data[i];
+		struct s_questinfo *qi = &map[m].qi_data[i];
 		if (qi->nd == nd && qi->quest_id == quest_id) {
 			return qi;
 		}
@@ -4240,7 +4240,7 @@ struct questinfo *map_has_questinfo(int m, struct npc_data *nd, int quest_id) {
 /**
  * @see DBApply
  */
-int map_db_final(DBKey key, DBData *data, va_list ap)
+int map_db_final(u_DBKey key, s_DBData *data, va_list ap)
 {
 	struct map_data_other_server *mdos = (struct map_data_other_server *)db_data2ptr(data);
 	if(mdos && mdos->cell == NULL)
@@ -4251,7 +4251,7 @@ int map_db_final(DBKey key, DBData *data, va_list ap)
 /**
  * @see DBApply
  */
-int nick_db_final(DBKey key, DBData *data, va_list args)
+int nick_db_final(u_DBKey key, s_DBData *data, va_list args)
 {
 	struct charid2nick* p = (struct charid2nick*)db_data2ptr(data);
 	struct charid_request* req;
@@ -4268,16 +4268,16 @@ int nick_db_final(DBKey key, DBData *data, va_list args)
 	return 0;
 }
 
-int cleanup_sub(struct block_list *bl, va_list ap)
+int cleanup_sub(struct s_block_list *bl, va_list ap)
 {
 	nullpo_ret(bl);
 
 	switch(bl->type) {
 		case BL_PC:
-			map_quit((struct map_session_data *) bl);
+			map_quit((struct s_map_session_data *) bl);
 			break;
 		case BL_NPC:
-			npc_unload((struct npc_data *)bl,false);
+			npc_unload((struct s_npc_data *)bl,false);
 			break;
 		case BL_MOB:
 			unit_free(bl,CLR_OUTSIGHT);
@@ -4289,7 +4289,7 @@ int cleanup_sub(struct block_list *bl, va_list ap)
 			map_clearflooritem(bl);
 			break;
 		case BL_SKILL:
-			skill_delunit((struct skill_unit *) bl);
+			skill_delunit((struct s_skill_unit *) bl);
 			break;
 	}
 
@@ -4301,7 +4301,7 @@ int cleanup_sub(struct block_list *bl, va_list ap)
  * Free all skill damage entries for a map
  * @param m Map data
  **/
-void map_skill_damage_free(struct map_data *m) {
+void map_skill_damage_free(struct s_map_data *m) {
 	uint8 i;
 
 	for (i = 0; i < m->skill_damage.count; i++) {
@@ -4324,7 +4324,7 @@ void map_skill_damage_free(struct map_data *m) {
  * @param other Rate to Other target
  * @param caster Caster type
  **/
-void map_skill_damage_add(struct map_data *m, uint16 skill_id, int pc, int mob, int boss, int other, uint8 caster) {
+void map_skill_damage_add(struct s_map_data *m, uint16 skill_id, int pc, int mob, int boss, int other, uint8 caster) {
 	struct s_skill_damage *entry;
 	int i = 0;
 
@@ -4358,9 +4358,9 @@ void map_skill_damage_add(struct map_data *m, uint16 skill_id, int pc, int mob, 
 /**
  * @see DBApply
  */
-static int cleanup_db_sub(DBKey key, DBData *data, va_list va)
+static int cleanup_db_sub(u_DBKey key, s_DBData *data, va_list va)
 {
-	return cleanup_sub((struct block_list *)db_data2ptr(data), va);
+	return cleanup_sub((struct s_block_list *)db_data2ptr(data), va);
 }
 
 /*==========================================
@@ -4369,7 +4369,7 @@ static int cleanup_db_sub(DBKey key, DBData *data, va_list va)
 void do_final(void)
 {
 	int i, j;
-	struct map_session_data* sd;
+	struct s_map_session_data* sd;
 	struct s_mapiterator* iter;
 
 	ShowStatus("Terminating...\n");
@@ -4469,7 +4469,7 @@ void do_final(void)
 	ShowStatus("Finished.\n");
 }
 
-static int map_abort_sub(struct map_session_data* sd, va_list ap)
+static int map_abort_sub(struct s_map_session_data* sd, va_list ap)
 {
 	chrif_save(sd,1);
 	return 1;
@@ -4565,7 +4565,7 @@ void map_do_init_msg(void){
 	}
 }
 void map_do_final_msg(void){
-	DBIterator *iter = db_iterator(map_msg_db);
+	s_DBIterator *iter = db_iterator(map_msg_db);
 	struct msg_data *mdb;
 
 	for (mdb = (struct msg_data *)dbi_first(iter); dbi_exists(iter); mdb = (struct msg_data *)dbi_next(iter)) {
@@ -4594,7 +4594,7 @@ int map_msg_config_read(const char *cfgName, int lang){
 	}
 	return 0;
 }
-const char* map_msg_txt(struct map_session_data *sd, int msg_number){
+const char* map_msg_txt(struct s_map_session_data *sd, int msg_number){
 	struct msg_data *mdb;
 	uint8 lang = 0; //default
 	if(sd && sd->langtype) lang = sd->langtype;
@@ -4620,7 +4620,7 @@ void do_shutdown(void)
 		runflag = MAPSERVER_ST_SHUTDOWN;
 		ShowStatus("Shutting down...\n");
 		{
-			struct map_session_data* sd;
+			struct s_map_session_data* sd;
 			struct s_mapiterator* iter = mapit_getallusers();
 			for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
 				clif_GM_kick(NULL, sd);

@@ -105,22 +105,22 @@ int chmapif_send_fame_list(int fd){
 	WBUFW(buf,0) = 0x2b1b;
 
 	for(i = 0; i < fame_list_size_smith && smith_fame_list[i].id; i++) {
-		memcpy(WBUFP(buf, len), &smith_fame_list[i], sizeof(struct fame_list));
-		len += sizeof(struct fame_list);
+		memcpy(WBUFP(buf, len), &smith_fame_list[i], sizeof(struct s_fame_list));
+		len += sizeof(struct s_fame_list);
 	}
 	// add blacksmith's block length
 	WBUFW(buf, 6) = len;
 
 	for(i = 0; i < fame_list_size_chemist && chemist_fame_list[i].id; i++) {
-		memcpy(WBUFP(buf, len), &chemist_fame_list[i], sizeof(struct fame_list));
-		len += sizeof(struct fame_list);
+		memcpy(WBUFP(buf, len), &chemist_fame_list[i], sizeof(struct s_fame_list));
+		len += sizeof(struct s_fame_list);
 	}
 	// add alchemist's block length
 	WBUFW(buf, 4) = len;
 
 	for(i = 0; i < fame_list_size_taekwon && taekwon_fame_list[i].id; i++) {
-		memcpy(WBUFP(buf, len), &taekwon_fame_list[i], sizeof(struct fame_list));
-		len += sizeof(struct fame_list);
+		memcpy(WBUFP(buf, len), &taekwon_fame_list[i], sizeof(struct s_fame_list));
+		len += sizeof(struct s_fame_list);
 	}
 	// add total packet length
 	WBUFW(buf, 2) = len;
@@ -292,11 +292,11 @@ int chmapif_parse_askscdata(int fd){
 		}
 		if( Sql_NumRows(sql_handle) > 0 )
 		{
-			struct status_change_data scdata;
+			struct s_status_change_data scdata;
 			int count;
 			char* data;
 
-			WFIFOHEAD(fd,14+50*sizeof(struct status_change_data));
+			WFIFOHEAD(fd,14+50*sizeof(struct s_status_change_data));
 			WFIFOW(fd,0) = 0x2b1d;
 			WFIFOL(fd,4) = aid;
 			WFIFOL(fd,8) = cid;
@@ -308,13 +308,13 @@ int chmapif_parse_askscdata(int fd){
 				Sql_GetData(sql_handle, 3, &data, NULL); scdata.val2 = atoi(data);
 				Sql_GetData(sql_handle, 4, &data, NULL); scdata.val3 = atoi(data);
 				Sql_GetData(sql_handle, 5, &data, NULL); scdata.val4 = atoi(data);
-				memcpy(WFIFOP(fd, 14+count*sizeof(struct status_change_data)), &scdata, sizeof(struct status_change_data));
+				memcpy(WFIFOP(fd, 14+count*sizeof(struct s_status_change_data)), &scdata, sizeof(struct s_status_change_data));
 			}
 			if (count >= 50)
 				ShowWarning("Too many status changes for %d:%d, some of them were not loaded.\n", aid, cid);
 			if (count > 0)
 			{
-				WFIFOW(fd,2) = 14 + count*sizeof(struct status_change_data);
+				WFIFOW(fd,2) = 14 + count*sizeof(struct s_status_change_data);
 				WFIFOW(fd,12) = count;
 				WFIFOSET(fd,WFIFOW(fd,2));
 			}
@@ -362,7 +362,7 @@ int chmapif_parse_regmapuser(int fd, int id){
 		return 0;
 	else {
 		//TODO: When data mismatches memory, update guild/party online/offline states.
-		DBMap* online_char_db = char_get_onlinedb();
+		s_DBMap* online_char_db = char_get_onlinedb();
 		int i;
 
 		map_server[id].users = RFIFOW(fd,4);
@@ -370,7 +370,7 @@ int chmapif_parse_regmapuser(int fd, int id){
 		for(i = 0; i < map_server[id].users; i++) {
 			int aid = RFIFOL(fd,6+i*8);
 			int cid = RFIFOL(fd,6+i*8+4);
-			struct online_char_data* character = (struct online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
+			struct s_online_char_data* character = (struct s_online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
 			if( character->server > -1 && character->server != id )
 			{
 				ShowNotice("Set map user: Character (%d:%d) marked on map server %d, but map server %d claims to have (%d:%d) online!\n",
@@ -398,22 +398,22 @@ int chmapif_parse_reqsavechar(int fd, int id){
 		return 0;
 	else {
 		int aid = RFIFOL(fd,4), cid = RFIFOL(fd,8), size = RFIFOW(fd,2);
-		struct online_char_data* character;
-		DBMap* online_char_db = char_get_onlinedb();
+		struct s_online_char_data* character;
+		s_DBMap* online_char_db = char_get_onlinedb();
 
-		if (size - 13 != sizeof(struct mmo_charstatus))
+		if (size - 13 != sizeof(struct s_mmo_charstatus))
 		{
-			ShowError("parse_from_map (save-char): Size mismatch! %d != %d\n", size-13, sizeof(struct mmo_charstatus));
+			ShowError("parse_from_map (save-char): Size mismatch! %d != %d\n", size-13, sizeof(struct s_mmo_charstatus));
 			RFIFOSKIP(fd,size);
 			return 1;
 		}
 		//Check account only if this ain't final save. Final-save goes through because of the char-map reconnect
 		if (RFIFOB(fd,12) || RFIFOB(fd,13) || (
-			(character = (struct online_char_data*)idb_get(online_char_db, aid)) != NULL &&
+			(character = (struct s_online_char_data*)idb_get(online_char_db, aid)) != NULL &&
 			character->char_id == cid))
 		{
-			struct mmo_charstatus char_dat;
-			memcpy(&char_dat, RFIFOP(fd,13), sizeof(struct mmo_charstatus));
+			struct s_mmo_charstatus char_dat;
+			memcpy(&char_dat, RFIFOP(fd,13), sizeof(struct s_mmo_charstatus));
 			char_mmo_char_tosql(cid, &char_dat);
 		} else {	//This may be valid on char-server reconnection, when re-sending characters that already logged off.
 			ShowError("parse_from_map (save-char): Received data for non-existant/offline character (%d:%d).\n", aid, cid);
@@ -467,12 +467,12 @@ int chmapif_parse_authok(int fd){
 		if( runflag != CHARSERVER_ST_RUNNING ){
 			chmapif_charselres(fd,account_id,0);
 		}else{
-			struct auth_node* node;
-			DBMap*  auth_db = char_get_authdb();
-			DBMap* online_char_db = char_get_onlinedb();
+			struct s_auth_node* node;
+			s_DBMap*  auth_db = char_get_authdb();
+			s_DBMap* online_char_db = char_get_onlinedb();
 
 			// create temporary auth entry
-			CREATE(node, struct auth_node, 1);
+			CREATE(node, struct s_auth_node, 1);
 			node->account_id = account_id;
 			node->char_id = 0;
 			node->login_id1 = login_id1;
@@ -487,7 +487,7 @@ int chmapif_parse_authok(int fd){
 			//Set char to "@ char select" in online db [Kevin]
 			char_set_charselect(account_id);
 			{
-				struct online_char_data* character = (struct online_char_data*)idb_get(online_char_db, account_id);
+				struct s_online_char_data* character = (struct s_online_char_data*)idb_get(online_char_db, account_id);
 				if( character != NULL ){
 					character->pincode_success = true;
 				}
@@ -509,7 +509,7 @@ int chmapif_parse_req_saveskillcooldown(int fd){
 		count = RFIFOW(fd,12);
 		if( count > 0 )
 		{
-			struct skill_cooldown_data data;
+			struct s_skill_cooldown_data data;
 			StringBuf buf;
 			int i;
 
@@ -517,7 +517,7 @@ int chmapif_parse_req_saveskillcooldown(int fd){
 			StringBuf_Printf(&buf, "INSERT INTO `%s` (`account_id`, `char_id`, `skill`, `tick`) VALUES ", schema_config.skillcooldown_db);
 			for( i = 0; i < count; ++i )
 			{
-				memcpy(&data,RFIFOP(fd,14+i*sizeof(struct skill_cooldown_data)),sizeof(struct skill_cooldown_data));
+				memcpy(&data,RFIFOP(fd,14+i*sizeof(struct s_skill_cooldown_data)),sizeof(struct s_skill_cooldown_data));
 				if( i > 0 )
 					StringBuf_AppendStr(&buf, ", ");
 				StringBuf_Printf(&buf, "('%d','%d','%d','%d')", aid, cid, data.skill_id, data.tick);
@@ -550,9 +550,9 @@ int chmapif_parse_req_skillcooldown(int fd){
 		{
 			int count;
 			char* data;
-			struct skill_cooldown_data scd;
+			struct s_skill_cooldown_data scd;
 
-			WFIFOHEAD(fd,14 + MAX_SKILLCOOLDOWN * sizeof(struct skill_cooldown_data));
+			WFIFOHEAD(fd,14 + MAX_SKILLCOOLDOWN * sizeof(struct s_skill_cooldown_data));
 			WFIFOW(fd,0) = 0x2b0b;
 			WFIFOL(fd,4) = aid;
 			WFIFOL(fd,8) = cid;
@@ -560,13 +560,13 @@ int chmapif_parse_req_skillcooldown(int fd){
 			{
 				Sql_GetData(sql_handle, 0, &data, NULL); scd.skill_id = atoi(data);
 				Sql_GetData(sql_handle, 1, &data, NULL); scd.tick = atoi(data);
-				memcpy(WFIFOP(fd,14+count*sizeof(struct skill_cooldown_data)), &scd, sizeof(struct skill_cooldown_data));
+				memcpy(WFIFOP(fd,14+count*sizeof(struct s_skill_cooldown_data)), &scd, sizeof(struct s_skill_cooldown_data));
 			}
 			if( count >= MAX_SKILLCOOLDOWN )
 				ShowWarning("Too many skillcooldowns for %d:%d, some of them were not loaded.\n", aid, cid);
 			if( count > 0 )
 			{
-				WFIFOW(fd,2) = 14 + count * sizeof(struct skill_cooldown_data);
+				WFIFOW(fd,2) = 14 + count * sizeof(struct s_skill_cooldown_data);
 				WFIFOW(fd,12) = count;
 				WFIFOSET(fd,WFIFOW(fd,2));
 				//Clear the data once loaded.
@@ -603,28 +603,28 @@ int chmapif_parse_reqchangemapserv(int fd){
 		return 0;
 	else {
 		int map_id, map_fd = -1;
-		struct mmo_charstatus* char_data;
-		struct mmo_charstatus char_dat;
-		DBMap* char_db_ = char_get_chardb();
+		struct s_mmo_charstatus* char_data;
+		struct s_mmo_charstatus char_dat;
+		s_DBMap* char_db_ = char_get_chardb();
 
 		map_id = char_search_mapserver(RFIFOW(fd,18), ntohl(RFIFOL(fd,24)), ntohs(RFIFOW(fd,28))); //Locate mapserver by ip and port.
 		if (map_id >= 0)
 			map_fd = map_server[map_id].fd;
 		//Char should just had been saved before this packet, so this should be safe. [Skotlex]
-		char_data = (struct mmo_charstatus*)uidb_get(char_db_,RFIFOL(fd,14));
+		char_data = (struct s_mmo_charstatus*)uidb_get(char_db_,RFIFOL(fd,14));
 		if (char_data == NULL) {	//Really shouldn't happen.
 			char_mmo_char_fromsql(RFIFOL(fd,14), &char_dat, true);
-			char_data = (struct mmo_charstatus*)uidb_get(char_db_,RFIFOL(fd,14));
+			char_data = (struct s_mmo_charstatus*)uidb_get(char_db_,RFIFOL(fd,14));
 		}
 
 		if( runflag == CHARSERVER_ST_RUNNING &&
 			session_isActive(map_fd) &&
 			char_data )
 		{	//Send the map server the auth of this player.
-			struct online_char_data* data;
-			struct auth_node* node;
-			DBMap*  auth_db = char_get_authdb();
-			DBMap* online_char_db = char_get_onlinedb();
+			struct s_online_char_data* data;
+			struct s_auth_node* node;
+			s_DBMap*  auth_db = char_get_authdb();
+			s_DBMap* online_char_db = char_get_onlinedb();
 
 			int aid = RFIFOL(fd,2);
 
@@ -635,7 +635,7 @@ int chmapif_parse_reqchangemapserv(int fd){
 			char_data->sex = RFIFOB(fd,30);
 
 			// create temporary auth entry
-			CREATE(node, struct auth_node, 1);
+			CREATE(node, struct s_auth_node, 1);
 			node->account_id = aid;
 			node->char_id = RFIFOL(fd,14);
 			node->login_id1 = RFIFOL(fd,6);
@@ -647,7 +647,7 @@ int chmapif_parse_reqchangemapserv(int fd){
 			node->changing_mapservers = 1;
 			idb_put(auth_db, aid, node);
 
-			data = (struct online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
+			data = (struct s_online_char_data*)idb_ensure(online_char_db, aid, char_create_online_data);
 			data->char_id = char_data->char_id;
 			data->server = map_id; //Update server where char is.
 
@@ -964,7 +964,7 @@ int chmapif_parse_save_scdata(int fd){
 		}
 		else if( count > 0 )
 		{
-			struct status_change_data data;
+			struct s_status_change_data data;
 			StringBuf buf;
 			int i;
 
@@ -972,7 +972,7 @@ int chmapif_parse_save_scdata(int fd){
 			StringBuf_Printf(&buf, "INSERT INTO `%s` (`account_id`, `char_id`, `type`, `tick`, `val1`, `val2`, `val3`, `val4`) VALUES ", schema_config.scdata_db);
 			for( i = 0; i < count; ++i )
 			{
-				memcpy (&data, RFIFOP(fd, 14+i*sizeof(struct status_change_data)), sizeof(struct status_change_data));
+				memcpy (&data, RFIFOP(fd, 14+i*sizeof(struct s_status_change_data)), sizeof(struct s_status_change_data));
 				if( i > 0 )
 					StringBuf_AppendStr(&buf, ", ");
 				StringBuf_Printf(&buf, "('%d','%d','%hu','%d','%d','%d','%d','%d')", aid, cid,
@@ -1015,13 +1015,13 @@ int chmapif_parse_reqauth(int fd, int id){
 		uint32 login_id1;
 		unsigned char sex;
 		uint32 ip;
-		struct auth_node* node;
-		struct mmo_charstatus* cd;
-		struct mmo_charstatus char_dat;
+		struct s_auth_node* node;
+		struct s_mmo_charstatus* cd;
+		struct s_mmo_charstatus char_dat;
 		bool autotrade;
 
-		DBMap*  auth_db = char_get_authdb();
-		DBMap* char_db_ = char_get_chardb();
+		s_DBMap*  auth_db = char_get_authdb();
+		s_DBMap* char_db_ = char_get_chardb();
 
 		account_id = RFIFOL(fd,2);
 		char_id    = RFIFOL(fd,6);
@@ -1031,15 +1031,15 @@ int chmapif_parse_reqauth(int fd, int id){
 		autotrade  = RFIFOB(fd,19) != 0;
 		RFIFOSKIP(fd,20);
 
-		node = (struct auth_node*)idb_get(auth_db, account_id);
-		cd = (struct mmo_charstatus*)uidb_get(char_db_,char_id);
+		node = (struct s_auth_node*)idb_get(auth_db, account_id);
+		cd = (struct s_mmo_charstatus*)uidb_get(char_db_,char_id);
 		if( cd == NULL )
 		{	//Really shouldn't happen. (or autotrade)
 				char_mmo_char_fromsql(char_id, &char_dat, true);
-				cd = (struct mmo_charstatus*)uidb_get(char_db_,char_id);
+				cd = (struct s_mmo_charstatus*)uidb_get(char_db_,char_id);
 		}
 		if( runflag == CHARSERVER_ST_RUNNING && autotrade && cd ){
-			uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+			uint16 mmo_charstatus_len = sizeof(struct s_mmo_charstatus) + 25;
 			if (cd->sex == 99)
 				cd->sex = sex;
 
@@ -1052,7 +1052,7 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOL(fd,16) = 0;
 			WFIFOL(fd,20) = 0;
 			WFIFOB(fd,24) = 0;
-			memcpy(WFIFOP(fd,25), cd, sizeof(struct mmo_charstatus));
+			memcpy(WFIFOP(fd,25), cd, sizeof(struct s_mmo_charstatus));
 			WFIFOSET(fd, WFIFOW(fd,2));
 
 			char_set_char_online(id, char_id, account_id);
@@ -1068,7 +1068,7 @@ int chmapif_parse_reqauth(int fd, int id){
 #endif
 			)
 		{// auth ok
-			uint16 mmo_charstatus_len = sizeof(struct mmo_charstatus) + 25;
+			uint16 mmo_charstatus_len = sizeof(struct s_mmo_charstatus) + 25;
 			if (cd->sex == 99)
 				cd->sex = sex;
 
@@ -1081,7 +1081,7 @@ int chmapif_parse_reqauth(int fd, int id){
 			WFIFOL(fd,16) = (uint32)node->expiration_time; // FIXME: will wrap to negative after "19-Jan-2038, 03:14:07 AM GMT"
 			WFIFOL(fd,20) = node->group_id;
 			WFIFOB(fd,24) = node->changing_mapservers;
-			memcpy(WFIFOP(fd,25), cd, sizeof(struct mmo_charstatus));
+			memcpy(WFIFOP(fd,25), cd, sizeof(struct s_mmo_charstatus));
 			WFIFOSET(fd, WFIFOW(fd,2));
 
 			// only use the auth once and mark user online
@@ -1157,7 +1157,7 @@ int chmapif_parse_updfamelist(int fd){
             int fame = RFIFOL(fd, 6);
             char type = RFIFOB(fd, 10);
             int size;
-            struct fame_list* list;
+            struct s_fame_list* list;
             int player_pos;
             int fame_pos;
 
@@ -1183,7 +1183,7 @@ int chmapif_parse_updfamelist(int fd){
             {// move in the list
                     if( player_pos == size )
                     {// new ranker - not in the list
-                            ARR_MOVE(size - 1, fame_pos, list, struct fame_list);
+                            ARR_MOVE(size - 1, fame_pos, list, struct s_fame_list);
                             list[fame_pos].id = cid;
                             list[fame_pos].fame = fame;
                             char_loadName(cid, list[fame_pos].name);
@@ -1192,7 +1192,7 @@ int chmapif_parse_updfamelist(int fd){
                     {// already in the list
                             if( fame_pos == size )
                                     --fame_pos;// move to the end of the list
-                            ARR_MOVE(player_pos, fame_pos, list, struct fame_list);
+                            ARR_MOVE(player_pos, fame_pos, list, struct s_fame_list);
                             list[fame_pos].fame = fame;
                     }
                     chmapif_send_fame_list(-1);
@@ -1317,7 +1317,7 @@ int chmapif_bonus_script_get(int fd) {
 	else {
 		uint8 num_rows = 0;
 		uint32 cid = RFIFOL(fd,2);
-		struct bonus_script_data tmp_bsdata;
+		struct s_bonus_script_data tmp_bsdata;
 		SqlStmt* stmt = SqlStmt_Malloc(sql_handle);
 
 		RFIFOSKIP(fd,6);
@@ -1340,7 +1340,7 @@ int chmapif_bonus_script_get(int fd) {
 
 		if ((num_rows = (uint8)SqlStmt_NumRows(stmt)) > 0) {
 			uint8 i;
-			uint32 size = 9 + num_rows * sizeof(struct bonus_script_data);
+			uint32 size = 9 + num_rows * sizeof(struct s_bonus_script_data);
 
 			WFIFOHEAD(fd, size);
 			WFIFOW(fd, 0) = 0x2b2f;
@@ -1349,7 +1349,7 @@ int chmapif_bonus_script_get(int fd) {
 			WFIFOB(fd, 8) = num_rows;
 
 			for (i = 0; i < num_rows && SQL_SUCCESS == SqlStmt_NextRow(stmt); i++) {
-				struct bonus_script_data bsdata;
+				struct s_bonus_script_data bsdata;
 				memset(&bsdata, 0, sizeof(bsdata));
 				memset(bsdata.script_str, '\0', sizeof(bsdata.script_str));
 
@@ -1358,7 +1358,7 @@ int chmapif_bonus_script_get(int fd) {
 				bsdata.flag = tmp_bsdata.flag;
 				bsdata.type = tmp_bsdata.type;
 				bsdata.icon = tmp_bsdata.icon;
-				memcpy(WFIFOP(fd, 9 + i * sizeof(struct bonus_script_data)), &bsdata, sizeof(struct bonus_script_data));
+				memcpy(WFIFOP(fd, 9 + i * sizeof(struct s_bonus_script_data)), &bsdata, sizeof(struct s_bonus_script_data));
 			}
 
 			WFIFOSET(fd, size);
@@ -1393,14 +1393,14 @@ int chmapif_bonus_script_save(int fd) {
 
 		if (count > 0) {
 			char esc_script[MAX_BONUS_SCRIPT_LENGTH*2];
-			struct bonus_script_data bsdata;
+			struct s_bonus_script_data bsdata;
 			StringBuf buf;
 			uint8 i;
 
 			StringBuf_Init(&buf);
 			StringBuf_Printf(&buf, "INSERT INTO `%s` (`char_id`, `script`, `tick`, `flag`, `type`, `icon`) VALUES ", schema_config.bonus_script_db);
 			for (i = 0; i < count; ++i) {
-				memcpy(&bsdata, RFIFOP(fd, 9 + i*sizeof(struct bonus_script_data)), sizeof(struct bonus_script_data));
+				memcpy(&bsdata, RFIFOP(fd, 9 + i*sizeof(struct s_bonus_script_data)), sizeof(struct s_bonus_script_data));
 				Sql_EscapeString(sql_handle, esc_script, bsdata.script_str);
 				if (i > 0)
 					StringBuf_AppendStr(&buf,", ");
@@ -1549,7 +1549,7 @@ void chmapif_server_reset(int id){
 	int i,j;
 	unsigned char buf[16384];
 	int fd = map_server[id].fd;
-	DBMap* online_char_db = char_get_onlinedb();
+	s_DBMap* online_char_db = char_get_onlinedb();
 
 	//Notify other map servers that this one is gone. [Skotlex]
 	WBUFW(buf,0) = 0x2b20;

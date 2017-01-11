@@ -74,7 +74,7 @@ extern "C" {
 #	define ERS_ALIGNED 1
 #endif /* not ERS_ALIGN_ENTRY */
 
-enum ERSOptions {
+enum e_ERSOptions {
 	ERS_OPT_NONE        = 0x00,
 	ERS_OPT_CLEAR       = 0x01,/* silently clears any entries left in the manager upon destruction */
 	ERS_OPT_WAIT        = 0x02,/* wait for entries to come in order to list! */
@@ -93,7 +93,7 @@ enum ERSOptions {
  * @param entry_size Return the size of the entries of this manager
  * @param destroy Destroy this instance of the manager
  */
-typedef struct eri {
+typedef struct s_eri {
 
 	/**
 	 * Allocate an entry from this entry manager.
@@ -101,7 +101,7 @@ typedef struct eri {
 	 * @param self Interface of the entry manager
 	 * @return An entry
 	 */
-	void *(*alloc)(struct eri *self);
+	void *(*alloc)(struct s_eri *self);
 
 	/**
 	 * Free an entry allocated from this manager.
@@ -110,14 +110,14 @@ typedef struct eri {
 	 * @param self Interface of the entry manager
 	 * @param entry Entry to be freed
 	 */
-	void (*free)(struct eri *self, void *entry);
+	void (*free)(struct s_eri *self, void *entry);
 
 	/**
 	 * Return the size of the entries allocated from this manager.
 	 * @param self Interface of the entry manager
 	 * @return Size of the entries of this manager in bytes
 	 */
-	size_t (*entry_size)(struct eri *self);
+	size_t (*entry_size)(struct s_eri *self);
 
 	/**
 	 * Destroy this instance of the manager.
@@ -126,10 +126,10 @@ typedef struct eri {
 	 * missing/extra entries.
 	 * @param self Interface of the entry manager
 	 */
-	void (*destroy)(struct eri *self);
+	void (*destroy)(struct s_eri *self);
 
 	/* */
-	void (*chunk_size) (struct eri *self, unsigned int new_size);
+	void (*chunk_size) (struct s_eri *self, unsigned int new_size);
 } ERS;
 
 #ifdef DISABLE_ERS

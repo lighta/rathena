@@ -6,7 +6,7 @@
 
 #include "../common/cbasetypes.h"
 
-struct map_session_data;
+struct s_map_session_data;
 
 //This is the distance at which @autoloot works,
 //if the item drops farther from the player than this,
@@ -19,14 +19,14 @@ extern char atcommand_symbol;
 extern char charcommand_symbol;
 extern int atcmd_binding_count;
 
-enum atCommandType : uint8 {
+enum e_atCommandType : uint8 {
 	COMMAND_ATCOMMAND = 1,
 	COMMAND_CHARCOMMAND = 2,
 };
 
-typedef int (*AtCommandFunc)(const int fd, struct map_session_data* sd, const char* command, const char* message);
+typedef int (*AtCommandFunc)(const int fd, struct s_map_session_data* sd, const char* command, const char* message);
 
-bool is_atcommand(const int fd, struct map_session_data* sd, const char* message, int type);
+bool is_atcommand(const int fd, struct s_map_session_data* sd, const char* message, int type);
 
 void do_init_atcommand(void);
 void do_final_atcommand(void);
@@ -35,13 +35,13 @@ void atcommand_db_load_groups(int* group_ids);
 bool atcommand_exists(const char* name);
 
 // @commands (script based)
-struct atcmd_binding_data {
+struct s_atcmd_binding_data {
 	char command[50];
 	char npc_event[50];
 	int level;
 	int level2;
 };
-extern struct atcmd_binding_data** atcmd_binding;
-struct atcmd_binding_data* get_atcommandbind_byname(const char* name);
+extern struct s_atcmd_binding_data** atcmd_binding;
+struct s_atcmd_binding_data* get_atcommandbind_byname(const char* name);
 
 #endif /* _ATCOMMAND_H_ */

@@ -6,15 +6,15 @@
 
 #include "../common/cbasetypes.h" // uint16, uint32
 
-struct map_session_data;
+struct s_map_session_data;
 
 void do_init_cashshop( void );
 void do_final_cashshop( void );
 void cashshop_reloaddb( void );
-bool cashshop_buylist( struct map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list );
+bool cashshop_buylist( struct s_map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list );
 
 // Taken from AEGIS
-enum CASH_SHOP_TAB_CODE
+enum e_CASH_SHOP_TAB_CODE
 {
 	CASHSHOP_TAB_NEW =  0x0,
 	CASHSHOP_TAB_POPULAR =  0x1,
@@ -28,7 +28,7 @@ enum CASH_SHOP_TAB_CODE
 };
 
 // PACKET_ZC_SE_PC_BUY_CASHITEM_RESULT
-enum CASHSHOP_BUY_RESULT
+enum e_CASHSHOP_BUY_RESULT
 {
 	CASHSHOP_RESULT_SUCCESS =  0x0,
 	CASHSHOP_RESULT_ERROR_SYSTEM =  0x1,
@@ -45,17 +45,17 @@ enum CASHSHOP_BUY_RESULT
 	CASHSHOP_RESULT_ERROR_BUSY =  0xc,
 };
 
-struct cash_item_data{
+struct s_cash_item_data{
 	unsigned short nameid;
 	uint32 price;
 };
 
-struct cash_item_db{
-	struct cash_item_data** item;
+struct s_cash_item_db{
+	struct s_cash_item_data** item;
 	uint32 count;
 };
 
-extern struct cash_item_db cash_shop_items[CASHSHOP_TAB_SEARCH];
+extern struct s_cash_item_db cash_shop_items[CASHSHOP_TAB_SEARCH];
 extern bool cash_shop_defined;
 
 #endif /* _CASHSHOP_H_ */

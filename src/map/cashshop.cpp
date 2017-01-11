@@ -8,12 +8,12 @@
 #include "../common/showmsg.h" // ShowWarning, ShowStatus
 
 #include "cashshop.h"
-#include "pc.h" // struct map_session_data
+#include "pc.h" // struct s_map_session_data
 #include "pet.h" // pet_create_egg
 #include "clif.h"
 #include "log.h"
 
-struct cash_item_db cash_shop_items[CASHSHOP_TAB_SEARCH];
+struct s_cash_item_db cash_shop_items[CASHSHOP_TAB_SEARCH];
 bool cash_shop_defined = false;
 
 extern char item_cash_db_db[32];
@@ -30,7 +30,7 @@ static bool cashshop_parse_dbrow(char* fields[], int columns, int current) {
 	unsigned short nameid = atoi(fields[1]);
 	uint32 price = atoi(fields[2]);
 	int j;
-	struct cash_item_data* cid;
+	struct s_cash_item_data* cid;
 
 	if( !itemdb_exists( nameid ) ){
 		ShowWarning( "cashshop_parse_dbrow: Invalid ID %hu in line '%d', skipping...\n", nameid, current );
@@ -48,8 +48,8 @@ static bool cashshop_parse_dbrow(char* fields[], int columns, int current) {
 	ARR_FIND( 0, cash_shop_items[tab].count, j, nameid == cash_shop_items[tab].item[j]->nameid );
 
 	if( j == cash_shop_items[tab].count ){
-		RECREATE( cash_shop_items[tab].item, struct cash_item_data *, ++cash_shop_items[tab].count );
-		CREATE( cash_shop_items[tab].item[ cash_shop_items[tab].count - 1], struct cash_item_data, 1 );
+		RECREATE( cash_shop_items[tab].item, struct s_cash_item_data *, ++cash_shop_items[tab].count );
+		CREATE( cash_shop_items[tab].item[ cash_shop_items[tab].count - 1], struct s_cash_item_data, 1 );
 		cid = cash_shop_items[tab].item[ cash_shop_items[tab].count - 1];
 	}else{
 		cid = cash_shop_items[tab].item[j];
@@ -162,7 +162,7 @@ static void cashshop_read_db( void ){
  * @param item_list Array of item ID
  * @return true: success, false: fail
  */
-bool cashshop_buylist( struct map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list ){
+bool cashshop_buylist( struct s_map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list ){
 	uint32 totalcash = 0;
 	uint32 totalweight = 0;
 	int i,new_;
@@ -238,7 +238,7 @@ bool cashshop_buylist( struct map_session_data* sd, uint32 kafrapoints, int n, u
 	for( i = 0; i < n; ++i ){
 		unsigned short nameid = *( item_list + i * 5 );
 		uint32 quantity = *( item_list + i * 5 + 2 );
-		struct item_data *id = itemdb_search(nameid);
+		struct s_item_data *id = itemdb_search(nameid);
 
 		if (!id)
 			continue;
@@ -253,7 +253,7 @@ bool cashshop_buylist( struct map_session_data* sd, uint32 kafrapoints, int n, u
 				get_amt = 1;
 
 			for (j = 0; j < quantity; j += get_amt) {
-				struct item item_tmp = { 0 };
+				struct s_item item_tmp = { 0 };
 
 				item_tmp.nameid = nameid;
 				item_tmp.identify = 1;

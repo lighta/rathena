@@ -22,8 +22,8 @@ enum e_guild_action : uint32 {
   GS_REMOVE = 0x8000,
 };
 
-//struct guild;
-//struct guild_castle;
+//struct s_guild;
+//struct s_guild_castle;
 
 int inter_guild_parse_frommap(int fd);
 int inter_guild_sql_init(void);

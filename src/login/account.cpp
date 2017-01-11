@@ -24,7 +24,7 @@
 
 /// internal structure
 typedef struct AccountDB_SQL {
-	AccountDB vtable;    // public interface
+	s_AccountDB vtable;    // public interface
 	Sql* accounts;       // SQL handle accounts storage
 	char   db_hostname[64]; // Doubled for long hostnames (bugreport:8003)
 	uint16 db_port;
@@ -43,30 +43,30 @@ typedef struct AccountDB_SQL {
 
 /// internal structure
 typedef struct AccountDBIterator_SQL {
-	AccountDBIterator vtable;    // public interface
+	s_AccountDBIterator vtable;    // public interface
 	AccountDB_SQL* db;
 	int last_account_id;
 } AccountDBIterator_SQL;
 
 /// internal functions
-static bool account_db_sql_init(AccountDB* self);
-static void account_db_sql_destroy(AccountDB* self);
-static bool account_db_sql_get_property(AccountDB* self, const char* key, char* buf, size_t buflen);
-static bool account_db_sql_set_property(AccountDB* self, const char* option, const char* value);
-static bool account_db_sql_create(AccountDB* self, struct mmo_account* acc);
-static bool account_db_sql_remove(AccountDB* self, const uint32 account_id);
-static bool account_db_sql_save(AccountDB* self, const struct mmo_account* acc);
-static bool account_db_sql_load_num(AccountDB* self, struct mmo_account* acc, const uint32 account_id);
-static bool account_db_sql_load_str(AccountDB* self, struct mmo_account* acc, const char* userid);
-static AccountDBIterator* account_db_sql_iterator(AccountDB* self);
-static void account_db_sql_iter_destroy(AccountDBIterator* self);
-static bool account_db_sql_iter_next(AccountDBIterator* self, struct mmo_account* acc);
+static bool account_db_sql_init(s_AccountDB* self);
+static void account_db_sql_destroy(s_AccountDB* self);
+static bool account_db_sql_get_property(s_AccountDB* self, const char* key, char* buf, size_t buflen);
+static bool account_db_sql_set_property(s_AccountDB* self, const char* option, const char* value);
+static bool account_db_sql_create(s_AccountDB* self, struct s_mmo_account* acc);
+static bool account_db_sql_remove(s_AccountDB* self, const uint32 account_id);
+static bool account_db_sql_save(s_AccountDB* self, const struct s_mmo_account* acc);
+static bool account_db_sql_load_num(s_AccountDB* self, struct s_mmo_account* acc, const uint32 account_id);
+static bool account_db_sql_load_str(s_AccountDB* self, struct s_mmo_account* acc, const char* userid);
+static s_AccountDBIterator* account_db_sql_iterator(s_AccountDB* self);
+static void account_db_sql_iter_destroy(s_AccountDBIterator* self);
+static bool account_db_sql_iter_next(s_AccountDBIterator* self, struct s_mmo_account* acc);
 
-static bool mmo_auth_fromsql(AccountDB_SQL* db, struct mmo_account* acc, uint32 account_id);
-static bool mmo_auth_tosql(AccountDB_SQL* db, const struct mmo_account* acc, bool is_new);
+static bool mmo_auth_fromsql(AccountDB_SQL* db, struct s_mmo_account* acc, uint32 account_id);
+static bool mmo_auth_tosql(AccountDB_SQL* db, const struct s_mmo_account* acc, bool is_new);
 
 /// public constructor
-AccountDB* account_db_sql(void) {
+s_AccountDB* account_db_sql(void) {
 	AccountDB_SQL* db = (AccountDB_SQL*)aCalloc(1, sizeof(AccountDB_SQL));
 
 	// set up the vtable
@@ -107,7 +107,7 @@ AccountDB* account_db_sql(void) {
  * Establish the database connection.
  * @param self: pointer to db
  */
-static bool account_db_sql_init(AccountDB* self) {
+static bool account_db_sql_init(s_AccountDB* self) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	Sql* sql_handle;
 	const char* username = "ragnarok";
@@ -150,7 +150,7 @@ static bool account_db_sql_init(AccountDB* self) {
  * Destroy the database and close the connection to it.
  * @param self: pointer to db
  */
-static void account_db_sql_destroy(AccountDB* self){
+static void account_db_sql_destroy(s_AccountDB* self){
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 
 	Sql_Free(db->accounts);
@@ -167,7 +167,7 @@ static void account_db_sql_destroy(AccountDB* self){
  * @param buflen: size of buffer to avoid out of bound
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_get_property(AccountDB* self, const char* key, char* buf, size_t buflen)
+static bool account_db_sql_get_property(s_AccountDB* self, const char* key, char* buf, size_t buflen)
 {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	const char* signature;
@@ -227,7 +227,7 @@ static bool account_db_sql_get_property(AccountDB* self, const char* key, char* 
  * @param value: config value for keyword
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_set_property(AccountDB* self, const char* key, const char* value) {
+static bool account_db_sql_set_property(s_AccountDB* self, const char* key, const char* value) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	const char* signature;
 
@@ -286,7 +286,7 @@ static bool account_db_sql_set_property(AccountDB* self, const char* key, const 
  * @param acc: pointer of mmo_account to save
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_create(AccountDB* self, struct mmo_account* acc) {
+static bool account_db_sql_create(s_AccountDB* self, struct s_mmo_account* acc) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	Sql* sql_handle = db->accounts;
 
@@ -341,7 +341,7 @@ static bool account_db_sql_create(AccountDB* self, struct mmo_account* acc) {
  * @param account_id: id of user account
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_remove(AccountDB* self, const uint32 account_id) {
+static bool account_db_sql_remove(s_AccountDB* self, const uint32 account_id) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	Sql* sql_handle = db->accounts;
 	bool result = false;
@@ -365,7 +365,7 @@ static bool account_db_sql_remove(AccountDB* self, const uint32 account_id) {
  * @param acc: pointer of mmo_account to save
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_save(AccountDB* self, const struct mmo_account* acc) {
+static bool account_db_sql_save(s_AccountDB* self, const struct s_mmo_account* acc) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	return mmo_auth_tosql(db, acc, false);
 }
@@ -378,7 +378,7 @@ static bool account_db_sql_save(AccountDB* self, const struct mmo_account* acc) 
  * @param account_id: id of user account
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_load_num(AccountDB* self, struct mmo_account* acc, const uint32 account_id) {
+static bool account_db_sql_load_num(s_AccountDB* self, struct s_mmo_account* acc, const uint32 account_id) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	return mmo_auth_fromsql(db, acc, account_id);
 }
@@ -392,7 +392,7 @@ static bool account_db_sql_load_num(AccountDB* self, struct mmo_account* acc, co
  * @param userid: name of user account
  * @return true if successful, false if something has failed
  */
-static bool account_db_sql_load_str(AccountDB* self, struct mmo_account* acc, const char* userid) {
+static bool account_db_sql_load_str(s_AccountDB* self, struct s_mmo_account* acc, const char* userid) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	Sql* sql_handle = db->accounts;
 	char esc_userid[2*NAME_LENGTH+1];
@@ -433,7 +433,7 @@ static bool account_db_sql_load_str(AccountDB* self, struct mmo_account* acc, co
  * @param self: pointer to db iterator
  * @return a new db iterator
  */
-static AccountDBIterator* account_db_sql_iterator(AccountDB* self) {
+static s_AccountDBIterator* account_db_sql_iterator(s_AccountDB* self) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	AccountDBIterator_SQL* iter = (AccountDBIterator_SQL*)aCalloc(1, sizeof(AccountDBIterator_SQL));
 
@@ -452,7 +452,7 @@ static AccountDBIterator* account_db_sql_iterator(AccountDB* self) {
  * Destroys this iterator, releasing all allocated memory (including itself).
  * @param self: pointer to db iterator
  */
-static void account_db_sql_iter_destroy(AccountDBIterator* self) {
+static void account_db_sql_iter_destroy(s_AccountDBIterator* self) {
 	AccountDBIterator_SQL* iter = (AccountDBIterator_SQL*)self;
 	aFree(iter);
 }
@@ -463,7 +463,7 @@ static void account_db_sql_iter_destroy(AccountDBIterator* self) {
  * @param acc: pointer of mmo_account to fill
  * @return true if next account found and filled, false if something has failed
  */
-static bool account_db_sql_iter_next(AccountDBIterator* self, struct mmo_account* acc) {
+static bool account_db_sql_iter_next(s_AccountDBIterator* self, struct s_mmo_account* acc) {
 	AccountDBIterator_SQL* iter = (AccountDBIterator_SQL*)self;
 	AccountDB_SQL* db = (AccountDB_SQL*)iter->db;
 	Sql* sql_handle = db->accounts;
@@ -501,7 +501,7 @@ static bool account_db_sql_iter_next(AccountDBIterator* self, struct mmo_account
  * @param account_id: id of user account to take data from
  * @return true if successful, false if something has failed
  */
-static bool mmo_auth_fromsql(AccountDB_SQL* db, struct mmo_account* acc, uint32 account_id) {
+static bool mmo_auth_fromsql(AccountDB_SQL* db, struct s_mmo_account* acc, uint32 account_id) {
 	Sql* sql_handle = db->accounts;
 	char* data;
 
@@ -556,7 +556,7 @@ static bool mmo_auth_fromsql(AccountDB_SQL* db, struct mmo_account* acc, uint32 
  * @param is_new: if it's a new entry or should we update
  * @return true if successful, false if something has failed
  */
-static bool mmo_auth_tosql(AccountDB_SQL* db, const struct mmo_account* acc, bool is_new) {
+static bool mmo_auth_tosql(AccountDB_SQL* db, const struct s_mmo_account* acc, bool is_new) {
 	Sql* sql_handle = db->accounts;
 	SqlStmt* stmt = SqlStmt_Malloc(sql_handle);
 	bool result = false;
@@ -653,7 +653,7 @@ static bool mmo_auth_tosql(AccountDB_SQL* db, const struct mmo_account* acc, boo
 	return result;
 }
 
-void mmo_save_global_accreg(AccountDB* self, int fd, int account_id, int char_id) {
+void mmo_save_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id) {
 	Sql* sql_handle = ((AccountDB_SQL*)self)->accounts;
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	int count = RFIFOW(fd, 12);
@@ -700,7 +700,7 @@ void mmo_save_global_accreg(AccountDB* self, int fd, int account_id, int char_id
 	}
 }
 
-void mmo_send_global_accreg(AccountDB* self, int fd, int account_id, int char_id) {
+void mmo_send_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id) {
 	Sql* sql_handle = ((AccountDB_SQL*)self)->accounts;
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	char* data;

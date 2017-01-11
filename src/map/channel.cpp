@@ -19,11 +19,11 @@
 #include "guild.h"
 #include "pc_groups.h"
 
-static DBMap* channel_db; // channels
+static s_DBMap* channel_db; // channels
 
-struct Channel_Config channel_config;
+struct s_Channel_Config channel_config;
 
-DBMap* channel_get_db(void){ return channel_db; }
+s_DBMap* channel_get_db(void){ return channel_db; }
 
 struct chan_banentry {
 	uint32 char_id;
@@ -40,14 +40,14 @@ struct chan_banentry {
  * return
  *  NULL : creation failed
  */
-struct Channel* channel_create(char *name, char *pass, unsigned char color, enum Channel_Type chantype, int val) {
-	struct Channel* channel;
+struct s_Channel* channel_create(char *name, char *pass, unsigned char color, enum e_Channel_Type chantype, int val) {
+	struct s_Channel* channel;
 
 	if(!name) return NULL;
 
-	CREATE( channel, struct Channel, 1 ); //will exit on fail allocation
+	CREATE( channel, struct s_Channel, 1 ); //will exit on fail allocation
 	channel->users = idb_alloc(DB_OPT_BASE);
-	channel->banned = idb_alloc((DBOptions) (DB_OPT_BASE|DB_OPT_RELEASE_DATA) );
+	channel->banned = idb_alloc((e_DBOptions) (DB_OPT_BASE|DB_OPT_RELEASE_DATA) );
 	channel->opt = CHAN_OPT_BASE;
 	channel->type = chantype;
 	channel->color = color;
@@ -76,15 +76,15 @@ struct Channel* channel_create(char *name, char *pass, unsigned char color, enum
  *  -1 : invalid channel
  *  -2 : can't delete now
  */
-int channel_delete(struct Channel *channel) {
+int channel_delete(struct s_Channel *channel) {
 	if(!channel)
 		return -1;
 	if(channel->type == CHAN_TYPE_PUBLIC && runflag == MAPSERVER_ST_RUNNING) //only delete those serv stop
 		return -2;
 	if( db_size(channel->users)) {
-		struct map_session_data *sd;
-		DBIterator *iter = db_iterator(channel->users);
-		for( sd = (struct map_session_data *)dbi_first(iter); dbi_exists(iter); sd = (struct map_session_data *)dbi_next(iter) ) { //for all users
+		struct s_map_session_data *sd;
+		s_DBIterator *iter = db_iterator(channel->users);
+		for( sd = (struct s_map_session_data *)dbi_first(iter); dbi_exists(iter); sd = (struct s_map_session_data *)dbi_next(iter) ) { //for all users
 			channel_clean(channel,sd,1); //make all quit
 		}
 		dbi_destroy(iter);
@@ -98,7 +98,7 @@ int channel_delete(struct Channel *channel) {
 		aFree(channel);
 		break;
 	case CHAN_TYPE_ALLY: {
-		struct guild *g = guild_search(channel->gid);
+		struct s_guild *g = guild_search(channel->gid);
 		if(g) g->channel = NULL;
 		aFree(channel);
 		break;
@@ -120,7 +120,7 @@ int channel_delete(struct Channel *channel) {
  * -2 : sd already in channel
  * -3 : sd banned
  */
-int channel_join(struct Channel *channel, struct map_session_data *sd) {
+int channel_join(struct s_Channel *channel, struct s_map_session_data *sd) {
 	if(!channel || !sd)
 		return -1;
 	if(sd->state.autotrade)
@@ -135,7 +135,7 @@ int channel_join(struct Channel *channel, struct map_session_data *sd) {
 		return -3;
 	}
 
-	RECREATE(sd->channels, struct Channel *, ++sd->channel_count);
+	RECREATE(sd->channels, struct s_Channel *, ++sd->channel_count);
 	sd->channels[ sd->channel_count - 1 ] = channel;
 	idb_put(channel->users, sd->status.char_id, sd);
 
@@ -163,7 +163,7 @@ int channel_join(struct Channel *channel, struct map_session_data *sd) {
  *  -2 : sd already in channel (channel_join)
  *  -3 : sd banned (channel_join)
  */
-int channel_mjoin(struct map_session_data *sd) {
+int channel_mjoin(struct s_map_session_data *sd) {
 	if(!sd) return -1;
 
 	if( !map[sd->bl.m].channel ) {
@@ -186,14 +186,14 @@ int channel_mjoin(struct map_session_data *sd) {
  *  0 : success
  *  -1 : invalid guild or no channel for guild
  */
-int channel_ajoin(struct guild *g){
+int channel_ajoin(struct s_guild *g){
 	int i;
-	struct map_session_data *pl_sd;
+	struct s_map_session_data *pl_sd;
 
 	if(!g || !g->channel) return -1;
 	for (i = 0; i < MAX_GUILDALLIANCE; i++){
-		struct guild *ag; //allied guld
-		struct guild_alliance *ga = &g->alliance[i]; //guild alliance
+		struct s_guild *ag; //allied guld
+		struct s_guild_alliance *ga = &g->alliance[i]; //guild alliance
 		if(ga->guild_id && (ga->opposition==0) && (ag=guild_search(ga->guild_id))){
 			for (i = 0; i < ag->max_member; i++){ //load all guildmember
 				pl_sd = ag->member[i].sd;
@@ -213,9 +213,9 @@ int channel_ajoin(struct guild *g){
  *  -1 : invalid sd
  *  -2 : sd has no guild attached
  */
-int channel_gjoin(struct map_session_data *sd, int flag){
-	struct Channel *channel;
-	struct guild *g;
+int channel_gjoin(struct s_map_session_data *sd, int flag){
+	struct s_Channel *channel;
+	struct s_guild *g;
 
 	if(!sd || sd->state.autotrade) return -1;
 	g = sd->guild;
@@ -233,8 +233,8 @@ int channel_gjoin(struct map_session_data *sd, int flag){
 	if(flag&2){
 		int i;
 		for (i = 0; i < MAX_GUILDALLIANCE; i++){
-			struct guild *ag; //allied guld
-			struct guild_alliance *ga = &g->alliance[i]; //guild alliance
+			struct s_guild *ag; //allied guld
+			struct s_guild_alliance *ga = &g->alliance[i]; //guild alliance
 			if(ga->guild_id && (ga->opposition==0) && (ag=guild_search(ga->guild_id)) ) //only join allies
 				channel_join(ag->channel,sd);
 		}
@@ -250,7 +250,7 @@ int channel_gjoin(struct map_session_data *sd, int flag){
  *  0 : success
  *  -1 : invalid sd or channel
  */
-int channel_clean(struct Channel *channel, struct map_session_data *sd, int flag) {
+int channel_clean(struct s_Channel *channel, struct s_map_session_data *sd, int flag) {
 	unsigned char i;
 
 	if(!channel || !sd)
@@ -295,7 +295,7 @@ int channel_clean(struct Channel *channel, struct map_session_data *sd, int flag
  *  -1 : invalid sd
  *
  */
-int channel_pcquit(struct map_session_data *sd, int type){
+int channel_pcquit(struct s_map_session_data *sd, int type){
 	int i;
 
 	//On closing state we could have clean all chan by sd but pcquit is more used to free unit when
@@ -304,13 +304,13 @@ int channel_pcquit(struct map_session_data *sd, int type){
 
 	// Leave all chat channels.
 	if(type&(1|2) && channel_config.ally_enable && sd->guild){ //quit guild and ally chan
-		struct guild *g = sd->guild;
+		struct s_guild *g = sd->guild;
 		if(type&1 && channel_haspc(g->channel,sd)==1){
 			channel_clean(g->channel,sd,0); //leave guild chan
 		}
 		if(type&2){
 			for (i = 0; i < MAX_GUILDALLIANCE; i++) { //leave all alliance chan
-				struct guild *ag; //allied guild
+				struct s_guild *ag; //allied guild
 				if( g->alliance[i].guild_id && (ag = guild_search(g->alliance[i].guild_id) ) ) {
 					if(channel_haspc(ag->channel,sd) == 1)
 						channel_clean(ag->channel,sd,0);
@@ -339,7 +339,7 @@ int channel_pcquit(struct map_session_data *sd, int type){
  *  -1 : invalid sd, channel, or msg
  *  -2 : delay msg too low since last talk
  */
-int channel_send(struct Channel *channel, struct map_session_data *sd, const char *msg) {
+int channel_send(struct s_Channel *channel, struct s_map_session_data *sd, const char *msg) {
 	if(!channel || !sd || !msg)
 		return -1;
 
@@ -403,7 +403,7 @@ int channel_chk(char *chname, char *chpass, int type){
  * return
  *  NULL : channel not found
  */
-struct Channel* channel_name2channel(char *chname, struct map_session_data *sd, int flag){
+struct s_Channel* channel_name2channel(char *chname, struct s_map_session_data *sd, int flag){
 	if(channel_chk(chname, NULL, 1))
 		return NULL;
 	if(sd && strcmpi(chname + 1,channel_config.map_chname) == 0){
@@ -421,7 +421,7 @@ struct Channel* channel_name2channel(char *chname, struct map_session_data *sd, 
 		return sd->guild->channel;
 	}
 	else
-		return (struct Channel*) strdb_get(channel_db, chname + 1);
+		return (struct s_Channel*) strdb_get(channel_db, chname + 1);
 	return NULL;
 }
 
@@ -432,7 +432,7 @@ struct Channel* channel_name2channel(char *chname, struct map_session_data *sd, 
  *  0 : not found
  *  1 : has pc
  */
-int channel_haspc(struct Channel *channel,struct map_session_data *sd){
+int channel_haspc(struct s_Channel *channel,struct s_map_session_data *sd){
 	if(!channel || !sd) return -1;
 	return (idb_exists(channel->users, sd->status.char_id))?1:0;
 }
@@ -444,7 +444,7 @@ int channel_haspc(struct Channel *channel,struct map_session_data *sd){
  *  0 : not found
  *  1 : has pc
  */
-int channel_haspcbanned(struct Channel *channel,struct map_session_data *sd){
+int channel_haspcbanned(struct s_Channel *channel,struct s_map_session_data *sd){
 	if(!channel || !sd) return -1;
 	return (idb_exists(channel->banned, sd->status.char_id))?1:0;
 }
@@ -457,7 +457,7 @@ int channel_haspcbanned(struct Channel *channel,struct map_session_data *sd){
  *  -2 : not found
  *  x>0 : has_chan at index x
  */
-int channel_pc_haschan(struct map_session_data *sd, struct Channel *channel){
+int channel_pc_haschan(struct s_map_session_data *sd, struct s_Channel *channel){
 	int k;
 	if(!channel || !sd) return -1; //channel or player doesn't exist
 	ARR_FIND(0, sd->channel_count, k, strcmpi(channel->name,sd->channels[k]->name) == 0);
@@ -475,7 +475,7 @@ int channel_pc_haschan(struct map_session_data *sd, struct Channel *channel){
  *  0 : success
  *  -1 : fail
  */
-int channel_display_list(struct map_session_data *sd, char *options){
+int channel_display_list(struct s_map_session_data *sd, char *options){
 
 	if(!sd || !options)
 		return -1;
@@ -501,7 +501,7 @@ int channel_display_list(struct map_session_data *sd, char *options){
 
 			for(k = 0; k < sd->channel_count; k++) {
 				char output[128];
-				struct Channel *channel;
+				struct s_Channel *channel;
 
 				if (!(channel = sd->channels[k]))
 					continue;
@@ -512,9 +512,9 @@ int channel_display_list(struct map_session_data *sd, char *options){
 		}
 	}
 	else { //display public chanels
-		DBIterator *iter;
+		s_DBIterator *iter;
 		bool has_perm = pc_has_permission(sd, PC_PERM_CHANNEL_ADMIN) ? true : false;
-		struct Channel *channel;
+		struct s_Channel *channel;
 		char output[128];
 
 		clif_displaymessage(sd->fd, msg_txt(sd,1410)); // ---- Public Channels ----
@@ -523,14 +523,14 @@ int channel_display_list(struct map_session_data *sd, char *options){
 			clif_displaymessage(sd->fd, output);
 		}
 		if( channel_config.ally_enable && sd->status.guild_id ) {
-			struct guild *g = sd->guild;
+			struct s_guild *g = sd->guild;
 			if (g && g->channel) {
-				sprintf(output, msg_txt(sd,1409), channel_config.ally_chname, db_size(((struct Channel *)g->channel)->users));// - #%s (%d users)
+				sprintf(output, msg_txt(sd,1409), channel_config.ally_chname, db_size(((struct s_Channel *)g->channel)->users));// - #%s (%d users)
 				clif_displaymessage(sd->fd, output);
 			}
 		}
 		iter = db_iterator(channel_db);
-		for(channel = (struct Channel *)dbi_first(iter); dbi_exists(iter); channel = (struct Channel *)dbi_next(iter)) {
+		for(channel = (struct s_Channel *)dbi_first(iter); dbi_exists(iter); channel = (struct s_Channel *)dbi_next(iter)) {
 			if( has_perm || channel->type == CHAN_TYPE_PUBLIC ) {
 				sprintf(output, msg_txt(sd,1409), channel->name, db_size(channel->users));// - #%s (%d users)
 				clif_displaymessage(sd->fd, output);
@@ -548,7 +548,7 @@ int channel_display_list(struct map_session_data *sd, char *options){
  *  0 : success
  *  -1 : fail
  */
-int channel_pccreate(struct map_session_data *sd, char *chname, char *chpass){
+int channel_pccreate(struct s_map_session_data *sd, char *chname, char *chpass){
 	char output[128];
 	int8 res;
 
@@ -557,7 +557,7 @@ int channel_pccreate(struct map_session_data *sd, char *chname, char *chpass){
 
 	res = channel_chk(chname,chpass,7);
 	if(res==0){ //success
-		struct Channel *channel = channel_create(chname + 1,chpass,0,CHAN_TYPE_PRIVATE,sd->status.char_id);
+		struct s_Channel *channel = channel_create(chname + 1,chpass,0,CHAN_TYPE_PRIVATE,sd->status.char_id);
 		channel_join(channel,sd);
 		if( !( channel->opt & CHAN_OPT_ANNOUNCE_JOIN ) ) {
 			sprintf(output, msg_txt(sd,1403),chname); // You're now in the '%s' channel.
@@ -582,8 +582,8 @@ int channel_pccreate(struct map_session_data *sd, char *chname, char *chpass){
  *  0 : success
  *  -1 : fail
  */
-int channel_pcdelete(struct map_session_data *sd, char *chname){
-	struct Channel *channel;
+int channel_pcdelete(struct s_map_session_data *sd, char *chname){
+	struct s_Channel *channel;
 	char output[128];
 
 	if(!sd || !chname) return 0;
@@ -613,8 +613,8 @@ int channel_pcdelete(struct map_session_data *sd, char *chname){
  *  0 : success
  *  -1 : fail
  */
-int channel_pcleave(struct map_session_data *sd, char *chname){
-	struct Channel *channel;
+int channel_pcleave(struct s_map_session_data *sd, char *chname){
+	struct s_Channel *channel;
 	char output[128];
 
 	if(!sd || !chname)
@@ -655,8 +655,8 @@ int channel_pcleave(struct map_session_data *sd, char *chname){
  *  0 : success
  *  -1 : fail
  */
-int channel_pcjoin(struct map_session_data *sd, char *chname, char *pass){
-	struct Channel *channel;
+int channel_pcjoin(struct s_map_session_data *sd, char *chname, char *pass){
+	struct s_Channel *channel;
 	char output[128];
 
 	if(!sd || !chname)
@@ -713,8 +713,8 @@ int channel_pcjoin(struct map_session_data *sd, char *chname, char *pass){
  *  0 : success
  *  -1 : fail
  */
-int channel_pccolor(struct map_session_data *sd, char *chname, char *color){
-	struct Channel *channel;
+int channel_pccolor(struct s_map_session_data *sd, char *chname, char *color){
+	struct s_Channel *channel;
 	char output[128];
 	int k;
 
@@ -759,8 +759,8 @@ int channel_pccolor(struct map_session_data *sd, char *chname, char *color){
  *  0 : success
  *  -1 : fail
  */
-int channel_pcbind(struct map_session_data *sd, char *chname){
-	struct Channel *channel;
+int channel_pcbind(struct s_map_session_data *sd, char *chname){
+	struct s_Channel *channel;
 	char output[128];
 
 	if(!sd)
@@ -789,7 +789,7 @@ int channel_pcbind(struct map_session_data *sd, char *chname){
  *  0 : success
  *  -1 : fail
  */
-int channel_pcunbind(struct map_session_data *sd){
+int channel_pcunbind(struct s_map_session_data *sd){
 	char output[128];
 
 	if(!sd)
@@ -815,10 +815,10 @@ int channel_pcunbind(struct map_session_data *sd){
  *  0 : success
  *  -1 : fail
  */
-int channel_pcban(struct map_session_data *sd, char *chname, char *pname, int flag){
-	struct Channel *channel;
+int channel_pcban(struct s_map_session_data *sd, char *chname, char *pname, int flag){
+	struct s_Channel *channel;
 	char output[128];
-	struct map_session_data *tsd = map_nick2sd(pname);
+	struct s_map_session_data *tsd = map_nick2sd(pname);
 
 	if( channel_chk(chname,NULL,1) ) {
 		clif_displaymessage(sd->fd, msg_txt(sd,1405));// Channel name must start with '#'.
@@ -891,7 +891,7 @@ int channel_pcban(struct map_session_data *sd, char *chname, char *pname, int fl
 		sprintf(output, msg_txt(sd,1442),chname); // Cleared all bans from the '%s' channel.
 		break;
 	case 3: {
-		DBIterator *iter = db_iterator(channel->banned);
+		s_DBIterator *iter = db_iterator(channel->banned);
 		struct chan_banentry *cbe;
 		sprintf(output, msg_txt(sd,1443), channel->name);// ---- '#%s' Ban List:
 		clif_displaymessage(sd->fd, output);
@@ -917,8 +917,8 @@ int channel_pcban(struct map_session_data *sd, char *chname, char *pname, int fl
  *  0 : success
  *  -1 : fail
  */
-int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *option, const char *val){
-	struct Channel *channel;
+int channel_pcsetopt(struct s_map_session_data *sd, char *chname, const char *option, const char *val){
+	struct s_Channel *channel;
 	char output[128];
 	int k, s=0;
 	const char* opt_str[] = {
@@ -969,7 +969,7 @@ int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *opti
 			clif_displaymessage(sd->fd, output);
 			return -1;
 		} else {
-			channel->opt = (Channel_Opt) (channel->opt|k);
+			channel->opt = (e_Channel_Opt) (channel->opt|k);
 			sprintf(output, msg_txt(sd,1450), opt_str[k],channel->name);// Option '%s' is enabled for channel '#%s'.
 			clif_displaymessage(sd->fd, output);
 		}
@@ -982,12 +982,12 @@ int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *opti
 				return -1;
 			}
 			if( v == 0 ) {
-				channel->opt = (Channel_Opt) (channel->opt & ~k);
+				channel->opt = (e_Channel_Opt) (channel->opt & ~k);
 				channel->msg_delay = 0;
 				sprintf(output, msg_txt(sd,1453), opt_str[k],channel->name,v);// Option '%s' is disabled for channel '#%s'.
 				clif_displaymessage(sd->fd, output);
 			} else {
-				channel->opt = (Channel_Opt) (channel->opt | k);
+				channel->opt = (e_Channel_Opt) (channel->opt | k);
 				channel->msg_delay = v;
 				sprintf(output, msg_txt(sd,1452), opt_str[k],channel->name,v);// Option '%s' is enabled for channel '#%s' at %d seconds.
 				clif_displaymessage(sd->fd, output);
@@ -999,7 +999,7 @@ int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *opti
 					clif_displaymessage(sd->fd, output);
 					return -1;
 				} else {
-					channel->opt = (Channel_Opt) (channel->opt|k);
+					channel->opt = (e_Channel_Opt) (channel->opt|k);
 					sprintf(output, msg_txt(sd,1450), opt_str[k],channel->name);// Option '%s' is enabled for channel '#%s'.
 					clif_displaymessage(sd->fd, output);
 				}
@@ -1009,7 +1009,7 @@ int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *opti
 					clif_displaymessage(sd->fd, output);
 					return -1;
 				} else {
-					channel->opt = (Channel_Opt) (channel->opt & ~k);
+					channel->opt = (e_Channel_Opt) (channel->opt & ~k);
 					sprintf(output, msg_txt(sd,1453), opt_str[k],channel->name);// Option '%s' is disabled for channel '#%s'.
 					clif_displaymessage(sd->fd, output);
 				}
@@ -1149,7 +1149,7 @@ void channel_read_config(void) {
  *  0 : success
  */
 void do_init_channel(void) {
-	channel_db = stridb_alloc((DBOptions) (DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA), CHAN_NAME_LENGTH);
+	channel_db = stridb_alloc((e_DBOptions) (DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA), CHAN_NAME_LENGTH);
 	channel_config.ally_enable = channel_config.map_enable = channel_config.ally_autojoin = channel_config.map_autojoin = false;
 	channel_read_config();
 }
@@ -1159,12 +1159,12 @@ void do_init_channel(void) {
  * NB map and guild need to cleanup their chan as well
  */
 void do_final_channel(void) {
-	DBIterator *iter;
-	struct Channel *channel;
+	s_DBIterator *iter;
+	struct s_Channel *channel;
 	
 	//delete all in remaining chan db
 	iter = db_iterator(channel_db);
-	for( channel = (struct Channel *)dbi_first(iter); dbi_exists(iter); channel = (struct Channel *)dbi_next(iter) ) {
+	for( channel = (struct s_Channel *)dbi_first(iter); dbi_exists(iter); channel = (struct s_Channel *)dbi_next(iter) ) {
 		channel_delete(channel);
 	}
 	dbi_destroy(iter);

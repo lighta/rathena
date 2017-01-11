@@ -9,7 +9,7 @@
 #include "../common/malloc.h"
 #include "../common/showmsg.h"
 
-#include "map.h" // struct map_session_data
+#include "map.h" // struct s_map_session_data
 #include "chrif.h"
 #include "itemdb.h"
 #include "clif.h"
@@ -21,7 +21,7 @@
 #include "battle.h"
 #include "storage.h"
 
-static DBMap* guild_storage_db; ///Databases of guild_storage : int guild_id -> struct guild_storage*
+static s_DBMap* guild_storage_db; ///Databases of guild_storage : int guild_id -> struct s_guild_storage*
 
 /**
  * Storage item comparator (for qsort)
@@ -32,8 +32,8 @@ static DBMap* guild_storage_db; ///Databases of guild_storage : int guild_id -> 
  */
 static int storage_comp_item(const void *_i1, const void *_i2)
 {
-	struct item *i1 = (struct item *)_i1;
-	struct item *i2 = (struct item *)_i2;
+	struct s_item *i1 = (struct s_item *)_i1;
+	struct s_item *i2 = (struct s_item *)_i2;
 
 	if (i1->nameid == i2->nameid)
 		return 0;
@@ -51,12 +51,12 @@ static int storage_comp_item(const void *_i1, const void *_i2)
  * @param items : list of items to sort
  * @param size : number of item in list
  */
-void storage_sortitem(struct item* items, unsigned int size)
+void storage_sortitem(struct s_item* items, unsigned int size)
 {
 	nullpo_retv(items);
 
 	if( battle_config.client_sort_storage )
-		qsort(items, size, sizeof(struct item), storage_comp_item);
+		qsort(items, size, sizeof(struct s_item), storage_comp_item);
 }
 
 /**
@@ -84,9 +84,9 @@ void do_final_storage(void)
  * @see DBApply
  * @return 0
  */
-static int storage_reconnect_sub(DBKey key, DBData *data, va_list ap)
+static int storage_reconnect_sub(u_DBKey key, s_DBData *data, va_list ap)
 {
-	struct guild_storage *stor = (struct guild_storage *)db_data2ptr(data);
+	struct s_guild_storage *stor = (struct s_guild_storage *)db_data2ptr(data);
 
 	if (stor->dirty && stor->opened == 0) //Save closed storages.
 		gstorage_storagesave(0, stor->guild_id,0);
@@ -108,7 +108,7 @@ void do_reconnect_storage(void)
  * @param sd : player
  * @return  0:success, 1:fail
  */
-int storage_storageopen(struct map_session_data *sd)
+int storage_storageopen(struct s_map_session_data *sd)
 {
 	nullpo_ret(sd);
 
@@ -134,7 +134,7 @@ int storage_storageopen(struct map_session_data *sd)
  * @param b : item 2
  * @return 1:same, 0:are different
  */
-int compare_item(struct item *a, struct item *b)
+int compare_item(struct s_item *a, struct s_item *b)
 {
 	if( a->nameid == b->nameid &&
 		a->identify == b->identify &&
@@ -162,10 +162,10 @@ int compare_item(struct item *a, struct item *b)
  * @param amount : quantity of items
  * @return 0:success, 1:failed
  */
-static int storage_additem(struct map_session_data* sd, struct item* item_data, int amount)
+static int storage_additem(struct s_map_session_data* sd, struct s_item* item_data, int amount)
 {
-	struct storage_data* stor = &sd->status.storage;
-	struct item_data *data;
+	struct s_storage_data* stor = &sd->status.storage;
+	struct s_item_data *data;
 	int i;
 
 	if( item_data->nameid == 0 || amount <= 0 )
@@ -222,7 +222,7 @@ static int storage_additem(struct map_session_data* sd, struct item* item_data, 
  * @param amount :number of item to remove
  * @return 0:sucess, 1:fail
  */
-int storage_delitem(struct map_session_data* sd, int n, int amount)
+int storage_delitem(struct s_map_session_data* sd, int n, int amount)
 {
 	if( sd->status.storage.items[n].nameid == 0 || sd->status.storage.items[n].amount < amount )
 		return 1;
@@ -250,7 +250,7 @@ int storage_delitem(struct map_session_data* sd, int n, int amount)
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storageadd(struct map_session_data* sd, int index, int amount)
+void storage_storageadd(struct s_map_session_data* sd, int index, int amount)
 {
 	nullpo_retv(sd);
 
@@ -281,7 +281,7 @@ void storage_storageadd(struct map_session_data* sd, int index, int amount)
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storageget(struct map_session_data* sd, int index, int amount)
+void storage_storageget(struct s_map_session_data* sd, int index, int amount)
 {
 	unsigned char flag = 0;
 
@@ -309,7 +309,7 @@ void storage_storageget(struct map_session_data* sd, int index, int amount)
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storageaddfromcart(struct map_session_data* sd, int index, int amount)
+void storage_storageaddfromcart(struct s_map_session_data* sd, int index, int amount)
 {
 	nullpo_retv(sd);
 
@@ -340,7 +340,7 @@ void storage_storageaddfromcart(struct map_session_data* sd, int index, int amou
  * @param amount : number of item to take
  * @return 0:fail, 1:success
  */
-void storage_storagegettocart(struct map_session_data* sd, int index, int amount)
+void storage_storagegettocart(struct s_map_session_data* sd, int index, int amount)
 {
 	unsigned char flag;
 
@@ -369,7 +369,7 @@ void storage_storagegettocart(struct map_session_data* sd, int index, int amount
  * @author : [massdriller] / modified by [Valaris]
  * @param sd : player
  */
-void storage_storageclose(struct map_session_data* sd)
+void storage_storageclose(struct s_map_session_data* sd)
 {
 	nullpo_retv(sd);
 
@@ -389,7 +389,7 @@ void storage_storageclose(struct map_session_data* sd)
  *  1: Character is quitting
  *	2(x): Character is changing map-servers 
  */
-void storage_storage_quit(struct map_session_data* sd, int flag)
+void storage_storage_quit(struct s_map_session_data* sd, int flag)
 {
 	nullpo_retv(sd);
 
@@ -406,11 +406,11 @@ void storage_storage_quit(struct map_session_data* sd, int flag)
  * @param args
  * @return 
  */
-static DBData create_guildstorage(DBKey key, va_list args)
+static s_DBData create_guildstorage(u_DBKey key, va_list args)
 {
-	struct guild_storage *gs = NULL;
+	struct s_guild_storage *gs = NULL;
 
-	gs = (struct guild_storage *) aCalloc(sizeof(struct guild_storage), 1);
+	gs = (struct s_guild_storage *) aCalloc(sizeof(struct s_guild_storage), 1);
 	gs->guild_id=key.i;
 
 	return db_ptr2data(gs);
@@ -422,12 +422,12 @@ static DBData create_guildstorage(DBKey key, va_list args)
  * @param guild_id : id of the guild
  * @return guild_storage
  */
-struct guild_storage *gstorage_guild2storage(int guild_id)
+struct s_guild_storage *gstorage_guild2storage(int guild_id)
 {
-	struct guild_storage *gs = NULL;
+	struct s_guild_storage *gs = NULL;
 
 	if (guild_search(guild_id) != NULL)
-		gs = (struct guild_storage *)idb_ensure(guild_storage_db,guild_id,create_guildstorage);
+		gs = (struct s_guild_storage *)idb_ensure(guild_storage_db,guild_id,create_guildstorage);
 
 	return gs;
 }
@@ -438,9 +438,9 @@ struct guild_storage *gstorage_guild2storage(int guild_id)
  * @param guild_id : guild_id to search the storage
  * @return guild_storage or NULL
  */
-struct guild_storage *gstorage_get_storage(int guild_id)
+struct s_guild_storage *gstorage_get_storage(int guild_id)
 {
-	return (struct guild_storage*)idb_get(guild_storage_db,guild_id);
+	return (struct s_guild_storage*)idb_get(guild_storage_db,guild_id);
 }
 
 /**
@@ -458,9 +458,9 @@ void gstorage_delete(int guild_id)
  * @param sd : player
  * @return 0 : success, 1 : fail, 2 : no guild found
  */
-char gstorage_storageopen(struct map_session_data* sd)
+char gstorage_storageopen(struct s_map_session_data* sd)
 {
-	struct guild_storage *gstor;
+	struct s_guild_storage *gstor;
 
 	nullpo_ret(sd);
 
@@ -503,9 +503,9 @@ char gstorage_storageopen(struct map_session_data* sd)
  * @param amount : number of item to add
  * @return True : success, False : fail
  */
-bool gstorage_additem(struct map_session_data* sd, struct guild_storage* stor, struct item* item, int amount)
+bool gstorage_additem(struct s_map_session_data* sd, struct s_guild_storage* stor, struct s_item* item, int amount)
 {
-	struct item_data *id;
+	struct s_item_data *id;
 	int i;
 
 	nullpo_ret(sd);
@@ -565,8 +565,8 @@ bool gstorage_additem(struct map_session_data* sd, struct guild_storage* stor, s
  * @param amount : number of item to add
  * @return True : success, False : fail
  */
-bool gstorage_additem2(struct guild_storage* stor, struct item* item, int amount) {
-	struct item_data *id;
+bool gstorage_additem2(struct s_guild_storage* stor, struct s_item* item, int amount) {
+	struct s_item_data *id;
 	int i;
 
 	nullpo_ret(stor);
@@ -613,7 +613,7 @@ bool gstorage_additem2(struct guild_storage* stor, struct item* item, int amount
  * @param amount : number of item to delete
  * @return True : success, False : fail
  */
-bool gstorage_delitem(struct map_session_data* sd, struct guild_storage* stor, int n, int amount)
+bool gstorage_delitem(struct s_map_session_data* sd, struct s_guild_storage* stor, int n, int amount)
 {
 	nullpo_retr(1, sd);
 	nullpo_retr(1, stor);
@@ -639,9 +639,9 @@ bool gstorage_delitem(struct map_session_data* sd, struct guild_storage* stor, i
  * @param sd : player
  * @param amount : number of item to delete
  */
-void gstorage_storageadd(struct map_session_data* sd, int index, int amount)
+void gstorage_storageadd(struct s_map_session_data* sd, int index, int amount)
 {
-	struct guild_storage *stor;
+	struct s_guild_storage *stor;
 
 	nullpo_retv(sd);
 	nullpo_retv(stor = gstorage_get_storage(sd->status.guild_id));
@@ -678,9 +678,9 @@ void gstorage_storageadd(struct map_session_data* sd, int index, int amount)
  * @param amount : number of item to get
  * @return 1:success, 0:fail
  */
-void gstorage_storageget(struct map_session_data* sd, int index, int amount)
+void gstorage_storageget(struct s_map_session_data* sd, int index, int amount)
 {
-	struct guild_storage *stor;
+	struct s_guild_storage *stor;
 	unsigned char flag = 0;
 
 	nullpo_retv(sd);
@@ -717,9 +717,9 @@ void gstorage_storageget(struct map_session_data* sd, int index, int amount)
  * @param index : index of item in cart
  * @param amount : number of item to transfer
  */
-void gstorage_storageaddfromcart(struct map_session_data* sd, int index, int amount)
+void gstorage_storageaddfromcart(struct s_map_session_data* sd, int index, int amount)
 {
-	struct guild_storage *stor;
+	struct s_guild_storage *stor;
 
 	nullpo_retv(sd);
 	nullpo_retv(stor = gstorage_get_storage(sd->status.guild_id));
@@ -751,10 +751,10 @@ void gstorage_storageaddfromcart(struct map_session_data* sd, int index, int amo
  * @param amount : number of item to transfer
  * @return 1:fail, 0:success
  */
-void gstorage_storagegettocart(struct map_session_data* sd, int index, int amount)
+void gstorage_storagegettocart(struct s_map_session_data* sd, int index, int amount)
 {
 	short flag;
-	struct guild_storage *stor;
+	struct s_guild_storage *stor;
 
 	nullpo_retv(sd);
 	nullpo_retv(stor = gstorage_get_storage(sd->status.guild_id));
@@ -788,7 +788,7 @@ void gstorage_storagegettocart(struct map_session_data* sd, int index, int amoun
  */
 bool gstorage_storagesave(uint32 account_id, int guild_id, int flag)
 {
-	struct guild_storage *stor = gstorage_get_storage(guild_id);
+	struct s_guild_storage *stor = gstorage_get_storage(guild_id);
 
 	if (stor) {
 		if (flag) //Char quitting, close it.
@@ -809,7 +809,7 @@ bool gstorage_storagesave(uint32 account_id, int guild_id, int flag)
  */
 void gstorage_storagesaved(int guild_id)
 {
-	struct guild_storage *stor;
+	struct s_guild_storage *stor;
 
 	if ((stor = gstorage_get_storage(guild_id)) != NULL) {
 		if (stor->dirty && stor->opened == 0) // Storage has been correctly saved.
@@ -821,9 +821,9 @@ void gstorage_storagesaved(int guild_id)
  * Close storage for player then save it
  * @param sd : player
  */
-void gstorage_storageclose(struct map_session_data* sd)
+void gstorage_storageclose(struct s_map_session_data* sd)
 {
-	struct guild_storage *stor;
+	struct s_guild_storage *stor;
 
 	nullpo_retv(sd);
 	nullpo_retv(stor = gstorage_get_storage(sd->status.guild_id));
@@ -846,9 +846,9 @@ void gstorage_storageclose(struct map_session_data* sd)
  * @param sd
  * @param flag
  */
-void gstorage_storage_quit(struct map_session_data* sd, int flag)
+void gstorage_storage_quit(struct s_map_session_data* sd, int flag)
 {
-	struct guild_storage *stor;
+	struct s_guild_storage *stor;
 
 	nullpo_retv(sd);
 	nullpo_retv(stor = gstorage_get_storage(sd->status.guild_id));

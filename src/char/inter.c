@@ -61,7 +61,7 @@ struct WisData {
 	unsigned long tick;
 	unsigned char src[NAME_LENGTH], dst[NAME_LENGTH], msg[512];
 };
-static DBMap* wis_db = NULL; // int wis_id -> struct WisData*
+static s_DBMap* wis_db = NULL; // int wis_id -> struct WisData*
 static int wis_dellist[WISDELLIST_MAX], wis_delnum;
 
 /* from pc.c due to @accinfo. any ideas to replace this crap are more than welcome. */
@@ -944,7 +944,7 @@ int mapif_disconnectplayer(int fd, uint32 account_id, uint32 char_id, int reason
  * Existence check of WISP data
  * @see DBApply
  */
-int check_ttl_wisdata_sub(DBKey key, DBData *data, va_list ap)
+int check_ttl_wisdata_sub(u_DBKey key, s_DBData *data, va_list ap)
 {
 	unsigned long tick;
 	struct WisData *wd = (struct WisData *)db_data2ptr(data);

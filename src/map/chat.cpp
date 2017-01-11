@@ -18,16 +18,16 @@
 #include "pc.h"
 #include "pc_groups.h"
 
-int chat_triggerevent(struct chat_data *cd); // forward declaration
+int chat_triggerevent(struct s_chat_data *cd); // forward declaration
 
 /// Initializes a chatroom object (common functionality for both pc and npc chatrooms).
 /// Returns a chatroom object on success, or NULL on failure.
-static struct chat_data* chat_createchat(struct block_list* bl, const char* title, const char* pass, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl)
+static struct s_chat_data* chat_createchat(struct s_block_list* bl, const char* title, const char* pass, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl)
 {
-	struct chat_data* cd;
+	struct s_chat_data* cd;
 	nullpo_retr(NULL, bl);
 
-	cd = (struct chat_data *) aMalloc(sizeof(struct chat_data));
+	cd = (struct s_chat_data *) aMalloc(sizeof(struct s_chat_data));
 
 	safestrncpy(cd->title, title, sizeof(cd->title));
 	safestrncpy(cd->pass, pass, sizeof(cd->pass));
@@ -71,9 +71,9 @@ static struct chat_data* chat_createchat(struct block_list* bl, const char* titl
  * @param pub : public or private
  * @return 0
  */
-int chat_createpcchat(struct map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
+int chat_createpcchat(struct s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
 {
-	struct chat_data* cd;
+	struct s_chat_data* cd;
 
 	nullpo_ret(sd);
 
@@ -117,13 +117,13 @@ int chat_createpcchat(struct map_session_data* sd, const char* title, const char
  * @param pass : password of chat room
  * @return 0
  */
-int chat_joinchat(struct map_session_data* sd, int chatid, const char* pass)
+int chat_joinchat(struct s_map_session_data* sd, int chatid, const char* pass)
 {
-	struct chat_data* cd;
+	struct s_chat_data* cd;
 
 	nullpo_ret(sd);
 
-	cd = (struct chat_data*)map_id2bl(chatid);
+	cd = (struct s_chat_data*)map_id2bl(chatid);
 
 	if( cd == NULL || cd->bl.type != BL_CHAT || cd->bl.m != sd->bl.m || sd->state.vending || sd->state.buyingstore || sd->chatID || ((cd->owner->type == BL_NPC) ? cd->users+1 : cd->users) >= cd->limit ) {
 		clif_joinchatfail(sd,0);
@@ -175,15 +175,15 @@ int chat_joinchat(struct map_session_data* sd, int chatid, const char* pass)
  * @param kicked : for clif notification, kicked=1 or regular leave
  * @return 0:success, 1:failed
  */
-int chat_leavechat(struct map_session_data* sd, bool kicked)
+int chat_leavechat(struct s_map_session_data* sd, bool kicked)
 {
-	struct chat_data* cd;
+	struct s_chat_data* cd;
 	int i;
 	int leavechar;
 
 	nullpo_retr(1, sd);
 
-	cd = (struct chat_data*)map_id2bl(sd->chatID);
+	cd = (struct s_chat_data*)map_id2bl(sd->chatID);
 
 	if( cd == NULL ) {
 		pc_setchatid(sd, 0);
@@ -206,8 +206,8 @@ int chat_leavechat(struct map_session_data* sd, bool kicked)
 		cd->usersd[i] = cd->usersd[i+1];
 
 	if( cd->users == 0 && cd->owner->type == BL_PC ) { // Delete empty chatroom
-		struct skill_unit* unit;
-		struct skill_unit_group* group;
+		struct s_skill_unit* unit;
+		struct s_skill_unit_group* group;
 
 		clif_clearchat(cd, 0);
 		db_destroy(cd->kick_list);
@@ -225,7 +225,7 @@ int chat_leavechat(struct map_session_data* sd, bool kicked)
 	}
 
 	if( leavechar == 0 && cd->owner->type == BL_PC ) { // Set and announce new owner
-		cd->owner = (struct block_list*) cd->usersd[0];
+		cd->owner = (struct s_block_list*) cd->usersd[0];
 		clif_changechatowner(cd, cd->usersd[0]);
 		clif_clearchat(cd, 0);
 
@@ -250,17 +250,17 @@ int chat_leavechat(struct map_session_data* sd, bool kicked)
  * @param nextownername : string of new owner (name should be in chatroom)
  * @return 0:success, 1:failure
  */
-int chat_changechatowner(struct map_session_data* sd, const char* nextownername)
+int chat_changechatowner(struct s_map_session_data* sd, const char* nextownername)
 {
-	struct chat_data* cd;
-	struct map_session_data* tmpsd;
+	struct s_chat_data* cd;
+	struct s_map_session_data* tmpsd;
 	int i;
 
 	nullpo_retr(1, sd);
 
-	cd = (struct chat_data*)map_id2bl(sd->chatID);
+	cd = (struct s_chat_data*)map_id2bl(sd->chatID);
 
-	if( cd == NULL || (struct block_list*) sd != cd->owner )
+	if( cd == NULL || (struct s_block_list*) sd != cd->owner )
 		return 1;
 
 	ARR_FIND( 1, cd->users, i, strncmp(cd->usersd[i]->status.name, nextownername, NAME_LENGTH) == 0 );
@@ -271,7 +271,7 @@ int chat_changechatowner(struct map_session_data* sd, const char* nextownername)
 	clif_clearchat(cd,0);
 
 	// set new owner
-	cd->owner = (struct block_list*) cd->usersd[i];
+	cd->owner = (struct s_block_list*) cd->usersd[i];
 	clif_changechatowner(cd,cd->usersd[i]);
 
 	// swap the old and new owners' positions
@@ -302,15 +302,15 @@ int chat_changechatowner(struct map_session_data* sd, const char* nextownername)
  * @param pub : public or private
  * @return 1:success, 0:failure
  */
-int chat_changechatstatus(struct map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
+int chat_changechatstatus(struct s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
 {
-	struct chat_data* cd;
+	struct s_chat_data* cd;
 
 	nullpo_retr(1, sd);
 
-	cd = (struct chat_data*)map_id2bl(sd->chatID);
+	cd = (struct s_chat_data*)map_id2bl(sd->chatID);
 
-	if( cd == NULL || (struct block_list *)sd != cd->owner )
+	if( cd == NULL || (struct s_block_list *)sd != cd->owner )
 		return 1;
 
 	safestrncpy(cd->title, title, CHATROOM_TITLE_SIZE);
@@ -330,7 +330,7 @@ int chat_changechatstatus(struct map_session_data* sd, const char* title, const 
  * @param kickusername : player name to be kicked
  * @retur 1:success, 0:failure
  */
-int chat_npckickchat(struct chat_data* cd, const char* kickusername)
+int chat_npckickchat(struct s_chat_data* cd, const char* kickusername)
 {
 	int i;
 	nullpo_ret(cd);
@@ -348,16 +348,16 @@ int chat_npckickchat(struct chat_data* cd, const char* kickusername)
  * @param kickusername : player name to be kicked
  * @retur 1:success, 0:failure
  */
-int chat_kickchat(struct map_session_data* sd, const char* kickusername)
+int chat_kickchat(struct s_map_session_data* sd, const char* kickusername)
 {
-	struct chat_data* cd;
+	struct s_chat_data* cd;
 	int i;
 
 	nullpo_retr(1, sd);
 
-	cd = (struct chat_data *)map_id2bl(sd->chatID);
+	cd = (struct s_chat_data *)map_id2bl(sd->chatID);
 
-	if( cd == NULL || (struct block_list *)sd != cd->owner )
+	if( cd == NULL || (struct s_block_list *)sd != cd->owner )
 		return -1;
 
 	ARR_FIND( 0, cd->users, i, strncmp(cd->usersd[i]->status.name, kickusername, NAME_LENGTH) == 0 );
@@ -387,9 +387,9 @@ int chat_kickchat(struct map_session_data* sd, const char* kickusername)
  * @param maxLvl : maximum level to enter
  * @return 0
  */
-int chat_createnpcchat(struct npc_data* nd, const char* title, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl)
+int chat_createnpcchat(struct s_npc_data* nd, const char* title, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl)
 {
-	struct chat_data* cd;
+	struct s_chat_data* cd;
 
 	nullpo_ret(nd);
 
@@ -417,13 +417,13 @@ int chat_createnpcchat(struct npc_data* nd, const char* title, int limit, bool p
  * Removes a chat room for a NPC.
  * @param nd : NPC requesting
  */
-int chat_deletenpcchat(struct npc_data* nd)
+int chat_deletenpcchat(struct s_npc_data* nd)
 {
-	struct chat_data *cd;
+	struct s_chat_data *cd;
 
 	nullpo_ret(nd);
 
-	cd = (struct chat_data*)map_id2bl(nd->chat_id);
+	cd = (struct s_chat_data*)map_id2bl(nd->chat_id);
 
 	if( cd == NULL )
 		return 0;
@@ -443,7 +443,7 @@ int chat_deletenpcchat(struct npc_data* nd)
  * @param cd : chat room to trigger event
  * @return 0
  */
-int chat_triggerevent(struct chat_data *cd)
+int chat_triggerevent(struct s_chat_data *cd)
 {
 	nullpo_ret(cd);
 
@@ -458,7 +458,7 @@ int chat_triggerevent(struct chat_data *cd)
  * At most, 127 users are needed to trigger the event.
  * @param cd : chat room to trigger event
  */
-int chat_enableevent(struct chat_data* cd)
+int chat_enableevent(struct s_chat_data* cd)
 {
 	nullpo_ret(cd);
 
@@ -472,7 +472,7 @@ int chat_enableevent(struct chat_data* cd)
  * Disables the event of the chat room.
  * @param cd : chat room to trigger event
  */
-int chat_disableevent(struct chat_data* cd)
+int chat_disableevent(struct s_chat_data* cd)
 {
 	nullpo_ret(cd);
 
@@ -485,7 +485,7 @@ int chat_disableevent(struct chat_data* cd)
  * Kicks all the users from the chat room.
  * @param cd : chat room to trigger event
  */
-int chat_npckickall(struct chat_data* cd)
+int chat_npckickall(struct s_chat_data* cd)
 {
 	nullpo_ret(cd);
 

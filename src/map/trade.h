@@ -5,14 +5,14 @@
 #define	_TRADE_H_
 
 //#include "map.h"
-struct map_session_data;
+struct s_map_session_data;
 
-void trade_traderequest(struct map_session_data *sd, struct map_session_data *target_sd);
-void trade_tradeack(struct map_session_data *sd,int type);
-void trade_tradeadditem(struct map_session_data *sd,short index,short amount);
-void trade_tradeaddzeny(struct map_session_data *sd,int amount);
-void trade_tradeok(struct map_session_data *sd);
-void trade_tradecancel(struct map_session_data *sd);
-void trade_tradecommit(struct map_session_data *sd);
+void trade_traderequest(struct s_map_session_data *sd, struct s_map_session_data *target_sd);
+void trade_tradeack(struct s_map_session_data *sd,int type);
+void trade_tradeadditem(struct s_map_session_data *sd,short index,short amount);
+void trade_tradeaddzeny(struct s_map_session_data *sd,int amount);
+void trade_tradeok(struct s_map_session_data *sd);
+void trade_tradecancel(struct s_map_session_data *sd);
+void trade_tradecommit(struct s_map_session_data *sd);
 
 #endif /* _TRADE_H_ */

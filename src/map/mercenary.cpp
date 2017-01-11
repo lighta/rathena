@@ -52,7 +52,7 @@ bool mercenary_class(int class_){
 * @param class_ The Class ID
 * @return View Data of Mercenary
 **/
-struct view_data * mercenary_get_viewdata(int class_){
+struct s_view_data * mercenary_get_viewdata(int class_){
 	int i = mercenary_search_index(class_);
 	if( i < 0 )
 		return 0;
@@ -81,7 +81,7 @@ short mercenary_skill_get_index(uint16 skill_id) {
 * @param lifetime Contract duration
 * @return false if failed, true otherwise
 **/
-bool mercenary_create(struct map_session_data *sd, int class_, unsigned int lifetime) {
+bool mercenary_create(struct s_map_session_data *sd, int class_, unsigned int lifetime) {
 	struct s_mercenary merc;
 	struct s_mercenary_db *db;
 	int16 i;
@@ -110,7 +110,7 @@ bool mercenary_create(struct map_session_data *sd, int class_, unsigned int life
 * @param md The Mercenary
 * @return The Lifetime
 **/
-int mercenary_get_lifetime(struct mercenary_data *md) {
+int mercenary_get_lifetime(struct s_mercenary_data *md) {
 	const struct TimerData * td;
 	if( md == NULL || md->contract_timer == INVALID_TIMER )
 		return 0;
@@ -124,7 +124,7 @@ int mercenary_get_lifetime(struct mercenary_data *md) {
 * @param md Mercenary
 * @return -1 if not found, 0 - ARCH_MERC_GUILD, 1 - SPEAR_MERC_GUILD, or 2 - SWORD_MERC_GUILD
 **/
-int mercenary_get_guild(struct mercenary_data *md){
+int mercenary_get_guild(struct s_mercenary_data *md){
 	uint16 class_;
 
 	if( md == NULL || md->db == NULL )
@@ -132,7 +132,7 @@ int mercenary_get_guild(struct mercenary_data *md){
 
 	class_ = md->db->class_;
 
-	if( class_ >= 6017 && class_ <= 6026 )
+	if( class_ >= 6017 && class_ <= 6026 ) //too many magic number [lighta]]
 		return ARCH_MERC_GUILD;
 	if( class_ >= 6027 && class_ <= 6036 )
 		return SPEAR_MERC_GUILD;
@@ -147,8 +147,8 @@ int mercenary_get_guild(struct mercenary_data *md){
 * @param md Mercenary
 * @return the Faith value
 **/
-int mercenary_get_faith(struct mercenary_data *md) {
-	struct map_session_data *sd;
+int mercenary_get_faith(struct s_mercenary_data *md) {
+	struct s_map_session_data *sd;
 	uint16 class_;
 
 	if( md == NULL || md->db == NULL || (sd = md->master) == NULL )
@@ -171,8 +171,8 @@ int mercenary_get_faith(struct mercenary_data *md) {
 * @param md The Mercenary
 * @param value Faith Value
 **/
-void mercenary_set_faith(struct mercenary_data *md, int value) {
-	struct map_session_data *sd;
+void mercenary_set_faith(struct s_mercenary_data *md, int value) {
+	struct s_map_session_data *sd;
 	uint16 class_;
 	int *faith;
 
@@ -200,8 +200,8 @@ void mercenary_set_faith(struct mercenary_data *md, int value) {
 * @param md Mercenary
 * @return Number of calls
 **/
-int mercenary_get_calls(struct mercenary_data *md) {
-	struct map_session_data *sd;
+int mercenary_get_calls(struct s_mercenary_data *md) {
+	struct s_map_session_data *sd;
 	uint16 class_;
 
 	if( md == NULL || md->db == NULL || (sd = md->master) == NULL )
@@ -224,8 +224,8 @@ int mercenary_get_calls(struct mercenary_data *md) {
 * @param md Mercenary
 * @param value
 **/
-void mercenary_set_calls(struct mercenary_data *md, int value) {
-	struct map_session_data *sd;
+void mercenary_set_calls(struct s_mercenary_data *md, int value) {
+	struct s_map_session_data *sd;
 	uint16 class_;
 	int *calls;
 
@@ -251,7 +251,7 @@ void mercenary_set_calls(struct mercenary_data *md, int value) {
 * Save Mercenary data
 * @param md Mercenary
 **/
-void mercenary_save(struct mercenary_data *md) {
+void mercenary_save(struct s_mercenary_data *md) {
 	md->mercenary.hp = md->battle_status.hp;
 	md->mercenary.sp = md->battle_status.sp;
 	md->mercenary.life_time = mercenary_get_lifetime(md);
@@ -263,8 +263,8 @@ void mercenary_save(struct mercenary_data *md) {
 * Ends contract of Mercenary
 **/
 static int merc_contract_end(int tid, unsigned int tick, int id, intptr_t data) {
-	struct map_session_data *sd;
-	struct mercenary_data *md;
+	struct s_map_session_data *sd;
+	struct s_mercenary_data *md;
 
 	if( (sd = map_id2sd(id)) == NULL )
 		return 1;
@@ -288,8 +288,8 @@ static int merc_contract_end(int tid, unsigned int tick, int id, intptr_t data) 
 * @param md Mercenary
 * @param reply
 **/
-int mercenary_delete(struct mercenary_data *md, int reply) {
-	struct map_session_data *sd = md->master;
+int mercenary_delete(struct s_mercenary_data *md, int reply) {
+	struct s_map_session_data *sd = md->master;
 	md->mercenary.life_time = 0;
 
 	mercenary_contract_stop(md);
@@ -317,7 +317,7 @@ int mercenary_delete(struct mercenary_data *md, int reply) {
 * Stop contract of Mercenary
 * @param md Mercenary
 **/
-void mercenary_contract_stop(struct mercenary_data *md) {
+void mercenary_contract_stop(struct s_mercenary_data *md) {
 	nullpo_retv(md);
 	if( md->contract_timer != INVALID_TIMER )
 		delete_timer(md->contract_timer, merc_contract_end);
@@ -328,7 +328,7 @@ void mercenary_contract_stop(struct mercenary_data *md) {
 * Init contract of Mercenary
 * @param md Mercenary
 **/
-void merc_contract_init(struct mercenary_data *md) {
+void merc_contract_init(struct s_mercenary_data *md) {
 	if( md->contract_timer == INVALID_TIMER )
 		md->contract_timer = add_timer(gettick() + md->mercenary.life_time, merc_contract_end, md->master->bl.id, 0);
 
@@ -343,8 +343,8 @@ void merc_contract_init(struct mercenary_data *md) {
  */
 bool mercenary_recv_data(struct s_mercenary *merc, bool flag)
 {
-	struct map_session_data *sd;
-	struct mercenary_data *md;
+	struct s_map_session_data *sd;
+	struct s_mercenary_data *md;
 	struct s_mercenary_db *db;
 	int i = mercenary_search_index(merc->class_);
 
@@ -357,7 +357,7 @@ bool mercenary_recv_data(struct s_mercenary *merc, bool flag)
 
 	db = &mercenary_db[i];
 	if( !sd->md ) {
-		sd->md = md = (struct mercenary_data*)aCalloc(1,sizeof(struct mercenary_data));
+		sd->md = md = (struct s_mercenary_data*)aCalloc(1,sizeof(struct s_mercenary_data));
 		md->bl.type = BL_MER;
 		md->bl.id = npc_get_new_npc_id();
 		md->devotion_flag = 0;
@@ -408,7 +408,7 @@ bool mercenary_recv_data(struct s_mercenary *merc, bool flag)
 * @param hp HP amount
 * @param sp SP amount
 **/
-void mercenary_heal(struct mercenary_data *md, int hp, int sp) {
+void mercenary_heal(struct s_mercenary_data *md, int hp, int sp) {
 	if (md->master == NULL)
 		return;
 	if( hp )
@@ -422,7 +422,7 @@ void mercenary_heal(struct mercenary_data *md, int hp, int sp) {
  * @param md: Mercenary
  * @return false for status_damage
  */
-bool mercenary_dead(struct mercenary_data *md) {
+bool mercenary_dead(struct s_mercenary_data *md) {
 	mercenary_delete(md, 1);
 	return false;
 }
@@ -431,8 +431,8 @@ bool mercenary_dead(struct mercenary_data *md) {
 * Gives bonus to Mercenary
 * @param md Mercenary
 **/
-void mercenary_killbonus(struct mercenary_data *md) {
-	const enum sc_type scs[] = { SC_MERC_FLEEUP, SC_MERC_ATKUP, SC_MERC_HPUP, SC_MERC_SPUP, SC_MERC_HITUP };
+void mercenary_killbonus(struct s_mercenary_data *md) {
+	const enum e_sc_type scs[] = { SC_MERC_FLEEUP, SC_MERC_ATKUP, SC_MERC_HPUP, SC_MERC_SPUP, SC_MERC_HITUP };
 	uint8 index = rnd() % ARRAYLENGTH(scs);
 
 	sc_start(&md->bl,&md->bl, scs[index], 100, rnd() % 5, 600000);
@@ -442,7 +442,7 @@ void mercenary_killbonus(struct mercenary_data *md) {
 * Mercenary does kill
 * @param md Mercenary
 **/
-void mercenary_kills(struct mercenary_data *md){
+void mercenary_kills(struct s_mercenary_data *md){
 	if(md->mercenary.kill_count <= (INT_MAX-1)) //safe cap to INT_MAX
 		md->mercenary.kill_count++;
 
@@ -462,7 +462,7 @@ void mercenary_kills(struct mercenary_data *md){
 * @param skill_id The skill
 * @return Skill Level or 0 if Mercenary doesn't have the skill
 **/
-int mercenary_checkskill(struct mercenary_data *md, uint16 skill_id) {
+int mercenary_checkskill(struct s_mercenary_data *md, uint16 skill_id) {
 	short idx = mercenary_skill_get_index(skill_id);
 
 	if( !md || !md->db || idx == -1)
@@ -478,7 +478,7 @@ static bool mercenary_readdb_sub(char* str[], int columns, int current)
 	int ele;
 	uint16 i, class_ = atoi(str[0]);
 	struct s_mercenary_db *db;
-	struct status_data *status;
+	struct s_status_data *status;
 
 	//Find the ID, already exist or not in mercenary_db
 	ARR_FIND(0,mercenary_count,i,mercenary_db[i].class_ == class_);

@@ -18,8 +18,8 @@
 #include "script.h"
 
 
-static struct eri *mapreg_ers;
-struct reg_db regs;
+static struct s_eri *mapreg_ers;
+struct s_reg_db regs;
 
 bool skip_insert = false;
 
@@ -37,7 +37,7 @@ static bool mapreg_dirty = false; // Whether there are modified regs to be saved
  */
 int mapreg_readreg(int64 uid)
 {
-	struct mapreg_save *m = (struct mapreg_save *)i64db_get(regs.vars, uid);
+	struct s_mapreg_save *m = (struct s_mapreg_save *)i64db_get(regs.vars, uid);
 	return m ? m->u.i : 0;
 }
 
@@ -49,7 +49,7 @@ int mapreg_readreg(int64 uid)
  */
 char* mapreg_readregstr(int64 uid)
 {
-	struct mapreg_save *m = (struct mapreg_save *)i64db_get(regs.vars, uid);
+	struct s_mapreg_save *m = (struct s_mapreg_save *)i64db_get(regs.vars, uid);
 	return m ? m->u.str : NULL;
 }
 
@@ -62,13 +62,13 @@ char* mapreg_readregstr(int64 uid)
  */
 bool mapreg_setreg(int64 uid, int val)
 {
-	struct mapreg_save *m;
+	struct s_mapreg_save *m;
 	int num = script_getvarid(uid);
 	unsigned int i = script_getvaridx(uid);
 	const char* name = get_str(num);
 
 	if (val != 0) {
-		if ((m =(mapreg_save*) i64db_get(regs.vars, uid))) {
+		if ((m =(s_mapreg_save*) i64db_get(regs.vars, uid))) {
 			m->u.i = val;
 			if (name[1] != '@') {
 				m->save = true;
@@ -78,7 +78,7 @@ bool mapreg_setreg(int64 uid, int val)
 			if (i)
 				script_array_update(&regs, uid, false);
 
-			m = ers_alloc(mapreg_ers, struct mapreg_save);
+			m = ers_alloc(mapreg_ers, struct s_mapreg_save);
 
 			m->u.i = val;
 			m->uid = uid;
@@ -96,7 +96,7 @@ bool mapreg_setreg(int64 uid, int val)
 	} else { // val == 0
 		if (i)
 			script_array_update(&regs, uid, true);
-		if ((m = (mapreg_save*) i64db_get(regs.vars, uid))) {
+		if ((m = (s_mapreg_save*) i64db_get(regs.vars, uid))) {
 			ers_free(mapreg_ers, m);
 		}
 		i64db_remove(regs.vars, uid);
@@ -119,7 +119,7 @@ bool mapreg_setreg(int64 uid, int val)
  */
 bool mapreg_setregstr(int64 uid, const char* str)
 {
-	struct mapreg_save *m;
+	struct s_mapreg_save *m;
 	int num = script_getvarid(uid);
 	unsigned int i = script_getvaridx(uid);
 	const char* name = get_str(num);
@@ -131,14 +131,14 @@ bool mapreg_setregstr(int64 uid, const char* str)
 			if (SQL_ERROR == Sql_Query(mmysql_handle, "DELETE FROM `%s` WHERE `varname`='%s' AND `index`='%d'", mapreg_table, name, i))
 				Sql_ShowDebug(mmysql_handle);
 		}
-		if ((m = (mapreg_save*) i64db_get(regs.vars, uid))) {
+		if ((m = (s_mapreg_save*) i64db_get(regs.vars, uid))) {
 			if (m->u.str != NULL)
 				aFree(m->u.str);
 			ers_free(mapreg_ers, m);
 		}
 		i64db_remove(regs.vars, uid);
 	} else {
-		if ((m = (mapreg_save*) i64db_get(regs.vars, uid))) {
+		if ((m = (s_mapreg_save*) i64db_get(regs.vars, uid))) {
 			if (m->u.str != NULL)
 				aFree(m->u.str);
 			m->u.str = aStrdup(str);
@@ -150,7 +150,7 @@ bool mapreg_setregstr(int64 uid, const char* str)
 			if (i)
 				script_array_update(&regs, uid, false);
 
-			m = ers_alloc(mapreg_ers, struct mapreg_save);
+			m = ers_alloc(mapreg_ers, struct s_mapreg_save);
 
 			m->uid = uid;
 			m->u.str = aStrdup(str);
@@ -230,9 +230,9 @@ static void script_load_mapreg(void)
 static void script_save_mapreg(void)
 {
 	if (mapreg_dirty) {
-		DBIterator *iter = db_iterator(regs.vars);
-		struct mapreg_save *m;
-		for (m = (mapreg_save*) dbi_first(iter); dbi_exists(iter); m = (mapreg_save*) dbi_next(iter)) {
+		s_DBIterator *iter = db_iterator(regs.vars);
+		struct s_mapreg_save *m;
+		for (m = (s_mapreg_save*) dbi_first(iter); dbi_exists(iter); m = (s_mapreg_save*) dbi_next(iter)) {
 			if (m->save) {
 				int num = script_getvarid(m->uid);
 				int i = script_getvaridx(m->uid);
@@ -268,14 +268,14 @@ static int script_autosave_mapreg(int tid, unsigned int tick, int id, intptr_t d
  *
  * @see DBApply
  */
-int mapreg_destroyreg(DBKey key, DBData *data, va_list ap)
+int mapreg_destroyreg(u_DBKey key, s_DBData *data, va_list ap)
 {
-	struct mapreg_save *m = NULL;
+	struct s_mapreg_save *m = NULL;
 
 	if (data->type != DB_DATA_PTR) // Sanity check
 		return 0;
 
-	m = (mapreg_save*) db_data2ptr(data);
+	m = (s_mapreg_save*) db_data2ptr(data);
 
 	if (m->is_string) {
 		if (m->u.str)
@@ -327,7 +327,7 @@ void mapreg_final(void)
 void mapreg_init(void)
 {
 	regs.vars = i64db_alloc(DB_OPT_BASE);
-	mapreg_ers = ers_new(sizeof(struct mapreg_save), "mapreg.c:mapreg_ers", ERS_OPT_CLEAN);
+	mapreg_ers = ers_new(sizeof(struct s_mapreg_save), "mapreg.c:mapreg_ers", ERS_OPT_CLEAN);
 
 	skip_insert = false;
 	regs.arrays = NULL;

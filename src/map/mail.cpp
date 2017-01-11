@@ -17,7 +17,7 @@
 #include "log.h"
 #include "battle.h"
 
-void mail_clear(struct map_session_data *sd)
+void mail_clear(struct s_map_session_data *sd)
 {
 	sd->mail.nameid = 0;
 	sd->mail.index = 0;
@@ -27,7 +27,7 @@ void mail_clear(struct map_session_data *sd)
 	return;
 }
 
-int mail_removeitem(struct map_session_data *sd, short flag)
+int mail_removeitem(struct s_map_session_data *sd, short flag)
 {
 	nullpo_ret(sd);
 
@@ -45,7 +45,7 @@ int mail_removeitem(struct map_session_data *sd, short flag)
 	return 1;
 }
 
-int mail_removezeny(struct map_session_data *sd, short flag)
+int mail_removezeny(struct s_map_session_data *sd, short flag)
 {
 	nullpo_ret(sd);
 
@@ -67,7 +67,7 @@ int mail_removezeny(struct map_session_data *sd, short flag)
 * @param amount : amout of zeny or number of item
 * @return True if item/zeny can be set, False if failed
 */
-bool mail_setitem(struct map_session_data *sd, short idx, uint32 amount) {
+bool mail_setitem(struct s_map_session_data *sd, short idx, uint32 amount) {
 
 	if( pc_istrading(sd) )
 		return false;
@@ -103,7 +103,7 @@ bool mail_setitem(struct map_session_data *sd, short idx, uint32 amount) {
 	}
 }
 
-bool mail_setattachment(struct map_session_data *sd, struct mail_message *msg)
+bool mail_setattachment(struct s_map_session_data *sd, struct s_mail_message *msg)
 {
 	int n;
 
@@ -125,11 +125,11 @@ bool mail_setattachment(struct map_session_data *sd, struct mail_message *msg)
 		if( sd->weight > sd->max_weight )
 			return false;
 
-		memcpy(&msg->item, &sd->status.inventory[n], sizeof(struct item));
+		memcpy(&msg->item, &sd->status.inventory[n], sizeof(struct s_item));
 		msg->item.amount = sd->mail.amount;
 	}
 	else
-		memset(&msg->item, 0x00, sizeof(struct item));
+		memset(&msg->item, 0x00, sizeof(struct s_item));
 
 	msg->zeny = sd->mail.zeny;
 
@@ -140,7 +140,7 @@ bool mail_setattachment(struct map_session_data *sd, struct mail_message *msg)
 	return true;
 }
 
-void mail_getattachment(struct map_session_data* sd, int zeny, struct item* item)
+void mail_getattachment(struct s_map_session_data* sd, int zeny, struct s_item* item)
 {
 	if( item->nameid > 0 && item->amount > 0 )
 	{
@@ -154,7 +154,7 @@ void mail_getattachment(struct map_session_data* sd, int zeny, struct item* item
 	}
 }
 
-int mail_openmail(struct map_session_data *sd)
+int mail_openmail(struct s_map_session_data *sd)
 {
 	nullpo_ret(sd);
 
@@ -166,7 +166,7 @@ int mail_openmail(struct map_session_data *sd)
 	return 1;
 }
 
-void mail_deliveryfail(struct map_session_data *sd, struct mail_message *msg)
+void mail_deliveryfail(struct s_map_session_data *sd, struct s_mail_message *msg)
 {
 	nullpo_retv(sd);
 	nullpo_retv(msg);
@@ -186,7 +186,7 @@ void mail_deliveryfail(struct map_session_data *sd, struct mail_message *msg)
 }
 
 // This function only check if the mail operations are valid
-bool mail_invalid_operation(struct map_session_data *sd)
+bool mail_invalid_operation(struct s_map_session_data *sd)
 {
 	if( !map[sd->bl.m].flag.town && !pc_can_use_command(sd, "mail", COMMAND_ATCOMMAND) )
 	{
@@ -205,8 +205,8 @@ bool mail_invalid_operation(struct map_session_data *sd)
 * @param body_msg Mail message
 * @param body_len Message's length
 */
-void mail_send(struct map_session_data *sd, const char *dest_name, const char *title, const char *body_msg, int body_len) {
-	struct mail_message msg;
+void mail_send(struct s_map_session_data *sd, const char *dest_name, const char *title, const char *body_msg, int body_len) {
+	struct s_mail_message msg;
 
 	nullpo_retv(sd);
 

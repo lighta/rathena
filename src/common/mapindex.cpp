@@ -10,7 +10,7 @@
 #include "showmsg.h"
 #include "strlib.h"
 
-DBMap *mapindex_db;
+s_DBMap *mapindex_db;
 struct _indexes {
 	char name[MAP_NAME_LENGTH]; //Stores map name
 } indexes[MAX_MAPINDEX];

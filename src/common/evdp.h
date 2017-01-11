@@ -10,24 +10,24 @@ extern "C" {
 
 //#idef EVDP_EPOLL
 #include <sys/epoll.h>
-struct EVDP_DATA{
+struct s_EVDP_DATA{
 	struct epoll_event ev_data;
 	bool ev_added;
 };
-typedef struct EVDP_DATA EVDP_DATA;
+typedef struct s_EVDP_DATA s_EVDP_DATA;
 //#endif
 
 
-enum EVDP_EVENTFLAGS{
+enum e_EVDP_EVENTFLAGS{
 	EVDP_EVENT_IN = 1,	// Incomming data  
 	EVDP_EVENT_OUT = 2,	// Connection accepts writing.
 	EVDP_EVENT_HUP = 4	// Connection Closed.
 };
 
-typedef struct EVDP_EVENT{
+typedef struct s_EVDP_EVENT{
 	int32	events;	// due to performance reasons, this should be the first member.
 	int32	fd;	// Connection Identifier
-} EVDP_EVENT;
+} s_EVDP_EVENT;
 
 
 
@@ -53,7 +53,7 @@ void evdp_final();
  *
  * @return 	0 -> Timeout, 	> 0 no of changed connections.
  */
-int32 evdp_wait(EVDP_EVENT *out_fds,	int32 max_events, 	int32 timeout_ticks);
+int32 evdp_wait(s_EVDP_EVENT *out_fds,	int32 max_events, 	int32 timeout_ticks);
 
 
 /** 
@@ -80,7 +80,7 @@ int32 evdp_wait(EVDP_EVENT *out_fds,	int32 max_events, 	int32 timeout_ticks);
  * 
  * @return success indicator.
  */ 
-bool evdp_addlistener(int32 fd, EVDP_DATA *ep);
+bool evdp_addlistener(int32 fd, s_EVDP_DATA *ep);
 
 /**
  * Adds a connection (client connectioN) to the event notification system
@@ -94,7 +94,7 @@ bool evdp_addlistener(int32 fd, EVDP_DATA *ep);
  *
  * @return success indicator.
  */
-bool evdp_addclient(int32 fd, EVDP_DATA *ep);
+bool evdp_addclient(int32 fd, s_EVDP_DATA *ep);
 
 /**
  * Adds a connection (pending / outgoing connection!) to the event notification system.
@@ -114,7 +114,7 @@ bool evdp_addclient(int32 fd, EVDP_DATA *ep);
  *
  * @return success indicator
  */
-bool evdp_addconnecting(int32 fd, EVDP_DATA *ep);
+bool evdp_addconnecting(int32 fd, s_EVDP_DATA *ep);
 
 /**
  * Adds an outgoing connection to the normal event notification system after it has been successfully established. 
@@ -127,7 +127,7 @@ bool evdp_addconnecting(int32 fd, EVDP_DATA *ep);
  * 
  * @rturn success indicator
  */
-bool evdp_outgoingconnection_established(int32 fd, EVDP_DATA *ep);
+bool evdp_outgoingconnection_established(int32 fd, s_EVDP_DATA *ep);
 
 /**
  * Marks a connection to be monitored for writable.
@@ -141,7 +141,7 @@ bool evdp_outgoingconnection_established(int32 fd, EVDP_DATA *ep);
  *
  * @return success indicator
  */
-bool evdp_writable_add(int32 fd, EVDP_DATA *ep);
+bool evdp_writable_add(int32 fd, s_EVDP_DATA *ep);
 
 /** 
  * Removes the connection from writable notification monitoring
@@ -150,7 +150,7 @@ bool evdp_writable_add(int32 fd, EVDP_DATA *ep);
  * @param *ep	event data pointr for the connection
  *
  */ 
-void evdp_writable_remove(int32 fd, EVDP_DATA *ep);
+void evdp_writable_remove(int32 fd, s_EVDP_DATA *ep);
 
 /**
  * Removes an connectio from the event notification system.
@@ -164,7 +164,7 @@ void evdp_writable_remove(int32 fd, EVDP_DATA *ep);
  *	so the connection slot is in an "initial" blank status / ready to get reused.
  *
  */
-void evdp_remove(int32 fd, 	EVDP_DATA *ep);
+void evdp_remove(int32 fd, 	s_EVDP_DATA *ep);
 
 #ifdef	__cplusplus
 }

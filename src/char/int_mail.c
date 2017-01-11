@@ -14,14 +14,14 @@
 #include "inter.h"
 #include"int_mail.h"
 
-int mail_fromsql(uint32 char_id, struct mail_data* md)
+int mail_fromsql(uint32 char_id, struct s_mail_data* md)
 {
 	int i, j;
-	struct mail_message *msg;
+	struct s_mail_message *msg;
 	char *data;
 	StringBuf buf;
 
-	memset(md, 0, sizeof(struct mail_data));
+	memset(md, 0, sizeof(struct s_mail_data));
 	md->amount = 0;
 	md->full = false;
 
@@ -46,7 +46,7 @@ int mail_fromsql(uint32 char_id, struct mail_data* md)
 
 	for (i = 0; i < MAIL_MAX_INBOX && SQL_SUCCESS == Sql_NextRow(sql_handle); ++i )
 	{
-		struct item *item;
+		struct s_item *item;
 
 		msg = &md->msg[i];
 		Sql_GetData(sql_handle, 0, &data, NULL); msg->id = atoi(data);
@@ -57,7 +57,7 @@ int mail_fromsql(uint32 char_id, struct mail_data* md)
 		Sql_GetData(sql_handle, 5, &data, NULL); safestrncpy(msg->title, data, MAIL_TITLE_LENGTH);
 		Sql_GetData(sql_handle, 6, &data, NULL); safestrncpy(msg->body, data, MAIL_BODY_LENGTH);
 		Sql_GetData(sql_handle, 7, &data, NULL); msg->timestamp = atoi(data); //strtoull ?
-		Sql_GetData(sql_handle, 8, &data, NULL); msg->status = (mail_status)atoi(data);
+		Sql_GetData(sql_handle, 8, &data, NULL); msg->status = (e_mail_status)atoi(data);
 		Sql_GetData(sql_handle, 9, &data, NULL); msg->zeny = strtoul(data, NULL, 10);
 		item = &msg->item;
 		Sql_GetData(sql_handle,10, &data, NULL); item->amount = (short)atoi(data);
@@ -113,7 +113,7 @@ int mail_fromsql(uint32 char_id, struct mail_data* md)
 
 /// Stores a single message in the database.
 /// Returns the message's ID if successful (or 0 if it fails).
-int mail_savemessage(struct mail_message* msg)
+int mail_savemessage(struct s_mail_message* msg)
 {
 	StringBuf buf;
 	SqlStmt* stmt;
@@ -162,7 +162,7 @@ int mail_savemessage(struct mail_message* msg)
 
 /// Retrieves a single message from the database.
 /// Returns true if the operation succeeds (or false if it fails).
-bool mail_loadmessage(int mail_id, struct mail_message* msg)
+bool mail_loadmessage(int mail_id, struct s_mail_message* msg)
 {
 	int j;
 	StringBuf buf;
@@ -199,7 +199,7 @@ bool mail_loadmessage(int mail_id, struct mail_message* msg)
 		Sql_GetData(sql_handle, 5, &data, NULL); safestrncpy(msg->title, data, MAIL_TITLE_LENGTH);
 		Sql_GetData(sql_handle, 6, &data, NULL); safestrncpy(msg->body, data, MAIL_BODY_LENGTH);
 		Sql_GetData(sql_handle, 7, &data, NULL); msg->timestamp = atoi(data);
-		Sql_GetData(sql_handle, 8, &data, NULL); msg->status = (mail_status)atoi(data);
+		Sql_GetData(sql_handle, 8, &data, NULL); msg->status = (e_mail_status)atoi(data);
 		Sql_GetData(sql_handle, 9, &data, NULL); msg->zeny = atoi(data);
 		Sql_GetData(sql_handle,10, &data, NULL); msg->item.amount = (short)atoi(data);
 		Sql_GetData(sql_handle,11, &data, NULL); msg->item.nameid = atoi(data);
@@ -236,7 +236,7 @@ bool mail_loadmessage(int mail_id, struct mail_message* msg)
  *------------------------------------------*/
 void mapif_Mail_sendinbox(int fd, uint32 char_id, unsigned char flag)
 {
-	struct mail_data md;
+	struct s_mail_data md;
 	mail_fromsql(char_id, &md);
 
 	//FIXME: dumping the whole structure like this is unsafe [ultramage]
@@ -297,7 +297,7 @@ bool mail_DeleteAttach(int mail_id)
 
 void mapif_Mail_getattach(int fd, uint32 char_id, int mail_id)
 {
-	struct mail_message msg;
+	struct s_mail_message msg;
 
 	if( !mail_loadmessage(mail_id, &msg) )
 		return;
@@ -314,12 +314,12 @@ void mapif_Mail_getattach(int fd, uint32 char_id, int mail_id)
 	if( !mail_DeleteAttach(mail_id) )
 		return;
 
-	WFIFOHEAD(fd, sizeof(struct item) + 12);
+	WFIFOHEAD(fd, sizeof(struct s_item) + 12);
 	WFIFOW(fd,0) = 0x384a;
-	WFIFOW(fd,2) = sizeof(struct item) + 12;
+	WFIFOW(fd,2) = sizeof(struct s_item) + 12;
 	WFIFOL(fd,4) = char_id;
 	WFIFOL(fd,8) = (msg.zeny > 0)?msg.zeny:0;
-	memcpy(WFIFOP(fd,12), &msg.item, sizeof(struct item));
+	memcpy(WFIFOP(fd,12), &msg.item, sizeof(struct s_item));
 	WFIFOSET(fd,WFIFOW(fd,2));
 }
 
@@ -356,7 +356,7 @@ void mapif_parse_Mail_delete(int fd)
 /*==========================================
  * Report New Mail to Map Server
  *------------------------------------------*/
-void mapif_Mail_new(struct mail_message *msg)
+void mapif_Mail_new(struct s_mail_message *msg)
 {
 	unsigned char buf[74];
 
@@ -376,7 +376,7 @@ void mapif_Mail_new(struct mail_message *msg)
  *------------------------------------------*/
 void mapif_Mail_return(int fd, uint32 char_id, int mail_id)
 {
-	struct mail_message msg;
+	struct s_mail_message msg;
 	int new_mail = 0;
 
 	if( mail_loadmessage(mail_id, &msg) )
@@ -423,28 +423,28 @@ void mapif_parse_Mail_return(int fd)
 /*==========================================
  * Send Mail
  *------------------------------------------*/
-void mapif_Mail_send(int fd, struct mail_message* msg)
+void mapif_Mail_send(int fd, struct s_mail_message* msg)
 {
-	int len = sizeof(struct mail_message) + 4;
+	int len = sizeof(struct s_mail_message) + 4;
 
 	WFIFOHEAD(fd,len);
 	WFIFOW(fd,0) = 0x384d;
 	WFIFOW(fd,2) = len;
-	memcpy(WFIFOP(fd,4), msg, sizeof(struct mail_message));
+	memcpy(WFIFOP(fd,4), msg, sizeof(struct s_mail_message));
 	WFIFOSET(fd,len);
 }
 
 void mapif_parse_Mail_send(int fd)
 {
-	struct mail_message msg;
+	struct s_mail_message msg;
 	char esc_name[NAME_LENGTH*2+1];
 	uint32 account_id = 0;
 
-	if(RFIFOW(fd,2) != 8 + sizeof(struct mail_message))
+	if(RFIFOW(fd,2) != 8 + sizeof(struct s_mail_message))
 		return;
 
 	account_id = RFIFOL(fd,4);
-	memcpy(&msg, RFIFOP(fd,8), sizeof(struct mail_message));
+	memcpy(&msg, RFIFOP(fd,8), sizeof(struct s_mail_message));
 
 	// Try to find the Dest Char by Name
 	Sql_EscapeStringLen(sql_handle, esc_name, msg.dest_name, strnlen(msg.dest_name, NAME_LENGTH));
@@ -471,10 +471,10 @@ void mapif_parse_Mail_send(int fd)
 	mapif_Mail_new(&msg); // notify recipient
 }
 
-void mail_sendmail(int send_id, const char* send_name, int dest_id, const char* dest_name, const char* title, const char* body, int zeny, struct item *item)
+void mail_sendmail(int send_id, const char* send_name, int dest_id, const char* dest_name, const char* title, const char* body, int zeny, struct s_item *item)
 {
-	struct mail_message msg;
-	memset(&msg, 0, sizeof(struct mail_message));
+	struct s_mail_message msg;
+	memset(&msg, 0, sizeof(struct s_mail_message));
 
 	msg.send_id = send_id;
 	safestrncpy(msg.send_name, send_name, NAME_LENGTH);
@@ -484,7 +484,7 @@ void mail_sendmail(int send_id, const char* send_name, int dest_id, const char* 
 	safestrncpy(msg.body, body, MAIL_BODY_LENGTH);
 	msg.zeny = zeny;
 	if( item != NULL )
-		memcpy(&msg.item, item, sizeof(struct item));
+		memcpy(&msg.item, item, sizeof(struct s_item));
 
 	msg.timestamp = time(NULL);
 
