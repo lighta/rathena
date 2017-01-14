@@ -69,9 +69,9 @@
  * @see #db.h
 \*****************************************************************************/
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "db.h"
 #include "ers.h"

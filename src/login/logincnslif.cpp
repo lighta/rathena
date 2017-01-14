@@ -7,8 +7,8 @@
  * @author rAthena Dev Team
  */
 
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 #include "../common/mmo.h" //cbasetype + NAME_LENGTH
 #include "../common/showmsg.h" //show notice

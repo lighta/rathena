@@ -11,9 +11,9 @@
 #define getpagesize() 4096 // @TODO: implement this properly (GetSystemInfo .. dwPageSize..). (Atm as on all supported win platforms its 4k its static.)
 #define __thread __declspec( thread ) 
 #else
-#include <cstdlib>
-#include <cstring>
-#include <csignal>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
 #include <unistd.h>
 #include <pthread.h>
 #include <sched.h>

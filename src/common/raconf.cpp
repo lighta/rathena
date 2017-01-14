@@ -9,9 +9,9 @@
 // For more information, see LICENCE in the main folder
 //
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "db.h"
 #include "malloc.h"

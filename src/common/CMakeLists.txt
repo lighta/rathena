@@ -25,6 +25,7 @@ message( STATUS "Creating svnversion.h - done" )
 #
 set( COMMON_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}"
 	CACHE PATH "common source directory" )
+#message( STATUS "DEBUG COMMON_SOURCE_DIR=${COMMON_SOURCE_DIR}" )
 mark_as_advanced( COMMON_SOURCE_DIR )
 
 set( COMMON_ALL_HEADERS
@@ -42,10 +43,10 @@ set( COMMON_MINI_HEADERS
 	${LIBCONFIG_HEADERS} # needed by showmsg.h
 	CACHE INTERNAL "" )
 set( COMMON_MINI_SOURCES
-	"${COMMON_SOURCE_DIR}/core.c"
-	"${COMMON_SOURCE_DIR}/malloc.c"
-	"${COMMON_SOURCE_DIR}/showmsg.c"
-	"${COMMON_SOURCE_DIR}/strlib.c"
+	"${COMMON_SOURCE_DIR}/core.cpp"
+	"${COMMON_SOURCE_DIR}/malloc.cpp"
+	"${COMMON_SOURCE_DIR}/showmsg.cpp"
+	"${COMMON_SOURCE_DIR}/strlib.cpp"
 	${LIBCONFIG_SOURCES} # needed by showmsg.c
 	CACHE INTERNAL "" )
 set( COMMON_MINI_INCLUDE_DIRS ${LIBCONFIG_INCLUDE_DIRS} CACHE INTERNAL "" )
@@ -86,28 +87,28 @@ set( COMMON_BASE_HEADERS
 	${LIBCONFIG_HEADERS} # needed by conf.h/showmsg.h
 	CACHE INTERNAL "common_base headers" )
 set( COMMON_BASE_SOURCES
-	"${COMMON_SOURCE_DIR}/conf.c"
-	"${COMMON_SOURCE_DIR}/core.c"
-	"${COMMON_SOURCE_DIR}/db.c"
-	"${COMMON_SOURCE_DIR}/des.c"
-	"${COMMON_SOURCE_DIR}/ers.c"
-	"${COMMON_SOURCE_DIR}/grfio.c"
-	"${COMMON_SOURCE_DIR}/malloc.c"
-	"${COMMON_SOURCE_DIR}/mapindex.c"
-	"${COMMON_SOURCE_DIR}/md5calc.c"
-	"${COMMON_SOURCE_DIR}/nullpo.c"
-	"${COMMON_SOURCE_DIR}/random.c"
-	"${COMMON_SOURCE_DIR}/showmsg.c"
-	"${COMMON_SOURCE_DIR}/socket.c"
-	"${COMMON_SOURCE_DIR}/strlib.c"
-	"${COMMON_SOURCE_DIR}/timer.c"
-	"${COMMON_SOURCE_DIR}/utils.c"
-	"${COMMON_SOURCE_DIR}/thread.c"
-	"${COMMON_SOURCE_DIR}/mutex.c"
-	"${COMMON_SOURCE_DIR}/mempool.c"
-	"${COMMON_SOURCE_DIR}/raconf.c"
-	"${COMMON_SOURCE_DIR}/msg_conf.c"
-	"${COMMON_SOURCE_DIR}/cli.c"
+	"${COMMON_SOURCE_DIR}/conf.cpp"
+	"${COMMON_SOURCE_DIR}/core.cpp"
+	"${COMMON_SOURCE_DIR}/db.cpp"
+	"${COMMON_SOURCE_DIR}/des.cpp"
+	"${COMMON_SOURCE_DIR}/ers.cpp"
+	"${COMMON_SOURCE_DIR}/grfio.cpp"
+	"${COMMON_SOURCE_DIR}/malloc.cpp"
+	"${COMMON_SOURCE_DIR}/mapindex.cpp"
+	"${COMMON_SOURCE_DIR}/md5calc.cpp"
+	"${COMMON_SOURCE_DIR}/nullpo.cpp"
+	"${COMMON_SOURCE_DIR}/random.cpp"
+	"${COMMON_SOURCE_DIR}/showmsg.cpp"
+	"${COMMON_SOURCE_DIR}/socket.cpp"
+	"${COMMON_SOURCE_DIR}/strlib.cpp"
+	"${COMMON_SOURCE_DIR}/timer.cpp"
+	"${COMMON_SOURCE_DIR}/utils.cpp"
+	"${COMMON_SOURCE_DIR}/thread.cpp"
+	"${COMMON_SOURCE_DIR}/mutex.cpp"
+	"${COMMON_SOURCE_DIR}/mempool.cpp"
+	"${COMMON_SOURCE_DIR}/raconf.cpp"
+	"${COMMON_SOURCE_DIR}/msg_conf.cpp"
+	"${COMMON_SOURCE_DIR}/cli.cpp"
 	${LIBCONFIG_SOURCES} # needed by conf.c/showmsg.c
 	CACHE INTERNAL "common_base sources" )
 set( COMMON_BASE_INCLUDE_DIRS
@@ -122,10 +123,12 @@ set( DEFINITIONS "${GLOBAL_DEFINITIONS} ${COMMON_BASE_DEFINITIONS}" )
 set( SOURCE_FILES ${MT19937AR_HEADERS} ${MT19937AR_SOURCES} ${COMMON_BASE_HEADERS} ${COMMON_BASE_SOURCES} )
 source_group( mt19937ar FILES ${MT19937AR_HEADERS} ${MT19937AR_SOURCES} )
 source_group( common FILES ${COMMON_BASE_HEADERS} ${COMMON_BASE_SOURCES} )
+
 add_library( common_base ${SOURCE_FILES} )
 target_link_libraries( common_base ${LIBRARIES} )
 set_target_properties( common_base PROPERTIES COMPILE_FLAGS "${DEFINITIONS}" )
 include_directories( ${INCLUDE_DIRS} )
+
 set( HAVE_common_base ON  CACHE INTERNAL "" )
 set( TARGET_LIST ${TARGET_LIST} common_base  CACHE INTERNAL "" )
 message( STATUS "Creating target common_base - done" )
@@ -145,7 +148,7 @@ set( COMMON_HEADERS
 	"${CMAKE_CURRENT_SOURCE_DIR}/sql.h"
 	CACHE INTERNAL "common headers" )
 set( COMMON_SOURCES
-	"${CMAKE_CURRENT_SOURCE_DIR}/sql.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sql.cpp"
 	CACHE INTERNAL "common sources" )
 set( DEPENDENCIES common_base )
 set( LIBRARIES ${GLOBAL_LIBRARIES} ${MYSQL_LIBRARIES} )
@@ -153,11 +156,13 @@ set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${MYSQL_INCLUDE_DIRS} )
 set( DEFINITIONS "${GLOBAL_DEFINITIONS}" )
 set( SOURCE_FILES ${COMMON_HEADERS} ${COMMON_SOURCES} )
 source_group( common FILES ${COMMON_HEADERS} ${COMMON_SOURCES} )
+
 add_library( common ${SOURCE_FILES} )
 add_dependencies( common ${DEPENDENCIES} )
 target_link_libraries( common ${LIBRARIES} ${DEPENDENCIES} )
 set_target_properties( common PROPERTIES COMPILE_FLAGS "${DEFINITIONS}" )
 include_directories( ${INCLUDE_DIRS} )
+
 set( HAVE_common ON  CACHE INTERNAL "" )
 set( TARGET_LIST ${TARGET_LIST} common  CACHE INTERNAL "" )
 message( STATUS "Creating target common - done" )

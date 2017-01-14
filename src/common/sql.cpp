@@ -1,8 +1,8 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <cstdlib>// strtoul
-#include <cstring>// memset
+#include <stdlib.h>// strtoul
+#include <string.h>// memset
 
 #ifdef WIN32
 #include "winapi.h"

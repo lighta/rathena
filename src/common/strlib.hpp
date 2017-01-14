@@ -4,7 +4,7 @@
 #ifndef _STRLIB_HPP_
 #define _STRLIB_HPP_
 
-#include <cstdarg>
+#include <stdarg.h>
 #include <string>
 
 std::string string_vsprintf(const char* format, std::va_list args) {

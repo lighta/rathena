@@ -1,9 +1,9 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <ctime>
-#include <cstdlib> // atexit
-#include <cstring> // atexit
+#include <time.h>
+#include <stdlib.h> // atexit
+#include <string.h> // atexit
 
 #include "core.h"
 #include "showmsg.h"

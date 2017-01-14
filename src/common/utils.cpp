@@ -1,9 +1,9 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <cstdlib>
-#include <cstring>
-#include <cmath> // floor()
+#include <stdlib.h>
+#include <string.h>
+#include <math.h> // floor()
 
 #ifdef WIN32
 	#include "winapi.h"

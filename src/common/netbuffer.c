@@ -17,7 +17,7 @@
 //	65536 (inter server connects may use it for charstatus struct..)  
 //
 
-#include <cstring>
+#include <string.h>
 #include <stdlib.h>
 
 #include "core.h"

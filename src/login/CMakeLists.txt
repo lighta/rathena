@@ -17,13 +17,13 @@ set( LOGIN_HEADERS
 	"${LOGIN_SOURCE_DIR}/loginlog.h"
 	)
 set( LOGIN_SOURCES
-	"${LOGIN_SOURCE_DIR}/account.c"
-	"${LOGIN_SOURCE_DIR}/ipban.c"
-	"${LOGIN_SOURCE_DIR}/login.c"
-	"${LOGIN_SOURCE_DIR}/loginclif.c"
-	"${LOGIN_SOURCE_DIR}/loginchrif.c"
-	"${LOGIN_SOURCE_DIR}/logincnslif.c"
-	"${LOGIN_SOURCE_DIR}/loginlog.c"
+	"${LOGIN_SOURCE_DIR}/account.cpp"
+	"${LOGIN_SOURCE_DIR}/ipban.cpp"
+	"${LOGIN_SOURCE_DIR}/login.cpp"
+	"${LOGIN_SOURCE_DIR}/loginclif.cpp"
+	"${LOGIN_SOURCE_DIR}/loginchrif.cpp"
+	"${LOGIN_SOURCE_DIR}/logincnslif.cpp"
+	"${LOGIN_SOURCE_DIR}/loginlog.cpp"
 	)
 set( DEPENDENCIES common )
 set( LIBRARIES ${GLOBAL_LIBRARIES} )

@@ -1,8 +1,8 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <cstring> // atexit
-#include <cstdlib>
+#include <string.h> // atexit
+#include <stdlib.h>
 
 #include "malloc.h"
 #include "showmsg.h"

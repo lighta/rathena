@@ -4,7 +4,7 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
-#include <cstdio>
+#include <stdio.h>
 #include "cbasetypes.h"
 
 #ifdef	__cplusplus

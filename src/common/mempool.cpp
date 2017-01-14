@@ -10,9 +10,9 @@
 //
 //
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifdef WIN32
 #include "winapi.h"

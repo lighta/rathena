@@ -1,9 +1,9 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <cstring>
-#include <cstdlib>
-#include <csignal>
+#include <string.h>
+#include <stdlib.h>
+#include <signal.h>
 #include <fstream>
 #include <iostream>
 #include <string>

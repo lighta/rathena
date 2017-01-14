@@ -6,8 +6,8 @@
  *
  ***********************************************************/
 
-#include <cstring>
-#include <cstdio>
+#include <string.h>
+#include <stdio.h>
 
 #include "../common/random.h"
 #include "md5calc.h"

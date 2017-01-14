@@ -345,7 +345,7 @@ static int npc_event_export(struct s_npc_data *nd, int i)
 		// NPC:<name> the prefix uses 4 characters
 		if( !strncasecmp( lname, script_config.onwhisper_event_name, NAME_LENGTH ) && strlen(nd->exname) > ( NAME_LENGTH - 4 ) ){
 			// The client only allows that many character so that NPC could not be whispered by unmodified clients
-			ShowWarning( "Whisper event in npc '"CL_WHITE"%s"CL_RESET"' was ignored, because it's name is too long.\n", nd->exname );
+			ShowWarning( "Whisper event in npc '" CL_WHITE "%s" CL_RESET "' was ignored, because it's name is too long.\n", nd->exname );
 			return 0;
 		}
 

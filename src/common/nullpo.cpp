@@ -1,9 +1,9 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <cstdio>
-#include <cstdarg>
-#include <cstring>
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
 
 #include "nullpo.h"
 #include "showmsg.h"

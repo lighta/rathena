@@ -40,8 +40,8 @@
  * @see common#ers.h                                                         *
 \*****************************************************************************/
 
-#include <cstring>
-#include <cstdlib>
+#include <string.h>
+#include <stdlib.h>
 
 #include "ers.h"
 #include "malloc.h" // CREATE, RECREATE, aMalloc, aFree

@@ -7,8 +7,8 @@
  * @author rAthena Dev Team
  */
 
-#include <cstdlib> // exit
-#include <cstring>
+#include <stdlib.h> // exit
+#include <string.h>
 
 #include "../common/cbasetypes.h"
 #include "../common/mmo.h"

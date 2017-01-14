@@ -4,7 +4,7 @@
 #ifndef	_TIMER_H_
 #define	_TIMER_H_
 
-#include <ctime>
+#include <time.h>
 #include "cbasetypes.h"
 
 #ifdef	__cplusplus

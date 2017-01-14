@@ -1,10 +1,10 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <cstdlib>
-#include <cstring> //std::strerror
+#include <stdlib.h>
+#include <string.h> //std::strerror
 #ifndef WIN32
-	#include <cerrno>
+	#include <errno.h>
 #endif
 
 #include "socket.h"

@@ -7,9 +7,9 @@
  * @author rAthena Dev Team
  */
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "cli.h"
 

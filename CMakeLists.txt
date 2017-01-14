@@ -30,12 +30,34 @@
 #   CMP0017: Prefer files from the CMake module directory when including from there.
 set( CMAKE_LEGACY_CYGWIN_WIN32 0 )
 cmake_minimum_required( VERSION 2.8.8 )
-project( rAthena C )
+project( rAthena )
 if( CYGWIN )
 	unset( WIN32 )
 endif()
 
+#define a final string to know where to put the binaries
+#only x86 is supported for windows atm. (need other dll for x64..)
+if(UNIX)
+ set(suffixInstallStr linux)
+elseif(WIN32)
+ set(suffixInstallStr win32/x86)
+elseif(CYGWIN)
+ set(suffixInstallStr win32/x86)
+elseif(MINGW)
+ set(suffixInstallStr win32/x86)  
+elseif(MSYS) 
+ set(suffixInstallStr win32/x86)
+elseif(APPLE)
+ set(suffixInstallStr mac)
+endif()
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/${suffixInstallStr})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib/${suffixInstallStr})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/${suffixInstallStr})
+set(CMAKE_C_CREATE_SHARED_LIBRARY)
+set(CMAKE_CXX_CREATE_SHARED_LIBRARY)
+set(CMAKE_DEBUG_POSTFIX "d")
+set(CMAKE_RELEASE_POSTFIX "r")
 #
 # Prevent building in the source directory by default
 #

@@ -8,8 +8,8 @@
  * @author rAthena Dev Team
  */
 
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 #include <string>
 
 #include "../common/core.h"

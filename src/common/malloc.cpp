@@ -1,9 +1,9 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
-#include <cstdlib>
-#include <cstring>
-#include <ctime>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 #include "core.h"
 #include "malloc.h"
