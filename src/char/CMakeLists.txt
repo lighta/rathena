@@ -53,10 +53,12 @@ set( SOURCE_FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} ${CHAR_HEADERS} ${CHA
 source_group( common FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} )
 source_group( char FILES ${CHAR_HEADERS} ${CHAR_SOURCES} )
 include_directories( ${INCLUDE_DIRS} )
+
 add_executable( char-server ${SOURCE_FILES} )
 add_dependencies( char-server ${DEPENDENCIES} )
 target_link_libraries( char-server ${LIBRARIES} ${DEPENDENCIES} )
 set_target_properties( char-server PROPERTIES COMPILE_FLAGS "${DEFINITIONS}" )
+
 if( INSTALL_COMPONENT_RUNTIME )
 	cpack_add_component( Runtime_charserver DESCRIPTION "char-server" DISPLAY_NAME "char-server" GROUP Runtime )
 	install( TARGETS char-server

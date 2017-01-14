@@ -107,6 +107,7 @@ set( SOURCE_FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} ${MAP_HEADERS} ${MAP_
 source_group( common FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} )
 source_group( map FILES ${MAP_HEADERS} ${MAP_SOURCES} )
 include_directories( ${INCLUDE_DIRS} )
+
 add_executable( map-server ${SOURCE_FILES} )
 add_dependencies( map-server ${DEPENDENCIES} )
 target_link_libraries( map-server ${LIBRARIES} ${DEPENDENCIES} )

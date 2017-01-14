@@ -1,9 +1,20 @@
 
 #
 # Create svnversion.h
+# tbd, could be rename version.h
 #
 message( STATUS "Creating svnversion.h" )
-if( SVNVERSION )
+if(GIT_VERSION)
+	# those 2 was done in parent to produce this
+	#include(GetGitVersion)
+	#get_git_version()
+	string(SUBSTRING ${GIT_VERSION} 0 10 SHORT_GIT_VERSION)
+	string(SUBSTRING ${GIT_HEAD_VERSION} 0 10 SHORT_GIT_HEAD_VERSION)
+	string(CONCAT GIT_STR_VERSIONS ${SHORT_GIT_VERSION} "_" ${SHORT_GIT_HEAD_VERSION})
+	#message( STATUS "git version=${GIT_STR_VERSIONS}" )
+	file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/svnversion.h
+		"#ifndef SVNVERSION\n#define SVNVERSION ${GIT_STR_VERSIONS}\n#endif\n" )
+elseif( SVNVERSION )
 	file( WRITE ${CMAKE_CURRENT_BINARY_DIR}/svnversion.h
 		"#ifndef SVNVERSION\n#define SVNVERSION ${SVNVERSION}\n#endif\n" )
 else()

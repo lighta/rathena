@@ -1,12 +1,13 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
+#include "strlib.h"
 
 #include <string.h> // atexit
 #include <stdlib.h>
 
 #include "malloc.h"
 #include "showmsg.h"
-#include "strlib.h"
+
 
 #define J_MAX_MALLOC_SIZE 65535
 
@@ -265,7 +266,7 @@ char* _strtok_r(char *s1, const char *s2, char **lasts)
 
 //#ifndef strnlen
 #if !(defined(WIN32) && defined(_MSC_VER) && _MSC_VER >= 1400) && !defined(HAVE_STRNLEN)
-size_t strnlen (const char* string, size_t maxlen)
+size_t strnlen (const char* string, size_t maxlen)  throw ()
 {
   const char* end = (const char*)memchr(string, '\0', maxlen);
   return end ? (size_t) (end - string) : maxlen;

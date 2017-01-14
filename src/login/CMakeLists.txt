@@ -33,6 +33,7 @@ set( SOURCE_FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} ${LOGIN_HEADERS} ${LO
 source_group( common FILES ${COMMON_BASE_HEADERS} ${COMMON_HEADERS} )
 source_group( login FILES ${LOGIN_HEADERS} ${LOGIN_SOURCES} )
 include_directories( ${INCLUDE_DIRS} )
+
 add_executable( login-server ${SOURCE_FILES} )
 add_dependencies( login-server ${DEPENDENCIES} )
 target_link_libraries( login-server ${LIBRARIES} ${DEPENDENCIES} )

@@ -35,18 +35,27 @@ if( CYGWIN )
 	unset( WIN32 )
 endif()
 
+#actually this might be misleading for arm...
+if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+	set(architecture x86)
+elseif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+	set(architecture x64)
+else()
+	message( FATAL_ERROR "unexpected architecture (CMAKE_SIZEOF_VOID_P is ${CMAKE_SIZEOF_VOID_P})" )
+endif()
+
 #define a final string to know where to put the binaries
 #only x86 is supported for windows atm. (need other dll for x64..)
 if(UNIX)
  set(suffixInstallStr linux)
 elseif(WIN32)
- set(suffixInstallStr win32/x86)
+ set(suffixInstallStr win32/${architecture})
 elseif(CYGWIN)
- set(suffixInstallStr win32/x86)
+ set(suffixInstallStr win32/${architecture})
 elseif(MINGW)
- set(suffixInstallStr win32/x86)  
+ set(suffixInstallStr win32/${architecture})  
 elseif(MSYS) 
- set(suffixInstallStr win32/x86)
+ set(suffixInstallStr win32/${architecture})
 elseif(APPLE)
  set(suffixInstallStr mac)
 endif()
@@ -58,12 +67,13 @@ set(CMAKE_C_CREATE_SHARED_LIBRARY)
 set(CMAKE_CXX_CREATE_SHARED_LIBRARY)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_RELEASE_POSTFIX "r")
+
 #
-# Prevent building in the source directory by default
+# Prevent building in the source directory
 #
+option( ALLOW_SAME_DIRECTORY "Allow CMake to build in the source directory." ON )
 if( ALLOW_SAME_DIRECTORY )
 elseif( "${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}" )
-	option( ALLOW_SAME_DIRECTORY "Allow CMake to build in the source directory." OFF )
 	message( FATAL_ERROR
 		"Do not use the source directory to build your files, instead delete CMakeCache.txt, create a separate folder and build there.\n"
 		"Example: (build in subdir 'build' and install to source dir)\n"
@@ -127,47 +137,12 @@ if(GIT_FOUND)
 	endif()
 endif()
 
-#
-# Find svnversion
-#
-message( STATUS "Detecting svnversion" )
-find_program( SVNVERSION_EXECUTABLE svnversion )
-mark_as_advanced( SVNVERSION_EXECUTABLE )
-if( SVNVERSION_EXECUTABLE )
-	message( STATUS "Found svnversion: ${SVNVERSION_EXECUTABLE}" )
-endif()
-message( STATUS "Detecting svnversion - done" )
-#
-# Find Subversion
-#
-message( STATUS "Detecting Subversion" )
-find_package( Subversion )
-message( STATUS "Detecting Subversion - done" )
-#
-# SVNVERSION
-#
-if( SVNVERSION_EXECUTABLE )
-	message( STATUS "Getting svn version" )
-	execute_process( COMMAND ${SVNVERSION_EXECUTABLE} ${PROJECT_SOURCE_DIR}
-		OUTPUT_VARIABLE SVNVERSION
-		OUTPUT_STRIP_TRAILING_WHITESPACE )
-	if( SVNVERSION MATCHES "^Unversioned" )
-		set( SVNVERSION )
-	endif()
-	string( REGEX REPLACE "[^1234567890MSexported]" "_" SVNVERSION "${SVNVERSION}" )
-	message( STATUS "Found SVNversion: ${SVNVERSION}" )
-	message( STATUS "Getting svn version - done" )
-endif()
-if( Subversion_FOUND AND SVNVERSION )
-	message( STATUS "Getting svn branch" )
-	Subversion_WC_INFO( ${PROJECT_SOURCE_DIR} rAthena )
-	if( rAthena_WC_URL )
-		string( REGEX MATCH "[^/]+$" BRANCH ${rAthena_WC_URL} )
-		set( SVNVERSION "${BRANCH}-${SVNVERSION}" )
-		message( STATUS "Found branch: ${BRANCH}" )
-	endif()
-	message( STATUS "Getting svn branch - done" )
-endif()
+include(GetGitVersion)
+get_git_version()
+
+#include(GetSvnVersion)
+#get_svn_version(SVN_VERSION)
+#message( STATUS "SVN_VERSION: ${SVN_VERSION}" )
 
 
 #
@@ -502,8 +477,7 @@ set( DEVELOPMENT_DIRECTORIES
 	"conf/msg_conf/import-tmpl"
 	"db/import-tmpl"
 	"src"
-	"vcproj-9"
-	"vcproj-10"
+	"ide"
 	)
 set( RUNTIME_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/athena-start"
@@ -612,11 +586,7 @@ add_subdirectory( src )
 #####################################################################
 # final checks and warnings
 #
-if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-	message( WARNING "64bit should work, but is not recommended." )
-elseif( NOT CMAKE_SIZEOF_VOID_P EQUAL 4 )
-	message( FATAL_ERROR "unexpected architecture (CMAKE_SIZEOF_VOID_P is ${CMAKE_SIZEOF_VOID_P})" )
-endif()
+
 list( LENGTH  TARGET_LIST  _LEN )
 if( _LEN EQUAL 0 )
 	message( FATAL_ERROR "no targets available" )

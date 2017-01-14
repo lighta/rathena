@@ -1,6 +1,4 @@
-/autom4te.cache/output.0
-/autom4te.cache/requests
-/autom4te.cache/traces.0
+/autom4te.cache/
 #Global
 .Apple*
 .DS_Store
@@ -113,6 +111,9 @@ Thumbs.db
 /nbproject
 
 
+*CMakeCache.txt
+*CMakeFiles/
+*cmake_install.cmake
 /.idea/.name
 /.idea/misc.xml
 /.idea/modules.xml
