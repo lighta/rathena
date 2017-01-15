@@ -8,6 +8,8 @@
  * @author rAthena Dev Team
  */
 
+#include "login.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <string>
@@ -29,7 +31,6 @@
 
 #include "account.h"
 #include "ipban.h"
-#include "login.h"
 #include "loginlog.h"
 #include "loginclif.h"
 #include "loginchrif.h"
@@ -236,10 +237,10 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
 
 	memset(&acc, '\0', sizeof(acc));
 	acc.account_id = -1; // assigned by account db
-	safestrncpy(acc.userid, userid, sizeof(acc.userid));
-	safestrncpy(acc.pass, pass, sizeof(acc.pass));
+	safestrncpy(acc.userid.data(), userid, acc.userid.size());
+	safestrncpy(acc.pass.data(), pass, acc.pass.size());
 	acc.sex = sex;
-	safestrncpy(acc.email, "a@a.com", sizeof(acc.email));
+	acc.email = std::string("a@a.com");
 	acc.expiration_time = ( login_config.start_limited_time != -1 ) ? time(NULL) + login_config.start_limited_time : 0;
 	safestrncpy(acc.lastlogin, "0000-00-00 00:00:00", sizeof(acc.lastlogin));
 	safestrncpy(acc.last_ip, last_ip, sizeof(acc.last_ip));
@@ -254,7 +255,7 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
 	if( !accounts->create(accounts, &acc) )
 		return 0;
 
-	ShowNotice("Account creation (account %s, id: %d, pass: %s, sex: %c)\n", acc.userid, acc.account_id, acc.pass, acc.sex);
+	ShowNotice("Account creation (account %s, id: %d, pass: %s, sex: %c)\n", acc.userid, acc.account_id, acc.pass.data(), acc.sex);
 
 	if( DIFF_TICK(tick, new_reg_tick) > 0 ) {// Update the registration check.
 		num_regs = 0;
@@ -336,8 +337,8 @@ int login_mmo_auth(struct s_login_session_data* sd, bool isServer) {
 		return 0; // 0 = Unregistered ID
 	}
 
-	if( !login_check_password(sd->md5key, sd->passwdenc, sd->passwd, acc.pass) ) {
-		ShowNotice("Invalid password (account: '%s', pass: '%s', received pass: '%s', ip: %s)\n", sd->userid, acc.pass, sd->passwd, ip);
+	if( !login_check_password(sd->md5key, sd->passwdenc, sd->passwd, acc.pass.data()) ) {
+		ShowNotice("Invalid password (account: '%s', pass: '%s', received pass: '%s', ip: %s)\n", sd->userid, acc.pass.data(), sd->passwd, ip);
 		return 1; // 1 = Incorrect Password
 	}
 
@@ -825,7 +826,7 @@ int do_init(int argc, char** argv) {
 	safestrncpy(console_log_filepath, "./log/login-msg_log.log", sizeof(console_log_filepath));
 
 	// initialize engine
-	accounts = account_db_sql();
+	accounts = c_ModuleAccount::smGetIntance().account_db_sql();
 
 	// read login-server configuration
 	login_set_defaults();

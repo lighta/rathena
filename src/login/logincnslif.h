@@ -7,8 +7,10 @@
  * @author rAthena Dev Team
  */
 
+#pragma once
 #ifndef CONSOLEIF_H
 #define	CONSOLEIF_H
+
 
 /**
  * Console Command Parser

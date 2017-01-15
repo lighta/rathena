@@ -7,6 +7,7 @@
  * @author rAthena Dev Team
  */
 
+#pragma once
 #ifndef LOGINCHRIF_H
 #define	LOGINCHRIF_H
 

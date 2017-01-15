@@ -8,6 +8,7 @@
  * @author rAthena Dev Team
  */
 
+#pragma once
 #ifndef _LOGIN_H_
 #define _LOGIN_H_
 

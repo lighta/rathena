@@ -6,7 +6,7 @@
  * @author Athena Dev Teams originally in login.c
  * @author rAthena Dev Team
  */
-
+#include "logincnslif.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -18,7 +18,7 @@
 #include "../common/timer.h"
 #include "../common/strlib.h"
 #include "login.h"
-#include "logincnslif.h"
+
 
 /**
  * Login-server console help: starting option info.

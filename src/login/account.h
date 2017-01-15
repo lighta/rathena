@@ -7,43 +7,14 @@
  * @author rAthena Dev Team
  */
 
+#pragma once
 #ifndef __ACCOUNT_H_INCLUDED__
 #define __ACCOUNT_H_INCLUDED__
 
+#include <array>
 #include "../common/cbasetypes.h"
 #include "../common/mmo.h" // ACCOUNT_REG2_NUM
 #include "../config/core.h"
-
-typedef struct s_AccountDB s_AccountDB;
-typedef struct s_AccountDBIterator s_AccountDBIterator;
-
-
-// standard engines
-s_AccountDB* account_db_sql(void);
-
-struct s_mmo_account {
-	uint32 account_id;
-	char userid[NAME_LENGTH];
-	char pass[32+1];        // 23+1 for plaintext, 32+1 for md5-ed passwords
-	char sex;               // gender (M/F/S)
-	char email[40];         // e-mail (by default: a@a.com)
-	unsigned int group_id;  // player group id
-	uint8 char_slots;       // this accounts maximum character slots (maximum is limited to MAX_CHARS define in char server)
-	unsigned int state;     // packet 0x006a value + 1 (0: compte OK)
-	time_t unban_time;      // (timestamp): ban time limit of the account (0 = no ban)
-	time_t expiration_time; // (timestamp): validity limit of the account (0 = unlimited)
-	unsigned int logincount;// number of successful auth attempts
-	char lastlogin[24];     // date+time of last successful login
-	char last_ip[16];       // save of last IP of connection
-	char birthdate[10+1];   // assigned birth date (format: YYYY-MM-DD, default: 0000-00-00)
-	char pincode[PINCODE_LENGTH+1];		// pincode system
-	time_t pincode_change;	// (timestamp): last time of pincode change
-#ifdef VIP_ENABLE
-	int old_group;
-	time_t vip_time;
-#endif
-};
-
 
 struct s_AccountDBIterator {
 	/// Destroys this iterator, releasing all allocated memory (including itself).
@@ -58,7 +29,6 @@ struct s_AccountDBIterator {
 	/// @return true if successful
 	bool (*next)(s_AccountDBIterator* self, struct s_mmo_account* acc);
 };
-
 
 struct s_AccountDB {
 	/// Initializes this database, making it ready for use.
@@ -138,8 +108,39 @@ struct s_AccountDB {
 	s_AccountDBIterator* (*iterator)(s_AccountDB* self);
 };
 
-void mmo_send_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id);
-void mmo_save_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id);
+struct s_mmo_account {
+	uint32 account_id;
+	std::array<char,NAME_LENGTH> userid;
+	std::array<char,32+1> pass;        // 23+1 for plaintext, 32+1 for md5-ed passwords
+	char sex;                           // gender (M/F/S)
+	std::string email;                   // e-mail (by default: a@a.com) //max 40
+	unsigned int group_id;              // player group id
+	uint8 char_slots;                   // this accounts maximum character slots (maximum is limited to MAX_CHARS define in char server)
+	unsigned int state;                 // packet 0x006a value + 1 (0: compte OK)
+	time_t unban_time;                  // (timestamp): ban time limit of the account (0 = no ban)
+	time_t expiration_time;             // (timestamp): validity limit of the account (0 = unlimited)
+	unsigned int logincount;            // number of successful auth attempts
+	char lastlogin[24];                 // date+time of last successful login
+	char last_ip[16];                   // save of last IP of connection
+	char birthdate[10+1];               // assigned birth date (format: YYYY-MM-DD, default: 0000-00-00)
+	char pincode[PINCODE_LENGTH+1];     // pincode system
+	time_t pincode_change;              // (timestamp): last time of pincode change
+#ifdef VIP_ENABLE
+	int old_group;
+	time_t vip_time;
+#endif
+};
 
+class c_ModuleAccount 
+{
+private:
+    c_ModuleAccount();
+public:
+    s_AccountDB* account_db_sql(void); // standard engines
+    void mmo_send_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id);
+    void mmo_save_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id);
+public:
+    static c_ModuleAccount& smGetIntance();
+};
 
 #endif // __ACCOUNT_H_INCLUDED__

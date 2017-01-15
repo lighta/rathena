@@ -6,7 +6,7 @@
  * @author Athena Dev Teams originally in login.c
  * @author rAthena Dev Team
  */
-
+#include "loginclif.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -22,7 +22,6 @@
 #include "account.h"
 #include "ipban.h" //ipban_check
 #include "login.h"
-#include "loginclif.h"
 #include "loginlog.h"
 #include "loginchrif.h"
 

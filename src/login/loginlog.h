@@ -7,6 +7,7 @@
  * @author rAthena Dev Team
  */
 
+#pragma once
 #ifndef __LOGINLOG_H_INCLUDED__
 #define __LOGINLOG_H_INCLUDED__
 

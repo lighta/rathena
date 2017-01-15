@@ -7,8 +7,10 @@
  * @author rAthena Dev Team
  */
 
+#pragma once
 #ifndef _LOGINCLIF_H
 #define	_LOGINCLIF_H
+
 
 /**
  * Entry point from client to log-server.

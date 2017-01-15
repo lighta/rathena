@@ -8,6 +8,7 @@
  * @author rAthena Dev Team
  */
 
+#pragma once
 #ifndef __IPBAN_H_INCLUDED__
 #define __IPBAN_H_INCLUDED__
 

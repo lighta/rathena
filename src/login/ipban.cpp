@@ -7,7 +7,7 @@
  * @author Athena Dev Teams < r15k
  * @author rAthena Dev Team
  */
-
+#include "ipban.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,7 +16,7 @@
 #include "../common/sql.h"
 #include "../common/strlib.h"
 #include "../common/timer.h"
-#include "ipban.h"
+
 #include "login.h"
 #include "loginlog.h"
 

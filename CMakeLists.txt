@@ -28,12 +28,16 @@
 #   changes to some CPack generators
 #   CYGWIN no longer defines WIN32
 #   CMP0017: Prefer files from the CMake module directory when including from there.
+# Update to 3.1 for CMAKE_CXX_STANDARD cross support definition
 set( CMAKE_LEGACY_CYGWIN_WIN32 0 )
-cmake_minimum_required( VERSION 2.8.8 )
+cmake_minimum_required( VERSION 3.1 )
 project( rAthena )
 if( CYGWIN )
 	unset( WIN32 )
 endif()
+set(CMAKE_CXX_STANDARD 11) # C++11...
+set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
+#set(CMAKE_CXX_EXTENSIONS OFF) #...without compiler extensions like gnu++11
 
 #actually this might be misleading for arm...
 if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
@@ -464,12 +468,7 @@ set( SVN_FOLDER_PATTERN "[\\.]svn"  CACHE STRING "pattern of svn folder that we 
 mark_as_advanced( SVN_FOLDER_PATTERN )
 set( DEVELOPMENT_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt"
-	"${CMAKE_CURRENT_SOURCE_DIR}/configure"
-	"${CMAKE_CURRENT_SOURCE_DIR}/configure.in"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rAthena-9.sln"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rAthena-10.sln"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rAthena-12.sln"
-	"${CMAKE_CURRENT_SOURCE_DIR}/rAthena-13.sln"
+	"${CMAKE_CURRENT_SOURCE_DIR}/ide/msvc/rAthena-15.sln"
 	)
 set( DEVELOPMENT_DIRECTORIES
 	"3rdparty"
@@ -479,20 +478,30 @@ set( DEVELOPMENT_DIRECTORIES
 	"src"
 	"ide"
 	)
-set( RUNTIME_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/athena-start"
-	"${CMAKE_CURRENT_SOURCE_DIR}/charserv.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/dbghelp.dll"
-	"${CMAKE_CURRENT_SOURCE_DIR}/libmysql.dll"
+
+set( COMMON_RUNTIME_FILES
 	"${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"
-	"${CMAKE_CURRENT_SOURCE_DIR}/logserv.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/mapserv.bat"
-	"${CMAKE_CURRENT_SOURCE_DIR}/pcre3.dll"
 	"${CMAKE_CURRENT_SOURCE_DIR}/README.txt"
+)
+if(WIN32)
+set( RUNTIME_FILES
+	${COMMON_RUNTIME_FILES}
+  "${CMAKE_CURRENT_SOURCE_DIR}/charserv.bat"
 	"${CMAKE_CURRENT_SOURCE_DIR}/runserver.bat"
 	"${CMAKE_CURRENT_SOURCE_DIR}/serv.bat"
+  "${CMAKE_CURRENT_SOURCE_DIR}/logserv.bat"
+	"${CMAKE_CURRENT_SOURCE_DIR}/mapserv.bat"
+  "${CMAKE_CURRENT_SOURCE_DIR}/dbghelp.dll"
+	"${CMAKE_CURRENT_SOURCE_DIR}/libmysql.dll"
+  "${CMAKE_CURRENT_SOURCE_DIR}/pcre3.dll"
 	"${CMAKE_CURRENT_SOURCE_DIR}/zlib1.dll"
 	)
+else()
+set( RUNTIME_FILES
+	${COMMON_RUNTIME_FILES}
+  "${CMAKE_CURRENT_SOURCE_DIR}/athena-start"
+)
+endif()
 set( RUNTIME_DIRECTORIES
 	"conf"
 	"db"
