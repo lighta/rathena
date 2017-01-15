@@ -9,6 +9,7 @@ PROJECT(${this_target})
 # Add your source files here (one file per line)
 # listed with $(ls -1 *.cpp)
 SET (${this_target}_SOURCE_FILES
+c_Module.cpp
 c_timer.cpp
 c_rAString.cpp
     )
@@ -17,6 +18,7 @@ c_rAString.cpp
 # Add your header files here(one file per line)
 # listed with $(ls -1 *.{h,hpp})
 SET(${this_target}_HEADER_FILES
+c_Module.h
 c_timer.h
 c_rAString.h
     )
