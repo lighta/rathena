@@ -28,6 +28,19 @@
 namespace ra {
   namespace login {
 
+    struct c_ModuleClif::pImpl{
+      pImpl(){};
+    };
+
+    c_ModuleClif::c_ModuleClif()
+    : aPimpl(new c_ModuleClif::pImpl) {
+    };
+
+    c_ModuleClif& c_ModuleClif::smGetInstance() {
+      static c_ModuleClif lInstance;
+      return lInstance;
+    }
+
     /**
      * Transmit auth result to client.
      * @param fd: client file desciptor link
@@ -85,23 +98,23 @@ namespace ra {
       }
 
       {
-        struct s_online_login_data* data = (struct s_online_login_data*) idb_get(online_db, sd->account_id);
+        struct s_online_login_data* data = (struct s_online_login_data*) idb_get(online_db, sd->gID);
         if (data) {// account is already marked as online!
           if (data->char_server > -1) {// Request char servers to kick this account out. [Skotlex]
             uint8 buf[6];
             ShowNotice("User '%s' is already online - Rejected.\n", sd->userid);
             WBUFW(buf, 0) = 0x2734;
-            WBUFL(buf, 2) = sd->account_id;
-            logchrif_sendallwos(-1, buf, 6);
+            WBUFL(buf, 2) = sd->gID;
+            c_ModuleChrif::smGetInstance().logchrif_sendallwos(-1, buf, 6);
             if (data->waiting_disconnect == INVALID_TIMER)
-              data->waiting_disconnect = add_timer(gettick() + AUTH_TIMEOUT, login_waiting_disconnect_timer, sd->account_id, 0);
+              data->waiting_disconnect = add_timer(gettick() + AUTH_TIMEOUT, login_waiting_disconnect_timer, sd->gID, 0);
             logclif_sent_auth_result(fd, 8); // 08 = Server still recognizes your last login
             return;
           } else
             if (data->char_server == -1) {// client has authed but did not access char-server yet
             // wipe previous session
-            idb_remove(auth_db, sd->account_id);
-            login_remove_online_user(sd->account_id);
+            idb_remove(auth_db, sd->gID);
+            login_remove_online_user(sd->gID);
             data = NULL;
           }
         }
@@ -114,7 +127,7 @@ namespace ra {
       WFIFOW(fd, 0) = 0x69;
       WFIFOW(fd, 2) = 47 + 32 * server_num;
       WFIFOL(fd, 4) = sd->login_id1;
-      WFIFOL(fd, 8) = sd->account_id;
+      WFIFOL(fd, 8) = sd->gID;
       WFIFOL(fd, 12) = sd->login_id2;
       WFIFOL(fd, 16) = 0; // in old version, that was for ip (not more used)
       //memcpy(WFIFOP(fd,20), sd->lastlogin, 24); // in old version, that was for name (not more used)
@@ -137,20 +150,20 @@ namespace ra {
 
       // create temporary auth entry
       CREATE(node, struct s_auth_node, 1);
-      node->account_id = sd->account_id;
+      node->account_id = sd->gID;
       node->login_id1 = sd->login_id1;
       node->login_id2 = sd->login_id2;
       node->sex = sd->sex;
       node->ip = ip;
       node->version = sd->version;
       node->clienttype = sd->clienttype;
-      idb_put(auth_db, sd->account_id, node);
+      idb_put(auth_db, sd->gID, node);
       {
         struct s_online_login_data* data;
         // mark client as 'online'
-        data = login_add_online_user(-1, sd->account_id);
+        data = login_add_online_user(-1, sd->gID);
         // schedule deletion of this node
-        data->waiting_disconnect = add_timer(gettick() + AUTH_TIMEOUT, login_waiting_disconnect_timer, sd->account_id, 0);
+        data->waiting_disconnect = add_timer(gettick() + AUTH_TIMEOUT, login_waiting_disconnect_timer, sd->gID, 0);
       }
     }
 
@@ -417,16 +430,16 @@ namespace ra {
         if (runflag == LOGINSERVER_ST_RUNNING &&
                 result == -1 &&
                 sd->sex == 'S' &&
-                sd->account_id < ARRAYLENGTH(ch_server) &&
-                !session_isValid(ch_server[sd->account_id].fd)) {
+                sd->gID < ARRAYLENGTH(ch_server) &&
+                !session_isValid(ch_server[sd->gID].fd)) {
           ShowStatus("Connection of the char-server '%s' accepted.\n", server_name);
-          safestrncpy(ch_server[sd->account_id].name, server_name, sizeof (ch_server[sd->account_id].name));
-          ch_server[sd->account_id].fd = fd;
-          ch_server[sd->account_id].ip = server_ip;
-          ch_server[sd->account_id].port = server_port;
-          ch_server[sd->account_id].users = 0;
-          ch_server[sd->account_id].type = type;
-          ch_server[sd->account_id].new_ = new_;
+          safestrncpy(ch_server[sd->gID].name, server_name, sizeof (ch_server[sd->gID].name));
+          ch_server[sd->gID].fd = fd;
+          ch_server[sd->gID].ip = server_ip;
+          ch_server[sd->gID].port = server_port;
+          ch_server[sd->gID].users = 0;
+          ch_server[sd->gID].type = type;
+          ch_server[sd->gID].new_ = new_;
 
           session[fd]->func_parse = logchrif_parse;
           session[fd]->flag.server = 1;
@@ -543,6 +556,6 @@ namespace ra {
     void do_final_loginclif(void) {
       return;
     }
-    
+
   } //end namespace
 }

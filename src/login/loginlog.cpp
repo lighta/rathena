@@ -38,6 +38,20 @@ namespace ra {
     static Sql* sql_handle = NULL;
     static bool enabled = false;
 
+    struct c_ModuleLog::pImpl {
+      pImpl() {
+      };
+    };
+
+    c_ModuleLog::c_ModuleLog()
+    : aPimpl(new c_ModuleLog::pImpl) {
+    };
+
+    c_ModuleLog& c_ModuleLog::smGetInstance() {
+      static c_ModuleLog lInstance;
+      return lInstance;
+    }
+
     /**
      * Get the number of failed login attempts by the ip in the last minutes.
      * @param ip: ip to search attempt from

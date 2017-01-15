@@ -11,8 +11,20 @@
 #ifndef _LOGINCLIF_H
 #define	_LOGINCLIF_H
 
+#include <memory>
+
 namespace ra {
     namespace login {
+
+        class c_ModuleClif {
+        private:
+            struct pImpl;
+            std::unique_ptr<pImpl> aPimpl;
+            c_ModuleClif();
+        public:
+            static c_ModuleClif& smGetInstance();
+        };
+        
         /**
          * Entry point from client to log-server.
          * Function that checks incoming command, then splits it to the correct handler.

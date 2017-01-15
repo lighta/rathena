@@ -40,7 +40,19 @@ void display_helpscreen(bool do_exit) {
 
 namespace ra {
   namespace login {
+    struct c_ModuleCnslif::pImpl{
+      pImpl(){};
+    };
 
+    c_ModuleCnslif::c_ModuleCnslif()
+    : aPimpl(new c_ModuleCnslif::pImpl) {
+    };
+
+    c_ModuleCnslif& c_ModuleCnslif::smGetInstance() {
+      static c_ModuleCnslif lInstance;
+      return lInstance;
+    }
+    
     /**
      * Read the option specified in command line
      *  and assign the confs used by the different server.

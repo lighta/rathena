@@ -60,6 +60,20 @@ namespace ra {
 
     int login_fd; // login server file descriptor socket
 
+    struct c_ModuleLoginCore::pImpl {
+      pImpl() {
+      };
+    };
+
+    c_ModuleLoginCore::c_ModuleLoginCore()
+    : aPimpl(new c_ModuleLoginCore::pImpl) {
+    };
+
+    c_ModuleLoginCore& c_ModuleLoginCore::smGetInstance() {
+      static c_ModuleLoginCore lInstance;
+      return lInstance;
+    }
+
     //early declaration
     bool login_check_password(const char* md5key, int passwdenc, const char* passwd, const char* refpass);
 
@@ -389,7 +403,7 @@ namespace ra {
       ShowNotice("Authentication accepted (account: %s, id: %d, ip: %s)\n", sd->userid, acc.account_id, ip);
 
       // update session data
-      sd->account_id = acc.account_id;
+      sd->gID = acc.account_id;
       sd->login_id1 = rnd() + 1;
       sd->login_id2 = rnd() + 1;
       safestrncpy(sd->lastlogin, acc.lastlogin.c_str(), sizeof (sd->lastlogin));
@@ -406,8 +420,8 @@ namespace ra {
 
       accounts->save(accounts, &acc);
 
-      if (sd->sex != 'S' && sd->account_id < START_ACCOUNT_NUM)
-        ShowWarning("Account %s has account id %d! Account IDs must be over %d to work properly!\n", sd->userid, sd->account_id, START_ACCOUNT_NUM);
+      if (sd->sex != 'S' && sd->gID < START_ACCOUNT_NUM)
+        ShowWarning("Account %s has account id %d! Account IDs must be over %d to work properly!\n", sd->userid, sd->gID, START_ACCOUNT_NUM);
 
       return -1; // account OK
     }
@@ -765,7 +779,7 @@ void do_final(void) {
   online_db->destroy(online_db, NULL);
   auth_db->destroy(auth_db, NULL);
 
-  do_final_loginchrif();
+  c_ModuleChrif::smGetInstance().do_final_loginchrif();
 
   if (login_fd != -1) {
     do_close(login_fd);
@@ -785,7 +799,7 @@ void do_shutdown(void) {
     runflag = LOGINSERVER_ST_SHUTDOWN;
     ShowStatus("Shutting down...\n");
     // TODO proper shutdown procedure; kick all characters, wait for acks, ...  [FlavioJS]
-    do_shutdown_loginchrif();
+    c_ModuleChrif::smGetInstance().do_shutdown_loginchrif();
     flush_fifos();
     runflag = CORE_ST_STOP;
   }
@@ -833,7 +847,7 @@ int do_init(int argc, char** argv) {
   rnd_init();
 
   do_init_loginclif();
-  do_init_loginchrif();
+  c_ModuleChrif::smGetInstance().do_init_loginchrif();
 
   // initialize logging
   if (login_config.log_login)
@@ -888,6 +902,7 @@ int do_init(int argc, char** argv) {
 
 // Console Command Parser [Wizputer]
 //FIXME to be remove (moved to cnslif / will be done once map/char/login, all have their cnslif interface ready)
+
 int parse_console(const char* buf) {
   return cnslif_parse(buf);
 }

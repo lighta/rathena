@@ -11,10 +11,21 @@
 #ifndef __LOGINLOG_H_INCLUDED__
 #define __LOGINLOG_H_INCLUDED__
 
+#include <memory>
 #include "../common_old/cbasetypes.h"
 
 namespace ra {
     namespace login {
+
+        class c_ModuleLog {
+        private:
+            struct pImpl;
+            std::unique_ptr<pImpl> aPimpl;
+            c_ModuleLog();
+        public:
+            static c_ModuleLog& smGetInstance();
+        };
+
         /**
          * Get the number of failed login attempts by the ip in the last minutes.
          * @param ip: ip to search attempt from

@@ -12,11 +12,13 @@
 #ifndef _LOGIN_H_
 #define _LOGIN_H_
 
+#include <memory>
+#include "../config/core.h"
 #include "../common_old/cbasetypes.h"
 #include "../common_old/mmo.h" // NAME_LENGTH,SEX_*
 #include "../common_old/core.h" // CORE_ST_LAST
 #include "account.h"
-#include "../config/core.h"
+
 
 enum E_LOGINSERVER_ST {
     LOGINSERVER_ST_RUNNING = CORE_ST_LAST,
@@ -33,7 +35,7 @@ namespace ra {
     namespace login {
 
         struct s_login_session_data {
-            uint32 account_id; ///also GID
+            uint32 gID; ///also GID
             long login_id1;
             long login_id2;
             char sex; /// 'F','M','S'
@@ -125,6 +127,16 @@ namespace ra {
 #define msg_config_read(cfgName) login_msg_config_read(cfgName)
 #define msg_txt(msg_number) login_msg_txt(msg_number)
 #define do_final_msg() login_do_final_msg()
+
+        class c_ModuleLoginCore {
+        private:
+            struct pImpl;
+            std::unique_ptr<pImpl> aPimpl;
+            c_ModuleLoginCore();
+        public:
+            c_ModuleLoginCore& smGetInstance();
+        };
+
         int login_msg_config_read(char *cfgName);
         const char* login_msg_txt(int msg_number);
         void login_do_final_msg(void);

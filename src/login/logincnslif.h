@@ -11,7 +11,7 @@
 #ifndef CONSOLEIF_H
 #define	CONSOLEIF_H
 
-
+#include <memory>
 /**
  * Login-server console help: starting option info.
  *  Do not rename function used as extern.
@@ -19,9 +19,19 @@
  * Remark ,to integrate to module
  */
 void display_helpscreen(bool do_exit);
-        
+
 namespace ra {
     namespace login {
+
+        class c_ModuleCnslif {
+        private:
+            struct pImpl;
+            std::unique_ptr<pImpl> aPimpl;
+            c_ModuleCnslif();
+        public:
+            static c_ModuleCnslif& smGetInstance();
+        };
+        
         /**
          * Console Command Parser
          * Transmited from command cli.c
