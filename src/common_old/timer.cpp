@@ -422,11 +422,11 @@ const char* timestamp2string(char* str, size_t size, time_t timestamp, const cha
  * Split given timein into year, month, day, hour, minute, second
  */
 void split_time(int timein, int* year, int* month, int* day, int* hour, int* minute, int *second) {
-	const int factor_min = 60;
-	const int factor_hour = factor_min*60;
-	const int factor_day = factor_hour*24;
-	const int factor_month = 2629743; // Approx  (30.44 days) 
-	const int factor_year = 31556926; // Approx (365.24 days)
+	static const int factor_min = 60;
+	static const int factor_hour = factor_min*60;
+	static const int factor_day = factor_hour*24;
+	static const int factor_month = 2629743; // Approx  (30.44 days) 
+	static const int factor_year = 31556926; // Approx (365.24 days)
 
 	*year = timein/factor_year;
 	timein -= *year*factor_year;

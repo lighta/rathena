@@ -4,9 +4,9 @@
 #ifndef _INSTANCE_H_
 #define _INSTANCE_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h" // struct point
-#include "../common/strlib.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h" // struct point
+#include "../common_old/strlib.h"
 
 #include "script.h" // struct s_reg_db
 

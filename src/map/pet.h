@@ -4,8 +4,8 @@
 #ifndef _PET_H_
 #define _PET_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h"
 
 //#include "map.h"
 #include "unit.h"

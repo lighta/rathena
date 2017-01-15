@@ -5,15 +5,15 @@
 #include <cmath>
 #include <cstring>
 
-#include "../common/cbasetypes.h"
-#include "../common/timer.h"
-#include "../common/nullpo.h"
-#include "../common/random.h"
-#include "../common/showmsg.h"
-#include "../common/malloc.h"
-#include "../common/utils.h"
-#include "../common/ers.h"
-#include "../common/strlib.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/timer.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/random.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/malloc.h"
+#include "../common_old/utils.h"
+#include "../common_old/ers.h"
+#include "../common_old/strlib.h"
 
 #include "status.h"
 #include "battle.h"

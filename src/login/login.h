@@ -12,9 +12,9 @@
 #ifndef _LOGIN_H_
 #define _LOGIN_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h" // NAME_LENGTH,SEX_*
-#include "../common/core.h" // CORE_ST_LAST
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h" // NAME_LENGTH,SEX_*
+#include "../common_old/core.h" // CORE_ST_LAST
 #include "account.h"
 #include "../config/core.h"
 

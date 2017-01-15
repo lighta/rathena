@@ -4,7 +4,7 @@
 #ifndef _ELEMENTAL_H_
 #define _ELEMENTAL_H_
 
-#include "../common/mmo.h"
+#include "../common_old/mmo.h"
 
 #include "status.h" // struct s_status_data, struct s_status_change
 #include "unit.h" // struct s_unit_data

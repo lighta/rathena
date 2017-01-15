@@ -4,8 +4,8 @@
 #ifndef _CHRIF_H_
 #define _CHRIF_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/socket.h" // enum chrif_req_op
+#include "../common_old/cbasetypes.h"
+#include "../common_old/socket.h" // enum chrif_req_op
 #include <ctime>
 
 enum e_sd_state { ST_LOGIN, ST_LOGOUT, ST_MAPCHANGE };

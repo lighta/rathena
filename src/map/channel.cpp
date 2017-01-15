@@ -4,13 +4,13 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../common/cbasetypes.h"
-#include "../common/malloc.h"
-#include "../common/conf.h" //libconfig
-#include "../common/showmsg.h"
-#include "../common/strlib.h" //safestrncpy
-#include "../common/socket.h" //set_eof
-#include "../common/timer.h"  // DIFF_TICK
+#include "../common_old/cbasetypes.h"
+#include "../common_old/malloc.h"
+#include "../common_old/conf.h" //libconfig
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h" //safestrncpy
+#include "../common_old/socket.h" //set_eof
+#include "../common_old/timer.h"  // DIFF_TICK
 
 #include "channel.h"
 #include "map.h" //msg_conf

@@ -3,12 +3,12 @@
 
 #include <cstring>
 
-#include "../common/conf.h"
-#include "../common/db.h"
-#include "../common/malloc.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h" // strcmp
-#include "../common/socket.h"
+#include "../common_old/conf.h"
+#include "../common_old/db.h"
+#include "../common_old/malloc.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h" // strcmp
+#include "../common_old/socket.h"
 
 #include "atcommand.h" // atCommandType
 #include "pc.h" // e_pc_permission

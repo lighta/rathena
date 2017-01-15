@@ -4,9 +4,9 @@
 #ifndef _CHAR_SQL_H_
 #define _CHAR_SQL_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/core.h" // CORE_ST_LAST
-#include "../common/mmo.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/core.h" // CORE_ST_LAST
+#include "../common_old/mmo.h"
 
 #define DB_NAME_LEN 256 //max len of dbs
 

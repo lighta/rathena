@@ -11,7 +11,7 @@
 #ifndef __LOGINLOG_H_INCLUDED__
 #define __LOGINLOG_H_INCLUDED__
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 /**
  * Get the number of failed login attempts by the ip in the last minutes.

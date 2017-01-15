@@ -3,12 +3,12 @@
 
 #include <cstring>
 
-#include "../common/cbasetypes.h"
-#include "../common/malloc.h"
-#include "../common/nullpo.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
-#include "../common/mmo.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/malloc.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h"
+#include "../common_old/mmo.h"
 #include "map.h"
 #include "atcommand.h" // msg_txt()
 #include "battle.h" // struct battle_config

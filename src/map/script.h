@@ -4,8 +4,8 @@
 #ifndef _SCRIPT_H_
 #define _SCRIPT_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/db.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/db.h"
 //#include "map.h"
 
 

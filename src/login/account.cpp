@@ -11,12 +11,12 @@
 #include <string.h>
 
 
-#include "../common/malloc.h"
-#include "../common/mmo.h"
-#include "../common/showmsg.h"
-#include "../common/socket.h"
-#include "../common/sql.h"
-#include "../common/strlib.h"
+#include "../common_old/malloc.h"
+#include "../common_old/mmo.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/socket.h"
+#include "../common_old/sql.h"
+#include "../common_old/strlib.h"
 
 
 /// global defines
@@ -315,7 +315,7 @@ static bool account_db_sql_create(s_AccountDB* self, struct s_mmo_account* acc) 
 
 	// decide on the account id to assign
 	uint32 account_id;
-	if( acc->account_id != -1 )
+	if( acc->account_id > 0 )
 	{// caller specifies it manually
 		account_id = acc->account_id;
 	}
@@ -339,18 +339,11 @@ static bool account_db_sql_create(s_AccountDB* self, struct s_mmo_account* acc) 
 		Sql_GetData(sql_handle, 0, &data, &len);
 		account_id = ( data != NULL ) ? atoi(data) : 0;
 		Sql_FreeResult(sql_handle);
-
-		if( account_id < START_ACCOUNT_NUM )
-			account_id = START_ACCOUNT_NUM;
-
+		account_id = std::max((uint32_t)START_ACCOUNT_NUM,account_id);
 	}
 
-	// zero value is prohibited
-	if( account_id == 0 )
-		return false;
-
-	// absolute maximum
-	if( account_id > END_ACCOUNT_NUM )
+	// reached max account. (if 0 is historique, should neverbe true)
+	if( account_id == 0 || account_id > END_ACCOUNT_NUM )
 		return false;
 
 	// insert the data into the database
@@ -445,7 +438,7 @@ static bool account_db_sql_load_str(s_AccountDB* self, struct s_mmo_account* acc
 		return false;
 	}
 
-	Sql_GetData(sql_handle, 0, &data, NULL);
+	Sql_GetData(sql_handle, 0, &data, nullptr);
 	account_id = atoi(data);
 
 	return account_db_sql_load_num(self, acc, account_id);
@@ -458,7 +451,7 @@ static bool account_db_sql_load_str(s_AccountDB* self, struct s_mmo_account* acc
  */
 static s_AccountDBIterator* account_db_sql_iterator(s_AccountDB* self) {
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
-	AccountDBIterator_SQL* iter = (AccountDBIterator_SQL*)aCalloc(1, sizeof(AccountDBIterator_SQL));
+	AccountDBIterator_SQL* iter = new AccountDBIterator_SQL;
 
 	// set up the vtable
 	iter->vtable.destroy = &account_db_sql_iter_destroy;
@@ -477,7 +470,8 @@ static s_AccountDBIterator* account_db_sql_iterator(s_AccountDB* self) {
  */
 static void account_db_sql_iter_destroy(s_AccountDBIterator* self) {
 	AccountDBIterator_SQL* iter = (AccountDBIterator_SQL*)self;
-	aFree(iter);
+	delete iter;
+	//aFree(iter);
 }
 
 /**
@@ -549,20 +543,20 @@ static bool mmo_auth_fromsql(AccountDB_SQL* db, struct s_mmo_account* acc, uint3
 	}
 
 	Sql_GetData(sql_handle,  0, &data, &out_len); acc->account_id = atoi(data);
-	Sql_GetData(sql_handle,  1, &data, &out_len); safestrncpy(acc->userid.data(), data, acc->userid.size() );
-	Sql_GetData(sql_handle,  2, &data, &out_len); safestrncpy(acc->pass.data(), data, acc->pass.size() );
+	Sql_GetData(sql_handle,  1, &data, &out_len); acc->userid = std::string(data,out_len);
+	Sql_GetData(sql_handle,  2, &data, &out_len); acc->pass = std::string(data,out_len);
 	Sql_GetData(sql_handle,  3, &data, &out_len); acc->sex = data[0];
 	Sql_GetData(sql_handle,  4, &data, &out_len); acc->email = std::string(data,out_len);
 	Sql_GetData(sql_handle,  5, &data, &out_len); acc->group_id = atoi(data);
 	Sql_GetData(sql_handle,  6, &data, &out_len); acc->state = strtoul(data, NULL, 10);
 	Sql_GetData(sql_handle,  7, &data, &out_len); acc->unban_time = atol(data);
 	Sql_GetData(sql_handle,  8, &data, &out_len); acc->expiration_time = atol(data);
-	Sql_GetData(sql_handle,  9, &data, &out_len); acc->logincount = strtoul(data, NULL, 10);
-	Sql_GetData(sql_handle, 10, &data, &out_len); safestrncpy(acc->lastlogin, data, sizeof(acc->lastlogin));
-	Sql_GetData(sql_handle, 11, &data, &out_len); safestrncpy(acc->last_ip, data, sizeof(acc->last_ip));
-	Sql_GetData(sql_handle, 12, &data, &out_len); safestrncpy(acc->birthdate, data, sizeof(acc->birthdate));
+	Sql_GetData(sql_handle,  9, &data, &out_len); acc->logincount = strtoul(data, nullptr, 10);
+	Sql_GetData(sql_handle, 10, &data, &out_len); acc->lastlogin = std::string(data,out_len);
+	Sql_GetData(sql_handle, 11, &data, &out_len); acc->last_ip = std::string(data,out_len);
+	Sql_GetData(sql_handle, 12, &data, &out_len); acc->birthdate = std::string(data,out_len);
 	Sql_GetData(sql_handle, 13, &data, &out_len); acc->char_slots = atoi(data);
-	Sql_GetData(sql_handle, 14, &data, &out_len); safestrncpy(acc->pincode, data, sizeof(acc->pincode));
+	Sql_GetData(sql_handle, 14, &data, &out_len); acc->pincode = std::string(data,out_len);
 	Sql_GetData(sql_handle, 15, &data, &out_len); acc->pincode_change = atol(data);
 #ifdef VIP_ENABLE
 	Sql_GetData(sql_handle, 16, &data, &out_len); acc->vip_time = atol(data);
@@ -604,22 +598,22 @@ static bool mmo_auth_tosql(AccountDB_SQL* db, const struct s_mmo_account* acc, b
 			"INSERT INTO `%s` (`account_id`, `userid`, `user_pass`, `sex`, `email`, `group_id`, `state`, `unban_time`, `expiration_time`, `logincount`, `lastlogin`, `last_ip`, `birthdate`, `character_slots`, `pincode`, `pincode_change`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 #endif
 			db->account_db.c_str())
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  0, SQLDT_INT,       (void*)&acc->account_id,      sizeof(acc->account_id))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  1, SQLDT_STRING,    (void*)acc->userid.data(),    acc->userid.size())
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  2, SQLDT_STRING,    (void*)acc->pass.data(),      acc->pass.size())
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  3, SQLDT_ENUM,      (void*)&acc->sex,             sizeof(acc->sex))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  4, SQLDT_STRING,    (void*)&acc->email,           acc->email.size())
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  5, SQLDT_INT,       (void*)&acc->group_id,        sizeof(acc->group_id))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  6, SQLDT_UINT,      (void*)&acc->state,           sizeof(acc->state))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  7, SQLDT_LONG,      (void*)&acc->unban_time,      sizeof(acc->unban_time))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  8, SQLDT_INT,       (void*)&acc->expiration_time, sizeof(acc->expiration_time))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  9, SQLDT_UINT,      (void*)&acc->logincount,      sizeof(acc->logincount))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_STRING,    (void*)&acc->lastlogin,       strlen(acc->lastlogin))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING,    (void*)&acc->last_ip,         strlen(acc->last_ip))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, SQLDT_STRING,    (void*)&acc->birthdate,       strlen(acc->birthdate))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_UCHAR,     (void*)&acc->char_slots,      sizeof(acc->char_slots))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_STRING,    (void*)&acc->pincode,         strlen(acc->pincode))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 15, SQLDT_LONG,      (void*)&acc->pincode_change,  sizeof(acc->pincode_change))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  0, SQLDT_INT,       (void*)&acc->account_id,                sizeof(acc->account_id))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  1, SQLDT_STRING,    (void*)acc->userid.c_str(),             acc->userid.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  2, SQLDT_STRING,    (void*)acc->pass.c_str(),               acc->pass.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  3, SQLDT_ENUM,      (void*)&acc->sex,                       sizeof(acc->sex))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  4, SQLDT_STRING,    (void*)&acc->email,                     acc->email.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  5, SQLDT_INT,       (void*)&acc->group_id,                  sizeof(acc->group_id))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  6, SQLDT_UINT,      (void*)&acc->state,                     sizeof(acc->state))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  7, SQLDT_LONG,      (void*)&acc->unban_time,                sizeof(acc->unban_time))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  8, SQLDT_INT,       (void*)&acc->expiration_time,           sizeof(acc->expiration_time))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  9, SQLDT_UINT,      (void*)&acc->logincount,                sizeof(acc->logincount))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_STRING,    (void*)acc->lastlogin.c_str(),         acc->lastlogin.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING,    (void*)acc->last_ip.c_str(),           acc->last_ip.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, SQLDT_STRING,    (void*)acc->birthdate.c_str(),         acc->birthdate.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_UCHAR,     (void*)&acc->char_slots,                sizeof(acc->char_slots))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_STRING,    (void*)acc->pincode.c_str(),           acc->pincode.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 15, SQLDT_LONG,      (void*)&acc->pincode_change,            sizeof(acc->pincode_change))
 #ifdef VIP_ENABLE
 		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 16, SQLDT_LONG,       (void*)&acc->vip_time,         sizeof(acc->vip_time))
 		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 17, SQLDT_INT,        (void*)&acc->old_group,        sizeof(acc->old_group))
@@ -639,21 +633,21 @@ static bool mmo_auth_tosql(AccountDB_SQL* db, const struct s_mmo_account* acc, b
 			"UPDATE `%s` SET `userid`=?,`user_pass`=?,`sex`=?,`email`=?,`group_id`=?,`state`=?,`unban_time`=?,`expiration_time`=?,`logincount`=?,`lastlogin`=?,`last_ip`=?,`birthdate`=?,`character_slots`=?,`pincode`=?, `pincode_change`=? WHERE `account_id` = '%d'",
 #endif
 			db->account_db.c_str(), acc->account_id)
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  0, SQLDT_STRING,    (void*)acc->userid.data(),    acc->userid.size())
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  1, SQLDT_STRING,    (void*)acc->pass.data(),      acc->pass.size())
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  2, SQLDT_ENUM,      (void*)&acc->sex,             sizeof(acc->sex))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  3, SQLDT_STRING,    (void*)acc->email.c_str(),            acc->email.size())
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  4, SQLDT_INT,       (void*)&acc->group_id,        sizeof(acc->group_id))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  5, SQLDT_UINT,      (void*)&acc->state,           sizeof(acc->state))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  6, SQLDT_LONG,      (void*)&acc->unban_time,      sizeof(acc->unban_time))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  7, SQLDT_LONG,      (void*)&acc->expiration_time, sizeof(acc->expiration_time))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  8, SQLDT_UINT,      (void*)&acc->logincount,      sizeof(acc->logincount))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  9, SQLDT_STRING,    (void*)&acc->lastlogin,       strlen(acc->lastlogin))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_STRING,    (void*)&acc->last_ip,         strlen(acc->last_ip))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING,    (void*)&acc->birthdate,       strlen(acc->birthdate))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, SQLDT_UCHAR,     (void*)&acc->char_slots,      sizeof(acc->char_slots))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_STRING,    (void*)&acc->pincode,         strlen(acc->pincode))
-		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_LONG,      (void*)&acc->pincode_change,  sizeof(acc->pincode_change))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  0, SQLDT_STRING,    (void*)acc->userid.c_str(),             acc->userid.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  1, SQLDT_STRING,    (void*)acc->pass.c_str(),               acc->pass.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  2, SQLDT_ENUM,      (void*)&acc->sex,                       sizeof(acc->sex))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  3, SQLDT_STRING,    (void*)acc->email.c_str(),              acc->email.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  4, SQLDT_INT,       (void*)&acc->group_id,                  sizeof(acc->group_id))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  5, SQLDT_UINT,      (void*)&acc->state,                     sizeof(acc->state))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  6, SQLDT_LONG,      (void*)&acc->unban_time,                sizeof(acc->unban_time))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  7, SQLDT_LONG,      (void*)&acc->expiration_time,           sizeof(acc->expiration_time))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  8, SQLDT_UINT,      (void*)&acc->logincount,                sizeof(acc->logincount))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt,  9, SQLDT_STRING,    (void*)acc->lastlogin.c_str(),         acc->lastlogin.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 10, SQLDT_STRING,    (void*)acc->last_ip.c_str(),           acc->last_ip.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 11, SQLDT_STRING,    (void*)acc->birthdate.c_str(),         acc->birthdate.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 12, SQLDT_UCHAR,     (void*)&acc->char_slots,                sizeof(acc->char_slots))
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 13, SQLDT_STRING,    (void*)acc->pincode.c_str(),           acc->pincode.size())
+		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 14, SQLDT_LONG,      (void*)&acc->pincode_change,            sizeof(acc->pincode_change))
 #ifdef VIP_ENABLE
 		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 15, SQLDT_LONG,      (void*)&acc->vip_time,        sizeof(acc->vip_time))
 		||  SQL_SUCCESS != SqlStmt_BindParam(stmt, 16, SQLDT_INT,       (void*)&acc->old_group,       sizeof(acc->old_group))

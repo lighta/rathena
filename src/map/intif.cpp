@@ -4,12 +4,12 @@
 #include <cstring>
 #include <cstdlib>
 
-#include "../common/showmsg.h"
-#include "../common/socket.h"
-#include "../common/nullpo.h"
-#include "../common/malloc.h"
-#include "../common/strlib.h"
-#include "../common/mmo.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/socket.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/malloc.h"
+#include "../common_old/strlib.h"
+#include "../common_old/mmo.h"
 
 #include "map.h"
 #include "battle.h"

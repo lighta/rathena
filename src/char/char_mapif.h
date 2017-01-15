@@ -10,7 +10,7 @@
 #ifndef CHAR_MAPIF_H
 #define	CHAR_MAPIF_H
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 int chmapif_sendall(unsigned char *buf, unsigned int len);
 int chmapif_sendallwos(int sfd, unsigned char *buf, unsigned int len);

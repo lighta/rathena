@@ -4,10 +4,10 @@
 #ifndef _PC_H_
 #define _PC_H_
 
-#include "../common/mmo.h" // JOB_*, MAX_FAME_LIST, struct s_fame_list, struct mmo_charstatus
-//#include "../common/ers.h"
-//#include "../common/timer.h" // INVALID_TIMER
-#include "../common/strlib.h"// StringBuf
+#include "../common_old/mmo.h" // JOB_*, MAX_FAME_LIST, struct s_fame_list, struct mmo_charstatus
+//#include "../common_old/ers.h"
+//#include "../common_old/timer.h" // INVALID_TIMER
+#include "../common_old/strlib.h"// StringBuf
 #include "map.h" // RC_ALL
 #include "itemdb.h" // MAX_ITEMGROUP MAX_ITEMDELAYS
 #include "searchstore.h"  // struct s_search_store_info

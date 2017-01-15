@@ -4,9 +4,9 @@
 #ifndef _SKILL_H_
 #define _SKILL_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h" // MAX_SKILL, struct square
-#include "../common/db.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h" // MAX_SKILL, struct square
+#include "../common_old/db.h"
 #include "map.h" // struct s_block_list
 //#include "battle.h" // enum damage_lv
 

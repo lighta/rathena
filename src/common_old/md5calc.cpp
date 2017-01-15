@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../common/random.h"
+#include "../common_old/random.h"
 #include "md5calc.h"
 
 #ifndef UINT_MAX

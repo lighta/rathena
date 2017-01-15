@@ -4,9 +4,9 @@
 #ifndef _CLIF_H_
 #define _CLIF_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/db.h" //dbmap
-//#include "../common/mmo.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/db.h" //dbmap
+//#include "../common_old/mmo.h"
 
 struct s_Channel;
 struct s_item;

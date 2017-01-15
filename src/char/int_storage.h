@@ -4,7 +4,7 @@
 #ifndef _INT_STORAGE_SQL_H_
 #define _INT_STORAGE_SQL_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
   struct s_storage_data;
   struct s_guild_storage;

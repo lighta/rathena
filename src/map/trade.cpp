@@ -4,8 +4,8 @@
 #include <cstdio>
 #include <cstring>
 
-#include "../common/nullpo.h"
-#include "../common/socket.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/socket.h"
 #include "clif.h"
 #include "itemdb.h"
 #include "path.h"

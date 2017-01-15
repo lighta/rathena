@@ -4,7 +4,7 @@
 #ifndef _INT_PET_SQL_H_
 #define _INT_PET_SQL_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
   struct s_pet;
 

@@ -4,7 +4,7 @@
 #ifndef _INT_MERCENARY_SQL_H_
 #define _INT_MERCENARY_SQL_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 // struct s_mercenary;
 

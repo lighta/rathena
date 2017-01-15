@@ -4,7 +4,7 @@
 #ifndef _INT_GUILD_SQL_H_
 #define _INT_GUILD_SQL_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 enum e_guild_action : uint32 {
   GS_BASIC = 0x0001,

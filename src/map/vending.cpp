@@ -4,11 +4,11 @@
 #include <cstdlib> // atoi
 #include <cstring>
 
-#include "../common/nullpo.h"
-#include "../common/malloc.h" // aMalloc, aFree
-#include "../common/showmsg.h" // ShowInfo
-#include "../common/strlib.h"
-#include "../common/timer.h"  // DIFF_TICK
+#include "../common_old/nullpo.h"
+#include "../common_old/malloc.h" // aMalloc, aFree
+#include "../common_old/showmsg.h" // ShowInfo
+#include "../common_old/strlib.h"
+#include "../common_old/timer.h"  // DIFF_TICK
 
 #include "buyingstore.h"
 #include "clif.h"

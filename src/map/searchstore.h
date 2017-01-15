@@ -4,8 +4,8 @@
 #ifndef _SEARCHSTORE_H_
 #define _SEARCHSTORE_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h"
 #include "mapConst.h" //MESSAGE_SIZE
 
 #define SEARCHSTORE_RESULTS_PER_PAGE 10

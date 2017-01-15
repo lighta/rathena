@@ -4,11 +4,11 @@
 #ifndef _GUILD_H_
 #define _GUILD_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h"
 #include "mapConst.h" // NAME_LENGTH
 
-//#include "../common/mmo.h"
+//#include "../common_old/mmo.h"
 struct s_guild;
 struct s_guild_member;
 struct s_guild_position;

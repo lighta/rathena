@@ -9,13 +9,13 @@
 #include <unistd.h>
 #endif
 
-#include "../common/cbasetypes.h"
-#include "../common/grfio.h"
-#include "../common/malloc.h"
-#include "../common/mmo.h"
-#include "../common/showmsg.h"
-#include "../common/utils.h"
-#include "../common/core.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/grfio.h"
+#include "../common_old/malloc.h"
+#include "../common_old/mmo.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/utils.h"
+#include "../common_old/core.h"
 
 #include "../config/renewal.h"
 

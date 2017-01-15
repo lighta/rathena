@@ -4,14 +4,14 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../common/socket.h"
-#include "../common/timer.h"
-#include "../common/nullpo.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
-#include "../common/db.h"
-#include "../common/malloc.h"
-#include "../common/ers.h"  // ers_destroy
+#include "../common_old/socket.h"
+#include "../common_old/timer.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h"
+#include "../common_old/db.h"
+#include "../common_old/malloc.h"
+#include "../common_old/ers.h"  // ers_destroy
 
 #include "clif.h"
 #include "guild.h"

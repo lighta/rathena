@@ -10,14 +10,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/timer.h" //difftick
-#include "../common/strlib.h" //safeprint
-#include "../common/showmsg.h" //show notice
-#include "../common/socket.h" //wfifo session
-#include "../common/malloc.h"
-#include "../common/utils.h"
-#include "../common/md5calc.h"
-#include "../common/random.h"
+#include "../common_old/timer.h" //difftick
+#include "../common_old/strlib.h" //safeprint
+#include "../common_old/showmsg.h" //show notice
+#include "../common_old/socket.h" //wfifo session
+#include "../common_old/malloc.h"
+#include "../common_old/utils.h"
+#include "../common_old/md5calc.h"
+#include "../common_old/random.h"
 
 #include "account.h"
 #include "ipban.h" //ipban_check

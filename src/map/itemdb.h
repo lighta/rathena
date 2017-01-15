@@ -4,8 +4,8 @@
 #ifndef _ITEMDB_H_
 #define _ITEMDB_H_
 
-#include "../common/db.h"
-#include "../common/mmo.h" // ITEM_NAME_LENGTH
+#include "../common_old/db.h"
+#include "../common_old/mmo.h" // ITEM_NAME_LENGTH
 //#include "map.h"
 
 ///Maximum allowed Item ID (range: 1 ~ 65,534)

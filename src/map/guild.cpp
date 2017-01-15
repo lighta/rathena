@@ -4,14 +4,14 @@
 #include <cstring>
 #include <cstdlib>
 
-#include "../common/timer.h"
-#include "../common/nullpo.h"
-#include "../common/malloc.h"
-#include "../common/mapindex.h"
-#include "../common/showmsg.h"
-#include "../common/ers.h"
-#include "../common/strlib.h"
-#include "../common/utils.h"
+#include "../common_old/timer.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/malloc.h"
+#include "../common_old/mapindex.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/ers.h"
+#include "../common_old/strlib.h"
+#include "../common_old/utils.h"
 
 #include "map.h"
 #include "storage.h"

@@ -10,13 +10,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/mmo.h" //cbasetype + NAME_LENGTH
-#include "../common/showmsg.h" //show notice
-#include "../common/md5calc.h"
-#include "../common/ers.h"
-#include "../common/cli.h"
-#include "../common/timer.h"
-#include "../common/strlib.h"
+#include "../common_old/mmo.h" //cbasetype + NAME_LENGTH
+#include "../common_old/showmsg.h" //show notice
+#include "../common_old/md5calc.h"
+#include "../common_old/ers.h"
+#include "../common_old/cli.h"
+#include "../common_old/timer.h"
+#include "../common_old/strlib.h"
 #include "login.h"
 
 

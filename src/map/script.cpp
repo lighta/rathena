@@ -18,21 +18,21 @@
 #include "../../3rdparty/pcre/include/pcre.h" // preg_match
 #endif
 
-#include "../common/malloc.h"
-#include "../common/md5calc.h"
-#include "../common/nullpo.h"
-#include "../common/random.h"
-#include "../common/showmsg.h"
-#include "../common/socket.h"
-#include "../common/strlib.h"
-#include "../common/timer.h"
-#include "../common/utils.h"
-#include "../common/ers.h"  // ers_destroy
+#include "../common_old/malloc.h"
+#include "../common_old/md5calc.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/random.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/socket.h"
+#include "../common_old/strlib.h"
+#include "../common_old/timer.h"
+#include "../common_old/utils.h"
+#include "../common_old/ers.h"  // ers_destroy
 #ifdef BETA_THREAD_TEST
-	#include "../common/atomic.h"
-	#include "../common/spinlock.h"
-	#include "../common/thread.h"
-	#include "../common/mutex.h"
+	#include "../common_old/atomic.h"
+	#include "../common_old/spinlock.h"
+	#include "../common_old/thread.h"
+	#include "../common_old/mutex.h"
 #endif
 
 #include "script.h"

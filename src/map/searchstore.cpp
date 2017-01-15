@@ -4,9 +4,9 @@
 //#include <ctime>
 #include <cstring>
 
-#include "../common/malloc.h"  // aMalloc, aRealloc, aFree
-#include "../common/showmsg.h"  // ShowError, ShowWarning
-#include "../common/strlib.h"  // safestrncpy
+#include "../common_old/malloc.h"  // aMalloc, aRealloc, aFree
+#include "../common_old/showmsg.h"  // ShowError, ShowWarning
+#include "../common_old/strlib.h"  // safestrncpy
 #include "battle.h"  // battle_config.*
 #include "clif.h"  // clif_open_search_store_info, clif_search_store_info_*
 #include "pc.h"  // struct s_map_session_data

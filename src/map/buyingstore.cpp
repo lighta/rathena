@@ -4,13 +4,13 @@
 #include <cstdlib> // atoi
 #include <cstring> // atoi
 
-#include "../common/nullpo.h"
-#include "../common/db.h"  // ARR_FIND
-#include "../common/malloc.h" // aMalloc, aFree
-#include "../common/showmsg.h"  // ShowWarning
-#include "../common/socket.h"  // RBUF*
-#include "../common/strlib.h"  // safestrncpy
-#include "../common/timer.h"  // gettick
+#include "../common_old/nullpo.h"
+#include "../common_old/db.h"  // ARR_FIND
+#include "../common_old/malloc.h" // aMalloc, aFree
+#include "../common_old/showmsg.h"  // ShowWarning
+#include "../common_old/socket.h"  // RBUF*
+#include "../common_old/strlib.h"  // safestrncpy
+#include "../common_old/timer.h"  // gettick
 #include "atcommand.h"  // msg_txt
 #include "battle.h"  // battle_config.*
 #include "buyingstore.h"  // struct s_buyingstore

@@ -4,7 +4,7 @@
 #ifndef _MOB_H_
 #define _MOB_H_
 
-#include "../common/mmo.h" // struct s_item
+#include "../common_old/mmo.h" // struct s_item
 #include "status.h" // struct status data, struct s_status_change
 #include "unit.h" // struct s_view_data, unit_stop_walking(), unit_stop_attack()
 

@@ -4,9 +4,9 @@
 #ifndef _STORAGE_H_
 #define _STORAGE_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
-//#include "../common/mmo.h"
+//#include "../common_old/mmo.h"
 struct s_storage_data;
 struct s_guild_storage;
 struct s_item;

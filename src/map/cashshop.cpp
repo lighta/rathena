@@ -4,8 +4,8 @@
 #include <cstring> // memset
 #include <cstdlib> // atoi
 
-#include "../common/malloc.h" // CREATE, RECREATE, aFree
-#include "../common/showmsg.h" // ShowWarning, ShowStatus
+#include "../common_old/malloc.h" // CREATE, RECREATE, aFree
+#include "../common_old/showmsg.h" // ShowWarning, ShowStatus
 
 #include "cashshop.h"
 #include "pc.h" // struct s_map_session_data

@@ -12,8 +12,8 @@
 #define __ACCOUNT_H_INCLUDED__
 
 #include <array>
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h" // ACCOUNT_REG2_NUM
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h" // ACCOUNT_REG2_NUM
 #include "../config/core.h"
 
 struct s_AccountDBIterator {
@@ -110,8 +110,8 @@ struct s_AccountDB {
 
 struct s_mmo_account {
 	uint32 account_id;
-	std::array<char,NAME_LENGTH> userid;
-	std::array<char,32+1> pass;        // 23+1 for plaintext, 32+1 for md5-ed passwords
+	std::string userid;                 //max NAME_LENGHT
+	std::string pass;                   // 23+1 for plaintext, 32+1 for md5-ed passwords, //max 33
 	char sex;                           // gender (M/F/S)
 	std::string email;                   // e-mail (by default: a@a.com) //max 40
 	unsigned int group_id;              // player group id
@@ -120,10 +120,10 @@ struct s_mmo_account {
 	time_t unban_time;                  // (timestamp): ban time limit of the account (0 = no ban)
 	time_t expiration_time;             // (timestamp): validity limit of the account (0 = unlimited)
 	unsigned int logincount;            // number of successful auth attempts
-	char lastlogin[24];                 // date+time of last successful login
-	char last_ip[16];                   // save of last IP of connection
-	char birthdate[10+1];               // assigned birth date (format: YYYY-MM-DD, default: 0000-00-00)
-	char pincode[PINCODE_LENGTH+1];     // pincode system
+	std::string  lastlogin;                 // date+time of last successful login //max 24
+	std::string  last_ip;                   // save of last IP of connection //max 16
+	std::string  birthdate;             // assigned birth date (format: YYYY-MM-DD, default: 0000-00-00) //max 10+1
+	std::string  pincode;               // pincode system //max PINCODE_LENGTH+1
 	time_t pincode_change;              // (timestamp): last time of pincode change
 #ifdef VIP_ENABLE
 	int old_group;

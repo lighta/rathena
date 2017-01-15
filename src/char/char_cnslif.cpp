@@ -6,11 +6,11 @@
 
 #include "char_cnslif.h"
 
-#include "../common/socket.h"
-#include "../common/showmsg.h"
-#include "../common/timer.h"
-#include "../common/ers.h"
-#include "../common/cli.h"
+#include "../common_old/socket.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/timer.h"
+#include "../common_old/ers.h"
+#include "../common_old/cli.h"
 #include "char.h"
 
 

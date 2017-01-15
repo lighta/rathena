@@ -5,6 +5,7 @@
 #define	_MMO_H_
 
 #include <ctime>
+#include <map>
 
 #include "cbasetypes.h"
 #include "../config/core.h"
@@ -155,7 +156,7 @@ struct s_Channel;
 #define EL_CLASS_BASE 2114
 #define EL_CLASS_MAX (EL_CLASS_BASE+MAX_ELEMENTAL_CLASS-1)
 
-enum e_item_types {
+enum e_item_types : uint8 {
 	IT_HEALING = 0,
 	IT_UNKNOWN, //1
 	IT_USABLE,  //2
@@ -184,6 +185,7 @@ enum e_quest_state : uint8 {
 struct s_quest {
 	int quest_id;                    ///< Quest ID
 	unsigned int time;               ///< Expiration time
+	//std::map<int,int> count;            //quest_id, count
 	int count[MAX_QUEST_OBJECTIVES]; ///< Kill counters of each quest objective
 	enum e_quest_state state;          ///< Current quest state
 };

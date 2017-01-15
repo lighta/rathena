@@ -5,14 +5,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../common/mmo.h"
-#include "../common/malloc.h"
-#include "../common/db.h"
-#include "../common/showmsg.h"
-#include "../common/socket.h"
-#include "../common/strlib.h"
-#include "../common/sql.h"
-#include "../common/timer.h"
+#include "../common_old/mmo.h"
+#include "../common_old/malloc.h"
+#include "../common_old/db.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/socket.h"
+#include "../common_old/strlib.h"
+#include "../common_old/sql.h"
+#include "../common_old/timer.h"
 #include "char.h"
 #include "char_mapif.h"
 #include "inter.h"

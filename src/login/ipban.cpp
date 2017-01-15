@@ -11,11 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/cbasetypes.h"
-#include "../common/showmsg.h"
-#include "../common/sql.h"
-#include "../common/strlib.h"
-#include "../common/timer.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/sql.h"
+#include "../common_old/strlib.h"
+#include "../common_old/timer.h"
 
 #include "login.h"
 #include "loginlog.h"

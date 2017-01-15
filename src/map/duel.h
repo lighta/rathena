@@ -4,7 +4,7 @@
 #ifndef _DUEL_H_
 #define _DUEL_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 struct s_duel {
 	int members_count;

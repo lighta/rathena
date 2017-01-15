@@ -4,12 +4,12 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../common/socket.h"
-#include "../common/malloc.h"
-#include "../common/nullpo.h"
-#include "../common/random.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
+#include "../common_old/socket.h"
+#include "../common_old/malloc.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/random.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h"
 
 #include "itemdb.h"
 #include "map.h"

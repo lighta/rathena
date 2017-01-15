@@ -4,14 +4,14 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../common/cbasetypes.h"
-#include "../common/db.h"
-#include "../common/ers.h"
-#include "../common/malloc.h"
-#include "../common/showmsg.h"
-#include "../common/sql.h"
-#include "../common/strlib.h"
-#include "../common/timer.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/db.h"
+#include "../common_old/ers.h"
+#include "../common_old/malloc.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/sql.h"
+#include "../common_old/strlib.h"
+#include "../common_old/timer.h"
 
 #include "map.h" // mmysql_handle
 #include "mapreg.h"

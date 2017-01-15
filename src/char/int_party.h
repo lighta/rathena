@@ -4,7 +4,7 @@
 #ifndef _INT_PARTY_SQL_H_
 #define _INT_PARTY_SQL_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 //Party Flags on what to save/delete.
 enum e_PartySaveWhatFlag {

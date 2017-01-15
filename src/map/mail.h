@@ -4,7 +4,7 @@
 #ifndef _MAIL_H_
 #define _MAIL_H_
 
-#include "../common/mmo.h"
+#include "../common_old/mmo.h"
 
 
 void mail_clear(struct s_map_session_data *sd);

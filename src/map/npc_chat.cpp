@@ -6,10 +6,10 @@
 #include <cstring>
 
 #include "../../3rdparty/pcre/include/pcre.h"
-#include "../common/timer.h"
-#include "../common/malloc.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
+#include "../common_old/timer.h"
+#include "../common_old/malloc.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h"
 
 #include "mob.h" // struct s_mob_data
 #include "pc.h" // struct s_map_session_data

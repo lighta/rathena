@@ -4,7 +4,7 @@
 #ifndef _ATCOMMAND_H_
 #define _ATCOMMAND_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 struct s_map_session_data;
 

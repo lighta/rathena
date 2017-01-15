@@ -4,7 +4,7 @@
 #ifndef _PATH_H_
 #define _PATH_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 enum e_cell_chk : uint8;
 
 #define MOVE_COST 10

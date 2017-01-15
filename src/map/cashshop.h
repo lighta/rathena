@@ -4,7 +4,7 @@
 #ifndef _CASHSHOP_H_
 #define _CASHSHOP_H_
 
-#include "../common/cbasetypes.h" // uint16, uint32
+#include "../common_old/cbasetypes.h" // uint16, uint32
 
 struct s_map_session_data;
 

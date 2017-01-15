@@ -3,10 +3,10 @@
 
 #include <cstring>
 
-#include "../common/nullpo.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
-#include "../common/timer.h"  // gettick
+#include "../common_old/nullpo.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h"
+#include "../common_old/timer.h"  // gettick
 
 #include "atcommand.h"
 #include "itemdb.h"

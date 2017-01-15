@@ -10,11 +10,11 @@
 #include <stdlib.h>
 #include <string.h> //memcpy
 
-#include "../common/socket.h"
-#include "../common/sql.h"
-#include "../common/malloc.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
+#include "../common_old/socket.h"
+#include "../common_old/sql.h"
+#include "../common_old/malloc.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h"
 #include "inter.h"
 #include "char.h"
 #include "char_logif.h"

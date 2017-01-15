@@ -10,12 +10,12 @@
 #include <stdlib.h> // exit
 #include <string.h>
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h"
-#include "../common/socket.h"
-#include "../common/sql.h"
-#include "../common/strlib.h"
-#include "../common/showmsg.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h"
+#include "../common_old/socket.h"
+#include "../common_old/sql.h"
+#include "../common_old/strlib.h"
+#include "../common_old/showmsg.h"
 
 
 // global sql settings (in ipban_sql.c)

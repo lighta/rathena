@@ -4,10 +4,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../common/sql.h" // SQL_INNODB
-#include "../common/strlib.h"
-#include "../common/nullpo.h"
-#include "../common/showmsg.h"
+#include "../common_old/sql.h" // SQL_INNODB
+#include "../common_old/strlib.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/showmsg.h"
 #include "map.h"
 #include "battle.h"
 #include "itemdb.h"

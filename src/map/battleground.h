@@ -4,8 +4,8 @@
 #ifndef _BATTLEGROUND_H_
 #define _BATTLEGROUND_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h" // struct party
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h" // struct party
 #include "mapConst.h"
 
 #define MAX_BG_MEMBERS 30

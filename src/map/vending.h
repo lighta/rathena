@@ -4,8 +4,8 @@
 #ifndef	_VENDING_H_
 #define	_VENDING_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/db.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/db.h"
 //#include "map.h"
 
 struct s_map_session_data;

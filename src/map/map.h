@@ -8,13 +8,13 @@
 
 #include "../config/core.h"
 
-#include "../common/cbasetypes.h"
-#include "../common/core.h" // CORE_ST_LAST
-#include "../common/mmo.h"
-#include "../common/mapindex.h"
-#include "../common/db.h"
-#include "../common/msg_conf.h"
-#include "../common/sql.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/core.h" // CORE_ST_LAST
+#include "../common_old/mmo.h"
+#include "../common_old/mapindex.h"
+#include "../common_old/db.h"
+#include "../common_old/msg_conf.h"
+#include "../common_old/sql.h"
 #include "mapConst.h"
 
 struct s_npc_data;

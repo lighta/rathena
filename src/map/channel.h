@@ -4,7 +4,7 @@
 #ifndef CHANNEL_H
 #define	CHANNEL_H
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 //namespace rA {
 

@@ -11,7 +11,7 @@
 #ifndef LOGINCHRIF_H
 #define	LOGINCHRIF_H
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 /**
  * Entry point from char-server to log-server.

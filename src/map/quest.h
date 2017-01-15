@@ -4,8 +4,8 @@
 #ifndef _QUEST_H_
 #define _QUEST_H_
 
-#include "../common/cbasetypes.h"
-#include "../common/strlib.h"
+#include "../common_old/cbasetypes.h"
+#include "../common_old/strlib.h"
 
 enum e_quest_state : uint8;
 struct s_map_session_data;

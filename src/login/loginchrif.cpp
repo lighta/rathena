@@ -10,15 +10,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/timer.h" //difftick
-#include "../common/strlib.h" //safeprint
-#include "../common/showmsg.h" //show notice
-#include "../common/socket.h" //wfifo session
+#include "../common_old/timer.h" //difftick
+#include "../common_old/strlib.h" //safeprint
+#include "../common_old/showmsg.h" //show notice
+#include "../common_old/socket.h" //wfifo session
 #include "account.h"
 #include "login.h"
-
 #include "loginlog.h"
 
+#include "../common/c_rAString.h" // is_email_valid
+#include "../common/c_timer.h" //timestamp2string
+using namespace ra::common_new;
 
 //early declaration
 void logchrif_on_disconnect(int id);
@@ -162,22 +164,20 @@ int logchrif_send_accdata(int fd, uint32 aid) {
 	time_t expiration_time = 0;
 	std::string email;
 	int group_id = 0;
-	char birthdate[10+1] = "";
-	char pincode[PINCODE_LENGTH+1];
+	std::string birthdate;
+	std::string pincode;
 	char isvip = false;
 	uint8 char_slots = MIN_CHARS, char_vip = 0, char_billing = 0;
 	s_AccountDB* accounts = login_get_accounts_db();
 
-	memset(pincode,0,PINCODE_LENGTH+1);
 	if( !accounts->load_num(accounts, &acc, aid) )
 		return -1;
 	else {
 		email = acc.email;
 		expiration_time = acc.expiration_time;
 		group_id = acc.group_id;
-
-		safestrncpy(birthdate, acc.birthdate, sizeof(birthdate));
-		safestrncpy(pincode, acc.pincode, sizeof(pincode));
+		birthdate = acc.birthdate;
+		pincode = acc.pincode;
 #ifdef VIP_ENABLE
 		char_vip = login_config.vip_sys.char_increase;
 		if( acc.vip_time > time(NULL) ) {
@@ -196,8 +196,8 @@ int logchrif_send_accdata(int fd, uint32 aid) {
 	WFIFOL(fd,46) = (uint32)expiration_time;
 	WFIFOB(fd,50) = (unsigned char)group_id;
 	WFIFOB(fd,51) = char_slots;
-	safestrncpy(WFIFOCP(fd,52), birthdate, 10+1);
-	safestrncpy(WFIFOCP(fd,63), pincode, 4+1 );
+	safestrncpy(WFIFOCP(fd,52), birthdate.c_str(), birthdate.size());
+	safestrncpy(WFIFOCP(fd,63), pincode.c_str(), pincode.size() );
 	WFIFOL(fd,68) = (uint32)acc.pincode_change;
 	WFIFOB(fd,72) = isvip;
 	WFIFOB(fd,73) = char_vip;
@@ -274,27 +274,27 @@ int logchrif_parse_reqchangemail(int fd, int id, char* ip){
 	else{
 		struct s_mmo_account acc;
 		s_AccountDB* accounts = login_get_accounts_db();
-		char actual_email[40];
-		char new_email[40];
+		std::string actual_email; //use istring instead ?
+		std::string new_email;
 
 		uint32 account_id = RFIFOL(fd,2);
-		safestrncpy(actual_email, RFIFOCP(fd,6), 40);
-		safestrncpy(new_email, RFIFOCP(fd,46), 40);
+		actual_email= std::string(RFIFOCP(fd,6), 40);
+		new_email = std::string(RFIFOCP(fd,46), 40);
 		RFIFOSKIP(fd, 86);
 
-		if( e_mail_check(actual_email) == 0 )
+		if( c_rAString::is_valid_email(actual_email) == false )
 			ShowNotice("Char-server '%s': Attempt to modify an e-mail on an account (@email GM command), but actual email is invalid (account: %d, ip: %s)\n", ch_server[id].name, account_id, ip);
-		else if( e_mail_check(new_email) == 0 )
+		else if( c_rAString::is_valid_email(new_email) == false )
 			ShowNotice("Char-server '%s': Attempt to modify an e-mail on an account (@email GM command) with a invalid new e-mail (account: %d, ip: %s)\n", ch_server[id].name, account_id, ip);
-		else if( strcmpi(new_email, "a@a.com") == 0 )
+		else if( strcmpi(new_email.c_str(), "a@a.com") == 0 )
 			ShowNotice("Char-server '%s': Attempt to modify an e-mail on an account (@email GM command) with a default e-mail (account: %d, ip: %s)\n", ch_server[id].name, account_id, ip);
 		else if( !accounts->load_num(accounts, &acc, account_id) )
 			ShowNotice("Char-server '%s': Attempt to modify an e-mail on an account (@email GM command), but account doesn't exist (account: %d, ip: %s).\n", ch_server[id].name, account_id, ip);
-		else if( strcmpi(acc.email.c_str(), actual_email) != 0 )
-			ShowNotice("Char-server '%s': Attempt to modify an e-mail on an account (@email GM command), but actual e-mail is incorrect (account: %d (%s), actual e-mail: %s, proposed e-mail: %s, ip: %s).\n", ch_server[id].name, account_id, acc.userid, acc.email, actual_email, ip);
+		else if( strcmpi(acc.email.c_str(), actual_email.c_str()) != 0 )
+			ShowNotice("Char-server '%s': Attempt to modify an e-mail on an account (@email GM command), but actual e-mail is incorrect (account: %d (%s), actual e-mail: %s, proposed e-mail: %s, ip: %s).\n", ch_server[id].name, account_id, acc.userid.c_str(), acc.email.c_str(), actual_email.c_str(), ip);
 		else{
 			acc.email = std::string(new_email,40);
-			ShowNotice("Char-server '%s': Modify an e-mail on an account (@email GM command) (account: %d (%s), new e-mail: %s, ip: %s).\n", ch_server[id].name, account_id, acc.userid, new_email, ip);
+			ShowNotice("Char-server '%s': Modify an e-mail on an account (@email GM command) (account: %d (%s), new e-mail: %s, ip: %s).\n", ch_server[id].name, account_id, acc.userid, new_email.c_str(), ip);
 			// Save
 			accounts->save(accounts, &acc);
 		}
@@ -614,8 +614,8 @@ int logchrif_parse_updpincode(int fd){
 		s_AccountDB* accounts = login_get_accounts_db();
 
 		if( accounts->load_num(accounts, &acc, RFIFOL(fd,4) ) ){
-			strncpy( acc.pincode, RFIFOCP(fd,8), PINCODE_LENGTH+1 );
-			acc.pincode_change = time( NULL );
+			acc.pincode = std::string(RFIFOCP(fd,8),PINCODE_LENGTH+1);
+			acc.pincode_change = time( nullptr );
 			accounts->save(accounts, &acc);
 		}
 		RFIFOSKIP(fd,8 + PINCODE_LENGTH+1);
@@ -642,7 +642,7 @@ int logchrif_parse_pincode_authfail(int fd){
 			if( ld == NULL )
 				return 0;
 
-			login_log( host2ip(acc.last_ip), acc.userid.data(), 100, "PIN Code check failed" );
+			login_log( host2ip(acc.last_ip.c_str()), acc.userid.c_str(), 100, "PIN Code check failed" );
 		}
 		login_remove_online_user(acc.account_id);
 		RFIFOSKIP(fd,6);
@@ -739,18 +739,18 @@ int logchrif_parse_accinfo(int fd) {
 			WFIFOL(fd, 23) = acc.logincount;
 			WFIFOL(fd, 27) = acc.state;
 			safestrncpy(WFIFOCP(fd, 31), acc.email.c_str(), acc.email.size());
-			safestrncpy(WFIFOCP(fd, 71), acc.last_ip, 16);
-			safestrncpy(WFIFOCP(fd, 87), acc.lastlogin, 24);
-			safestrncpy(WFIFOCP(fd, 111), acc.birthdate, 11);
+			safestrncpy(WFIFOCP(fd, 71), acc.last_ip.c_str(), acc.last_ip.size());
+			safestrncpy(WFIFOCP(fd, 87), acc.lastlogin.c_str(), acc.lastlogin.size());
+			safestrncpy(WFIFOCP(fd, 111), acc.birthdate.c_str(), acc.birthdate.size());
 			if ((unsigned int)u_group >= acc.group_id) {
-				safestrncpy(WFIFOCP(fd, 122), acc.pass.data(), 33);
-				safestrncpy(WFIFOCP(fd, 155), acc.pincode, PINCODE_LENGTH);
+				safestrncpy(WFIFOCP(fd, 122), acc.pass.c_str(), acc.pass.size());
+				safestrncpy(WFIFOCP(fd, 155), acc.pincode.c_str(), acc.pincode.size());
 			}
 			else {
 				memset(WFIFOP(fd, 122), '\0', 33);
 				memset(WFIFOP(fd, 155), '\0', PINCODE_LENGTH);
 			}
-			safestrncpy(WFIFOCP(fd, 155 + PINCODE_LENGTH), acc.userid.data(), NAME_LENGTH);
+			safestrncpy(WFIFOCP(fd, 155 + PINCODE_LENGTH), acc.userid.c_str(), acc.userid.size());
 			WFIFOSET(fd, len);
 		}
 		else {

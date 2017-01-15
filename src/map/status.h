@@ -4,8 +4,8 @@
 #ifndef _STATUS_H_
 #define _STATUS_H_
 
-#include "../common/enum_operators.h"
-#include "../common/mmo.h"
+#include "../common_old/enum_operators.h"
+#include "../common_old/mmo.h"
 //#include "map.h" // e_race2
 
 enum e_race2 : uint8;

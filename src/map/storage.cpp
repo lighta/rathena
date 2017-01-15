@@ -4,10 +4,10 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "../common/db.h"
-#include "../common/nullpo.h"
-#include "../common/malloc.h"
-#include "../common/showmsg.h"
+#include "../common_old/db.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/malloc.h"
+#include "../common_old/showmsg.h"
 
 #include "map.h" // struct s_map_session_data
 #include "chrif.h"

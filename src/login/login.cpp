@@ -14,19 +14,19 @@
 #include <string.h>
 #include <string>
 
-#include "../common/core.h"
-#include "../common/db.h"
-#include "../common/malloc.h"
-#include "../common/md5calc.h"
-#include "../common/random.h"
-#include "../common/showmsg.h"
-#include "../common/socket.h" //ip2str
-#include "../common/strlib.h"
-#include "../common/timer.h"
-#include "../common/msg_conf.h"
-#include "../common/cli.h"
-#include "../common/utils.h"
-#include "../common/mmo.h"
+#include "../common_old/core.h"
+#include "../common_old/db.h"
+#include "../common_old/malloc.h"
+#include "../common_old/md5calc.h"
+#include "../common_old/random.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/socket.h" //ip2str
+#include "../common_old/strlib.h"
+#include "../common_old/timer.h"
+#include "../common_old/msg_conf.h"
+#include "../common_old/cli.h"
+#include "../common_old/utils.h"
+#include "../common_old/mmo.h"
 #include "../config/core.h"
 
 #include "account.h"
@@ -231,21 +231,20 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
 
 	// check if the account doesn't exist already
 	if( accounts->load_str(accounts, &acc, userid) ) {
-		ShowNotice("Attempt of creation of an already existant account (account: %s_%c, pass: %s, received pass: %s)\n", userid, sex, acc.pass, pass);
+		ShowNotice("Attempt of creation of an already existant account (account: %s_%c, pass: %s, received pass: %s)\n", userid, sex, acc.pass.c_str(), pass);
 		return 1; // 1 = Incorrect Password
 	}
 
-	memset(&acc, '\0', sizeof(acc));
 	acc.account_id = -1; // assigned by account db
-	safestrncpy(acc.userid.data(), userid, acc.userid.size());
-	safestrncpy(acc.pass.data(), pass, acc.pass.size());
+	acc.userid = userid;
+	acc.pass = pass;
 	acc.sex = sex;
 	acc.email = std::string("a@a.com");
-	acc.expiration_time = ( login_config.start_limited_time != -1 ) ? time(NULL) + login_config.start_limited_time : 0;
-	safestrncpy(acc.lastlogin, "0000-00-00 00:00:00", sizeof(acc.lastlogin));
-	safestrncpy(acc.last_ip, last_ip, sizeof(acc.last_ip));
-	safestrncpy(acc.birthdate, "0000-00-00", sizeof(acc.birthdate));
-	safestrncpy(acc.pincode, "", sizeof(acc.pincode));
+	acc.expiration_time = ( login_config.start_limited_time != -1 ) ? time(nullptr) + login_config.start_limited_time : 0;
+	acc.lastlogin = "0000-00-00 00:00:00";
+	acc.last_ip = last_ip;
+	acc.birthdate = "0000-00-00";
+	acc.pincode = "";
 	acc.pincode_change = 0;
 	acc.char_slots = MIN_CHARS;
 #ifdef VIP_ENABLE
@@ -255,7 +254,7 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
 	if( !accounts->create(accounts, &acc) )
 		return 0;
 
-	ShowNotice("Account creation (account %s, id: %d, pass: %s, sex: %c)\n", acc.userid, acc.account_id, acc.pass.data(), acc.sex);
+	ShowNotice("Account creation (account %s, id: %d, pass: %s, sex: %c)\n", acc.userid.c_str(), acc.account_id, acc.pass.c_str(), acc.sex);
 
 	if( DIFF_TICK(tick, new_reg_tick) > 0 ) {// Update the registration check.
 		num_regs = 0;
@@ -337,8 +336,8 @@ int login_mmo_auth(struct s_login_session_data* sd, bool isServer) {
 		return 0; // 0 = Unregistered ID
 	}
 
-	if( !login_check_password(sd->md5key, sd->passwdenc, sd->passwd, acc.pass.data()) ) {
-		ShowNotice("Invalid password (account: '%s', pass: '%s', received pass: '%s', ip: %s)\n", sd->userid, acc.pass.data(), sd->passwd, ip);
+	if( !login_check_password(sd->md5key, sd->passwdenc, sd->passwd, acc.pass.c_str()) ) {
+		ShowNotice("Invalid password (account: '%s', pass: '%s', received pass: '%s', ip: %s)\n", sd->userid, acc.pass.c_str(), sd->passwd, ip);
 		return 1; // 1 = Incorrect Password
 	}
 
@@ -397,13 +396,15 @@ int login_mmo_auth(struct s_login_session_data* sd, bool isServer) {
 	sd->account_id = acc.account_id;
 	sd->login_id1 = rnd() + 1;
 	sd->login_id2 = rnd() + 1;
-	safestrncpy(sd->lastlogin, acc.lastlogin, sizeof(sd->lastlogin));
+	safestrncpy(sd->lastlogin, acc.lastlogin.c_str(), sizeof(sd->lastlogin));
 	sd->sex = acc.sex;
 	sd->group_id = acc.group_id;
 
 	// update account data
-	timestamp2string(acc.lastlogin, sizeof(acc.lastlogin), time(NULL), "%Y-%m-%d %H:%M:%S");
-	safestrncpy(acc.last_ip, ip, sizeof(acc.last_ip));
+	char strTime[24];
+	//tbd use something else, more c++ friendly
+	acc.lastlogin = timestamp2string(strTime, sizeof(strTime), time(nullptr), "%Y-%m-%d %H:%M:%S");  
+	acc.last_ip = ip;
 	acc.unban_time = 0;
 	acc.logincount++;
 

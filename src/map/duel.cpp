@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "../common/timer.h"  // gettick
+#include "../common_old/timer.h"  // gettick
 
 #include "atcommand.h"  // msg_txt
 #include "clif.h"

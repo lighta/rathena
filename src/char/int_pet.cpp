@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/mmo.h"
-#include "../common/malloc.h"
-#include "../common/socket.h"
-#include "../common/strlib.h"
-#include "../common/showmsg.h"
-#include "../common/utils.h"
-#include "../common/sql.h"
+#include "../common_old/mmo.h"
+#include "../common_old/malloc.h"
+#include "../common_old/socket.h"
+#include "../common_old/strlib.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/utils.h"
+#include "../common_old/sql.h"
 #include "char.h"
 #include "inter.h"
 #include "int_pet.h"

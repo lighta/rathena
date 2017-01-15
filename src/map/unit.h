@@ -4,7 +4,7 @@
 #ifndef _UNIT_H_
 #define _UNIT_H_
 
-#include "../common/cbasetypes.h"
+#include "../common_old/cbasetypes.h"
 
 //#include "map.h"
 enum e_sc_type : int16;

@@ -4,7 +4,7 @@
 #ifndef _INTER_SQL_H_
 #define _INTER_SQL_H_
 
-#include "../common/sql.h"
+#include "../common_old/sql.h"
 
 #define inter_cfgName "conf/inter_athena.conf"
 
