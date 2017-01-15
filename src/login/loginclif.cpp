@@ -196,7 +196,7 @@ namespace ra {
       }
 
       if ((result == 0 || result == 1) && login_config.dynamic_pass_failure_ban)
-        ipban_log(ip); // log failed password attempt
+        c_ModuleIpBan::smGetInstance().ipban_log(ip); // log failed password attempt
 
       //#if PACKETVER >= 20120000 /* not sure when this started */
       if (sd->version >= date2version(20120000)) { /* not sure when this started */
@@ -469,7 +469,7 @@ namespace ra {
 
       if (sd == NULL) {
         // Perform ip-ban check
-        if (login_config.ipban && ipban_check(ipl)) {
+        if (login_config.ipban && c_ModuleIpBan::smGetInstance().ipban_check(ipl)) {
           ShowStatus("Connection refused: IP isn't authorised (deny/allow, ip: %s).\n", ip);
           login_log(ipl, "unknown", -3, "ip banned");
           WFIFOHEAD(fd, 23);

@@ -18,7 +18,7 @@
 
 namespace ra {
     namespace login {
-
+        //TBD those struct, could probably move into c_ModuleAccount class scope
         struct s_AccountDBIterator {
             /// Destroys this iterator, releasing all allocated memory (including itself).
             ///

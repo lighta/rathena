@@ -673,7 +673,7 @@ namespace ra {
           if (accounts && accounts->set_property(accounts, w1, w2))
             continue;
           // try others
-          ipban_config_read(w1, w2);
+          c_ModuleIpBan::smGetInstance().ipban_config_read(w1, w2);
           loginlog_config_read(w1, w2);
         }
       }
@@ -752,7 +752,7 @@ void do_final(void) {
     loginlog_final();
 
   do_final_msg();
-  ipban_final();
+  c_ModuleIpBan::smGetInstance().ipban_final();
   do_final_loginclif();
   do_final_logincnslif();
 
@@ -840,7 +840,7 @@ int do_init(int argc, char** argv) {
     loginlog_init();
 
   // initialize static and dynamic ipban system
-  ipban_init();
+  c_ModuleIpBan::smGetInstance().ipban_init();
 
   // Online user database init
   online_db = idb_alloc(DB_OPT_RELEASE_DATA);
