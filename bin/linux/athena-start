@@ -1,5 +1,7 @@
 #!/bin/sh
 
+cd "$(dirname "$0")"
+
 #source var/function
 . ./function.sh
 inst_launch_workaround

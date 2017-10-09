@@ -72,6 +72,24 @@ set(CMAKE_CXX_CREATE_SHARED_LIBRARY)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_RELEASE_POSTFIX "r")
 
+#link folder to bin folder
+function(SYMLINK_FOLDER TARGETNAME)
+  if(UNIX)
+   add_custom_command(TARGET ${TARGETNAME} POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/link_folder.sh)
+  elseif(APPLE)
+   add_custom_command(TARGET ${TARGETNAME} POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/link_folder.sh)
+  elseif(WIN32)
+   add_custom_command(TARGET ${TARGETNAME} POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../link_folder.bat)
+  elseif(CYGWIN)
+   add_custom_command(TARGET ${TARGETNAME} POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../link_folder.bat)
+  elseif(MINGW)
+   add_custom_command(TARGET ${TARGETNAME} POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../link_folder.bat) 
+  elseif(MSYS) 
+   add_custom_command(TARGET ${TARGETNAME} POST_BUILD COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../link_folder.bat)
+  endif()
+  message( STATUS "Symlink target for ${TARGETNAME} - done" )
+endfunction(SYMLINK_FOLDER)
+
 #
 # Prevent building in the source directory
 #
