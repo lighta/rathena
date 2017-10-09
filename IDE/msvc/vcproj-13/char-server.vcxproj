@@ -18,6 +18,42 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\char\char.cpp" />
+    <ClCompile Include="..\..\..\src\char\char_clif.cpp" />
+    <ClCompile Include="..\..\..\src\char\char_cnslif.cpp" />
+    <ClCompile Include="..\..\..\src\char\char_logif.cpp" />
+    <ClCompile Include="..\..\..\src\char\char_mapif.cpp" />
+    <ClCompile Include="..\..\..\src\char\inter.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_auction.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_elemental.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_guild.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_homun.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_mail.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_mercenary.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_party.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_pet.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_quest.cpp" />
+    <ClCompile Include="..\..\..\src\char\int_storage.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\char\char.h" />
+    <ClInclude Include="..\..\..\src\char\char_clif.h" />
+    <ClInclude Include="..\..\..\src\char\char_cnslif.h" />
+    <ClInclude Include="..\..\..\src\char\char_logif.h" />
+    <ClInclude Include="..\..\..\src\char\char_mapif.h" />
+    <ClInclude Include="..\..\..\src\char\inter.h" />
+    <ClInclude Include="..\..\..\src\char\int_auction.h" />
+    <ClInclude Include="..\..\..\src\char\int_elemental.h" />
+    <ClInclude Include="..\..\..\src\char\int_guild.h" />
+    <ClInclude Include="..\..\..\src\char\int_homun.h" />
+    <ClInclude Include="..\..\..\src\char\int_mail.h" />
+    <ClInclude Include="..\..\..\src\char\int_mercenary.h" />
+    <ClInclude Include="..\..\..\src\char\int_party.h" />
+    <ClInclude Include="..\..\..\src\char\int_pet.h" />
+    <ClInclude Include="..\..\..\src\char\int_quest.h" />
+    <ClInclude Include="..\..\..\src\char\int_storage.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FED3A941-0AF7-49FE-85CF-E1DFDC0EBB23}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -155,42 +191,6 @@
       <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\char\char.h" />
-    <ClInclude Include="..\..\src\char\char_clif.h" />
-    <ClInclude Include="..\..\src\char\char_cnslif.h" />
-    <ClInclude Include="..\..\src\char\char_logif.h" />
-    <ClInclude Include="..\..\src\char\char_mapif.h" />
-    <ClInclude Include="..\..\src\char\inter.h" />
-    <ClInclude Include="..\..\src\char\int_auction.h" />
-    <ClInclude Include="..\..\src\char\int_elemental.h" />
-    <ClInclude Include="..\..\src\char\int_guild.h" />
-    <ClInclude Include="..\..\src\char\int_homun.h" />
-    <ClInclude Include="..\..\src\char\int_mail.h" />
-    <ClInclude Include="..\..\src\char\int_mercenary.h" />
-    <ClInclude Include="..\..\src\char\int_party.h" />
-    <ClInclude Include="..\..\src\char\int_pet.h" />
-    <ClInclude Include="..\..\src\char\int_quest.h" />
-    <ClInclude Include="..\..\src\char\int_storage.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\char\char.c" />
-    <ClCompile Include="..\..\src\char\char_clif.c" />
-    <ClCompile Include="..\..\src\char\char_cnslif.c" />
-    <ClCompile Include="..\..\src\char\char_logif.c" />
-    <ClCompile Include="..\..\src\char\char_mapif.c" />
-    <ClCompile Include="..\..\src\char\inter.c" />
-    <ClCompile Include="..\..\src\char\int_auction.c" />
-    <ClCompile Include="..\..\src\char\int_elemental.c" />
-    <ClCompile Include="..\..\src\char\int_guild.c" />
-    <ClCompile Include="..\..\src\char\int_homun.c" />
-    <ClCompile Include="..\..\src\char\int_mail.c" />
-    <ClCompile Include="..\..\src\char\int_mercenary.c" />
-    <ClCompile Include="..\..\src\char\int_party.c" />
-    <ClCompile Include="..\..\src\char\int_pet.c" />
-    <ClCompile Include="..\..\src\char\int_quest.c" />
-    <ClCompile Include="..\..\src\char\int_storage.c" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

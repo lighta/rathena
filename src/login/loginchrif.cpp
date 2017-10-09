@@ -27,7 +27,7 @@ namespace ra {
 
     //tmp outside for now, should be integrate int logchrif_parse(int fd) 
     int logchrif_parse(int fd) {
-      c_ModuleChrif::smGetInstance().logchrif_parse(fd);
+      return c_ModuleChrif::smGetInstance().logchrif_parse(fd);
     }
     
     /**

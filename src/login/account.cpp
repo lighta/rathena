@@ -9,6 +9,7 @@
 #include "account.h"
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm> //min / max
 
 
 #include "../common_old/malloc.h"
@@ -334,7 +335,7 @@ namespace ra {
         Sql_GetData(sql_handle, 0, &data, &len);
         account_id = (data != NULL) ? atoi(data) : 0;
         Sql_FreeResult(sql_handle);
-        account_id = std::max((uint32_t) START_ACCOUNT_NUM, account_id);
+        account_id = max((uint32_t) START_ACCOUNT_NUM, account_id);
       }
 
       // reached max account. (if 0 is historique, should neverbe true)

@@ -61,52 +61,52 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\char\char.cpp">
+    <ClCompile Include="..\..\src\char\char.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\char_clif.cpp">
+    <ClCompile Include="..\..\src\char\char_clif.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\char_cnslif.cpp">
+    <ClCompile Include="..\..\src\char\char_cnslif.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\char_logif.cpp">
+    <ClCompile Include="..\..\src\char\char_logif.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\char_mapif.cpp">
+    <ClCompile Include="..\..\src\char\char_mapif.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_auction.cpp">
+    <ClCompile Include="..\..\src\char\inter.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_elemental.cpp">
+    <ClCompile Include="..\..\src\char\int_auction.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_guild.cpp">
+    <ClCompile Include="..\..\src\char\int_elemental.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_homun.cpp">
+    <ClCompile Include="..\..\src\char\int_guild.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_mail.cpp">
+    <ClCompile Include="..\..\src\char\int_homun.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_mercenary.cpp">
+    <ClCompile Include="..\..\src\char\int_mail.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_party.cpp">
+    <ClCompile Include="..\..\src\char\int_mercenary.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_pet.cpp">
+    <ClCompile Include="..\..\src\char\int_party.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_quest.cpp">
+    <ClCompile Include="..\..\src\char\int_pet.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\int_storage.cpp">
+    <ClCompile Include="..\..\src\char\int_quest.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\char\inter.cpp">
+    <ClCompile Include="..\..\src\char\int_storage.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

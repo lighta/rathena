@@ -188,7 +188,7 @@ netbuf netbuffer_get( sysint sz ){
 }//end: netbuffer_get()
 
 
-void netbuffer_put( netbuf nb ){
+void netbuffer_put( netbuf_t nb ){
 	
 	// Decrement reference counter, if > 0 do nothing :)
 	if( InterlockedDecrement(&nb->refcnt) > 0 )
@@ -209,7 +209,7 @@ void netbuffer_put( netbuf nb ){
 }//end: netbuffer_put()
 
 
-void netbuffer_incref( netbuf nb ){
+void netbuffer_incref( netbuf_t nb ){
 	
 	InterlockedIncrement(&nb->refcnt);
 	

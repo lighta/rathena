@@ -1,7 +1,12 @@
 @ECHO OFF
-IF "%1"=="" GOTO DIRECT
-IF "%2"=="" GOTO DIRECT
-IF NOT EXIST "%1" GOTO NOTFOUND
+
+set cud_dir=%~dp0
+cd %cud_dir%
+
+IF "%~1"=="" GOTO DIRECT
+IF "%~2"=="" GOTO DIRECT
+IF "%~3"=="" GOTO DIRECT
+IF NOT EXIST "%~3/%~1" GOTO NOTFOUND
 GOTO START
 
 REM == How RESTART_9X and RESTART_NT works =========================

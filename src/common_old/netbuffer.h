@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-typedef struct netbuf{
+struct netbuf {
 	sysint	pool;				// The pool ID this buffer belongs to,
 								// is set to -1 if its an emergency allocated buffer 
 	
@@ -41,7 +41,8 @@ typedef struct netbuf{
 
 	// The Bufferspace itself.
 	char buf[32];
-} *netbuf;
+};
+typedef struct netbuf* netbuf_t;
 
 
 void netbuffer_init();
@@ -57,7 +58,7 @@ void netbuffer_final();
  *
  * @return pointer to netbuf struct
  */
-netbuf netbuffer_get( sysint sz );
+netbuf_t netbuffer_get( sysint sz );
 
 
 /** 
@@ -65,7 +66,7 @@ netbuf netbuffer_get( sysint sz );
  *
  * @param buf - the buffer to return 
  */
-void netbuffer_put( netbuf buf );
+void netbuffer_put( netbuf_t buf );
 
 
 /** 
@@ -73,7 +74,7 @@ void netbuffer_put( netbuf buf );
  * (used for areasends .. etc)
  *
  */
-void netbuffer_incref( netbuf buf );
+void netbuffer_incref( netbuf_t buf );
 
 
 // Some Useful macros

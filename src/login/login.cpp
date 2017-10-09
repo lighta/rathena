@@ -291,7 +291,7 @@ namespace ra {
      */
     int login_mmo_auth(struct s_login_session_data* sd, bool isServer) {
       struct s_mmo_account acc;
-      int len;
+      size_t len;
 
       char ip[16];
       ip2str(session[sd->fd]->client_addr, ip);
