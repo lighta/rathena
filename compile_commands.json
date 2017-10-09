@@ -1,0 +1,522 @@
+[
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/__/__/3rdparty/mt19937ar/mt19937ar.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar/mt19937ar.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar/mt19937ar.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/conf.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/conf.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/conf.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/core.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/core.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/core.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/db.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/db.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/db.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/des.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/des.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/des.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/ers.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/ers.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/ers.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/grfio.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/grfio.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/grfio.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/malloc.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/malloc.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/malloc.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/mapindex.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/mapindex.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/mapindex.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/md5calc.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/md5calc.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/md5calc.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/nullpo.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/nullpo.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/nullpo.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/random.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/random.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/random.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/showmsg.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/showmsg.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/showmsg.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/socket.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/socket.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/socket.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/strlib.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/strlib.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/strlib.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/timer.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/timer.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/timer.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/utils.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/utils.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/utils.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/thread.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/thread.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/thread.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/mutex.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/mutex.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/mutex.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/mempool.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/mempool.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/mempool.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/raconf.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/raconf.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/raconf.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/msg_conf.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/msg_conf.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/msg_conf.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/cli.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/cli.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/cli.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/__/__/3rdparty/libconfig/grammar.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/grammar.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/grammar.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/__/__/3rdparty/libconfig/libconfig.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/libconfig.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/libconfig.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/__/__/3rdparty/libconfig/scanctx.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanctx.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanctx.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/__/__/3rdparty/libconfig/scanner.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanner.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanner.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/common_base.dir/__/__/3rdparty/libconfig/strbuf.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/strbuf.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/strbuf.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/common",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/mt19937ar -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig -I/usr/include/mysql  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -o CMakeFiles/common.dir/sql.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/sql.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/sql.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/login",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DWITH_SQL -o CMakeFiles/login-server.dir/account.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/login/account.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/login/account.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/login",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DWITH_SQL -o CMakeFiles/login-server.dir/ipban.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/login/ipban.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/login/ipban.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/login",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DWITH_SQL -o CMakeFiles/login-server.dir/login.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/login/login.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/login/login.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/login",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DWITH_SQL -o CMakeFiles/login-server.dir/loginclif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/login/loginclif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/login/loginclif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/login",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DWITH_SQL -o CMakeFiles/login-server.dir/loginchrif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/login/loginchrif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/login/loginchrif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/login",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DWITH_SQL -o CMakeFiles/login-server.dir/logincnslif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/login/logincnslif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/login/logincnslif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/login",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DWITH_SQL -o CMakeFiles/login-server.dir/loginlog.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/login/loginlog.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/login/loginlog.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/char.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/char.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/char.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/char_clif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/char_clif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/char_clif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/char_cnslif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/char_cnslif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/char_cnslif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/char_logif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/char_logif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/char_logif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/char_mapif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/char_mapif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/char_mapif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_auction.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_auction.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_auction.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_elemental.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_elemental.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_elemental.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_guild.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_guild.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_guild.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_homun.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_homun.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_homun.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_mail.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_mail.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_mail.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_mercenary.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_mercenary.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_mercenary.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_party.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_party.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_party.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_pet.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_pet.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_pet.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_quest.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_quest.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_quest.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/int_storage.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/int_storage.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/int_storage.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/char",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -o CMakeFiles/char-server.dir/inter.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/char/inter.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/char/inter.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/atcommand.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/atcommand.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/atcommand.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/battle.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/battle.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/battle.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/battleground.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/battleground.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/battleground.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/buyingstore.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/buyingstore.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/buyingstore.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/chat.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/chat.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/chat.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/chrif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/chrif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/chrif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/clif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/clif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/clif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/date.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/date.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/date.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/duel.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/duel.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/duel.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/elemental.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/elemental.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/elemental.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/guild.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/guild.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/guild.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/homunculus.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/homunculus.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/homunculus.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/instance.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/instance.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/instance.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/intif.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/intif.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/intif.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/itemdb.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/itemdb.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/itemdb.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/log.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/log.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/log.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/mail.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/mail.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/mail.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/map.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/map.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/map.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/mapreg.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/mapreg.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/mapreg.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/mercenary.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/mercenary.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/mercenary.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/mob.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/mob.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/mob.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/npc.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/npc.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/npc.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/npc_chat.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/npc_chat.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/npc_chat.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/party.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/party.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/party.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/path.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/path.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/path.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/pc.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/pc.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/pc.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/pc_groups.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/pc_groups.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/pc_groups.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/pet.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/pet.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/pet.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/quest.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/quest.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/quest.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/script.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/script.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/script.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/searchstore.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/searchstore.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/searchstore.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/skill.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/skill.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/skill.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/status.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/status.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/status.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/storage.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/storage.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/storage.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/trade.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/trade.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/trade.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/unit.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/unit.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/unit.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/vending.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/vending.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/vending.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/cashshop.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/cashshop.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/cashshop.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/map",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DLIBCONFIG_STATIC -DPCRE_SUPPORT -o CMakeFiles/map-server.dir/channel.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/map/channel.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/map/channel.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/common/core.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/core.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/core.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/common/malloc.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/malloc.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/malloc.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/common/showmsg.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/showmsg.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/showmsg.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/common/strlib.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/strlib.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/strlib.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/__/3rdparty/libconfig/grammar.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/grammar.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/grammar.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/__/3rdparty/libconfig/libconfig.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/libconfig.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/libconfig.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/__/3rdparty/libconfig/scanctx.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanctx.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanctx.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/__/3rdparty/libconfig/scanner.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanner.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/scanner.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/gcc   -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/__/3rdparty/libconfig/strbuf.c.o   -c /home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/strbuf.c",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig/strbuf.c"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/common/des.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/des.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/des.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/common/grfio.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/grfio.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/grfio.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/__/common/utils.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/common/utils.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/common/utils.cpp"
+},
+{
+  "directory": "/home/lighta/Documents/Dev/RO/rathena/src/tool",
+  "command": "/bin/g++    -I/home/lighta/Documents/Dev/RO/rathena/src/common -I/usr/local/include -I/home/lighta/Documents/Dev/RO/rathena/3rdparty/libconfig  -g3 -gdwarf-2    -DHAVE_MONOTONIC_CLOCK -DHAVE_SETRLIMIT -DHAVE_STRNLEN -DHAVE_GETPID -DMINICORE -DLIBCONFIG_STATIC -o CMakeFiles/mapcache.dir/mapcache.cpp.o -c /home/lighta/Documents/Dev/RO/rathena/src/tool/mapcache.cpp",
+  "file": "/home/lighta/Documents/Dev/RO/rathena/src/tool/mapcache.cpp"
+}
+]

@@ -1,10 +1,9 @@
 // Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
+#include "char_cnslif.h"
 
 #include <stdlib.h>
 #include <string.h>
-
-#include "char_cnslif.h"
 
 #include "../common_old/socket.h"
 #include "../common_old/showmsg.h"

@@ -1,5 +1,6 @@
 // Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
+#include "char_logif.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -14,7 +15,7 @@
 #include "int_guild.h"
 #include "char.h"
 #include "char_clif.h"
-#include "char_logif.h"
+
 #include "char_mapif.h"
 
 
@@ -297,7 +298,7 @@ int chlogif_parse_ackconnect(int fd, struct s_char_session_data* sd){
 }
 
 int chlogif_parse_ackaccreq(int fd, struct s_char_session_data* sd){
-	if (RFIFOREST(fd) < 25)
+	if (RFIFOREST(fd) < 21)
 		return 0;
 	{
 		uint32 account_id = RFIFOL(fd,2);
@@ -306,19 +307,14 @@ int chlogif_parse_ackaccreq(int fd, struct s_char_session_data* sd){
 		uint8 sex = RFIFOB(fd,14);
 		uint8 result = RFIFOB(fd,15);
 		int request_id = RFIFOL(fd,16);
-		uint32 version = RFIFOL(fd,20);
-		uint8 clienttype = RFIFOB(fd,24);
-		RFIFOSKIP(fd,25);
+		uint8 clienttype = RFIFOB(fd,20);
+		RFIFOSKIP(fd,21);
 
-		if( session_isActive(request_id) && (sd=(struct s_char_session_data*)session[request_id]->session_data) &&
+		if( session_isActive(request_id) && (sd=(s_char_session_data*)session[request_id]->session_data) &&
 			!sd->auth && sd->account_id == account_id && sd->login_id1 == login_id1 && sd->login_id2 == login_id2 && sd->sex == sex )
 		{
 			int client_fd = request_id;
-			sd->version = version;
 			sd->clienttype = clienttype;
-			if(sd->version != date2version(PACKETVER))
-				ShowWarning("aid=%d has an incorect version=%d in clientinfo. Server compiled for %d\n",
-					sd->account_id,sd->version,date2version(PACKETVER));
 
 			switch( result )
 			{
@@ -374,8 +370,7 @@ int chlogif_parse_reqaccdata(int fd, struct s_char_session_data* sd){
 			// send characters to player
 			chclif_mmo_char_send(u_fd, sd);
 #if PACKETVER_SUPPORTS_PINCODE
-			if(sd->version >= date2version(20110309))
-				chlogif_pincode_start(u_fd,sd);
+			chlogif_pincode_start(u_fd,sd);
 #endif
 		}
 	}
@@ -404,7 +399,7 @@ int chlogif_parse_keepalive(int fd, struct s_char_session_data* sd){
  */
 void chlogif_parse_change_sex_sub(int sex, int acc, int char_id, int class_, int guild_id)
 {
-	// job modification
+	// job modification //tbd switch would be faster
 	if (class_ == JOB_BARD || class_ == JOB_DANCER)
 		class_ = (sex == SEX_MALE ? JOB_BARD : JOB_DANCER);
 	else if (class_ == JOB_CLOWN || class_ == JOB_GYPSY)
@@ -419,6 +414,8 @@ void chlogif_parse_change_sex_sub(int sex, int acc, int char_id, int class_, int
 		class_ = (sex == SEX_MALE ? JOB_BABY_MINSTREL : JOB_BABY_WANDERER);
 	else if (class_ == JOB_KAGEROU || class_ == JOB_OBORO)
 		class_ = (sex == SEX_MALE ? JOB_KAGEROU : JOB_OBORO);
+	else if (class_ == JOB_BABY_KAGEROU || class_ == JOB_BABY_OBORO)
+		class_ = (sex == SEX_MALE ? JOB_BABY_KAGEROU : JOB_BABY_OBORO);
 
 	if (SQL_ERROR == Sql_Query(sql_handle, "UPDATE `%s` SET `equip` = '0' WHERE `char_id` = '%d'", schema_config.inventory_db, char_id))
 		Sql_ShowDebug(sql_handle);
@@ -640,20 +637,20 @@ int chlogif_parse_vipack(int fd) {
 
 /**
  * HA 0x2742
- * Request vip data from loginserv
+ * Request vip data to loginserv
  * @param aid : account_id to request the vip data
  * @param flag : 0x1 Select info and update old_groupid, 0x2 VIP duration is changed by atcommand or script, 0x8 First request on player login
  * @param add_vip_time : tick to add to vip timestamp
  * @param mapfd: link to mapserv for ack
  * @return 0 if success
  */
-int chlogif_reqvipdata(uint32 aid, uint8 type, int32 timediff, int mapfd) {
+int chlogif_reqvipdata(uint32 aid, uint8 flag, int32 timediff, int mapfd) {
 	loginif_check(-1);
 #ifdef VIP_ENABLE
 	WFIFOHEAD(login_fd,15);
 	WFIFOW(login_fd,0) = 0x2742;
 	WFIFOL(login_fd,2) = aid; //aid
-	WFIFOB(login_fd,6) = type; //type
+	WFIFOB(login_fd,6) = flag; //flag
 	WFIFOL(login_fd,7) = timediff; //req_inc_duration
 	WFIFOL(login_fd,11) = mapfd; //req_inc_duration
 	WFIFOSET(login_fd,15);
@@ -666,7 +663,7 @@ int chlogif_reqvipdata(uint32 aid, uint8 type, int32 timediff, int mapfd) {
 * Request account info to login-server
 */
 int chlogif_req_accinfo(int fd, int u_fd, int u_aid, int u_group, int account_id, int8 type) {
-	chlogif_isconnected();
+	loginif_check(-1);
 	//ShowInfo("%d request account info for %d (type %d)\n", u_aid, account_id, type);
 	WFIFOHEAD(login_fd,23);
 	WFIFOW(login_fd,0) = 0x2720;

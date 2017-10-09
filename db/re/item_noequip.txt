@@ -73,6 +73,7 @@
 //----------------------------------------------------------------------------
 // GVG
 //----------------------------------------------------------------------------
+605,4		// Anodyne
 12218,4		// Assumptio_5_Scroll
 14529,4		// Greed_Scroll
 14590,4		// Pty_Assumptio_Scroll
@@ -184,6 +185,13 @@
 12388,16	// Runstone_Crush
 12389,16	// Runstone_Storm
 12390,16	// Runstone_Millennium
+12422,16	// HP_Increase_Potion_(Small)
+12423,16	// HP_Increase_Potion_(Medium)
+12424,16	// HP_Increase_Potion_(Large)
+12425,16	// SP_Increase_Potion_(Small)
+12426,16	// SP_Increase_Potion_(Medium)
+12427,16	// SP_Increase_Potion_(Large)
+12428,16	// Concentrated_White_Potion_Z
 12429,16	// Savage_Full_Roast
 12430,16	// Cocktail_Warg_Blood
 12431,16	// Minor_Stew

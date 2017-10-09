@@ -1,5 +1,6 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
+#include "int_elemental.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +12,7 @@
 #include "../common_old/sql.h"
 #include "char.h"
 #include "inter.h"
-#include "int_elemental.h"
+
 
 bool mapif_elemental_save(struct s_elemental* ele) {
 	bool flag = true;
@@ -19,7 +20,7 @@ bool mapif_elemental_save(struct s_elemental* ele) {
 	if( ele->elemental_id == 0 ) { // Create new DB entry
 		if( SQL_ERROR == Sql_Query(sql_handle,
 								   "INSERT INTO `%s` (`char_id`,`class`,`mode`,`hp`,`sp`,`max_hp`,`max_sp`,`atk1`,`atk2`,`matk`,`aspd`,`def`,`mdef`,`flee`,`hit`,`life_time`)"
-								   "VALUES ('%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%d','%u')",
+								   "VALUES ('%d','%d','%d','%u','%u','%u','%u','%d','%d','%d','%d','%d','%d','%d','%d','%u')",
 								   schema_config.elemental_db, ele->char_id, ele->class_, ele->mode, ele->hp, ele->sp, ele->max_hp, ele->max_sp, ele->atk, ele->atk2, ele->matk, ele->amotion, ele->def, ele->mdef, ele->flee, ele->hit, ele->life_time) )
 		{
 			Sql_ShowDebug(sql_handle);
@@ -28,8 +29,8 @@ bool mapif_elemental_save(struct s_elemental* ele) {
 		else
 			ele->elemental_id = (int)Sql_LastInsertId(sql_handle);
 	} else if( SQL_ERROR == Sql_Query(sql_handle,
-									"UPDATE `%s` SET `char_id` = '%d', `class` = '%d', `mode` = '%d', `hp` = '%d', `sp` = '%d',"
-									"`max_hp` = '%d', `max_sp` = '%d', `atk1` = '%d', `atk2` = '%d', `matk` = '%d', `aspd` = '%d', `def` = '%d',"
+									"UPDATE `%s` SET `char_id` = '%d', `class` = '%d', `mode` = '%d', `hp` = '%u', `sp` = '%u',"
+									"`max_hp` = '%u', `max_sp` = '%u', `atk1` = '%d', `atk2` = '%d', `matk` = '%d', `aspd` = '%d', `def` = '%d',"
 									"`mdef` = '%d', `flee` = '%d', `hit` = '%d', `life_time` = '%u' WHERE `ele_id` = '%d'", schema_config.elemental_db,
 									ele->char_id, ele->class_, ele->mode, ele->hp, ele->sp, ele->max_hp, ele->max_sp, ele->atk, ele->atk2,
 									ele->matk, ele->amotion, ele->def, ele->mdef, ele->flee, ele->hit, ele->life_time, ele->elemental_id) )

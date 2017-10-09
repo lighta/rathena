@@ -6,12 +6,12 @@
  *  For more information, see LICENCE in the main folder.
  * @author rAthena Dev Team
  */
-
+#include "cli.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "cli.h"
+
 
 #ifdef WIN32
 	#include <conio.h>
@@ -64,17 +64,15 @@ bool opt_has_next_value(const char* option, int i, int argc){
  *   svn version
  *   website/forum address
  *   irc hangout
- *   Discord server
  * @param do_exit: terminate execution ?
  */
 void display_versionscreen(bool do_exit)
 {
 	const char* git = get_git_hash();
-	if( git[0] != UNKNOWN_VERSION )
+  if( git[0] != UNKNOWN_VERSION )
 		ShowInfo("rAthena Git Hash: '" CL_WHITE "%s" CL_RESET "'\n", git);
-	ShowInfo(CL_GREEN"Website/Forum:" CL_RESET "\thttp://rathena.org/\n");
-	ShowInfo(CL_GREEN"IRC Channel:" CL_RESET "\tirc://irc.rizon.net/#rathena\n");
-	ShowInfo(CL_GREEN"Discord Server:" CL_RESET "\thttps://discord.gg/0XP9qqhUV9GLSfCh\n");
+	ShowInfo(CL_GREEN "Website/Forum:" CL_RESET "\thttp://rathena.org/\n");
+	ShowInfo(CL_GREEN "IRC Channel:" CL_RESET "\tirc://irc.rizon.net/#rathena\n");
 	ShowInfo("Open " CL_WHITE "readme.txt" CL_RESET " for more information.\n");
 	if (do_exit)
 		exit(EXIT_SUCCESS);

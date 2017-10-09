@@ -315,13 +315,6 @@ namespace ra {
 
       }
 
-      //Client Version check
-      if (login_config.check_client_version && sd->version != login_config.client_version_to_connect) {
-        ShowNotice("Invalid version (account: '%s', auth_vers: '%d', received version: '%d', ip: %s)\n",
-                sd->userid, login_config.client_version_to_connect, sd->version, ip);
-        return 5;
-      }
-
       len = strnlen(sd->userid, NAME_LENGTH);
 
       // Account creation with _M/_F
@@ -403,7 +396,7 @@ namespace ra {
       ShowNotice("Authentication accepted (account: %s, id: %d, ip: %s)\n", sd->userid, acc.account_id, ip);
 
       // update session data
-      sd->gID = acc.account_id;
+      sd->account_id = acc.account_id;
       sd->login_id1 = rnd() + 1;
       sd->login_id2 = rnd() + 1;
       safestrncpy(sd->lastlogin, acc.lastlogin.c_str(), sizeof (sd->lastlogin));
@@ -420,8 +413,8 @@ namespace ra {
 
       accounts->save(accounts, &acc);
 
-      if (sd->sex != 'S' && sd->gID < START_ACCOUNT_NUM)
-        ShowWarning("Account %s has account id %d! Account IDs must be over %d to work properly!\n", sd->userid, sd->gID, START_ACCOUNT_NUM);
+      if (sd->sex != 'S' && sd->account_id < START_ACCOUNT_NUM)
+        ShowWarning("Account %s has account id %d! Account IDs must be over %d to work properly!\n", sd->userid, sd->account_id, START_ACCOUNT_NUM);
 
       return -1; // account OK
     }
@@ -602,10 +595,6 @@ namespace ra {
           login_config.new_acc_length_limit = config_switch(w2) != 0;
         else if (!strcmpi(w1, "start_limited_time"))
           login_config.start_limited_time = atoi(w2);
-        else if (!strcmpi(w1, "check_client_version"))
-          login_config.check_client_version = config_switch(w2) != 0;
-        else if (!strcmpi(w1, "client_version_to_connect"))
-          login_config.client_version_to_connect = strtoul(w2, NULL, 10);
         else if (!strcmpi(w1, "use_MD5_passwords"))
           login_config.use_md5_passwds = config_switch(w2) != 0;
         else if (!strcmpi(w1, "group_id_to_connect"))
@@ -712,9 +701,6 @@ namespace ra {
       login_config.use_md5_passwds = false;
       login_config.group_id_to_connect = -1;
       login_config.min_group_id_to_connect = -1;
-      login_config.check_client_version = false;
-      login_config.client_version_to_connect = date2version(PACKETVER); //20120410 => 30
-      ShowInfo("loginconfig: client_version_to_connect = %d\n", login_config.client_version_to_connect);
 
       login_config.ipban = true;
       login_config.dynamic_pass_failure_ban = true;

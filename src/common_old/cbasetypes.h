@@ -1,8 +1,8 @@
 #ifndef _CBASETYPES_H_
 #define _CBASETYPES_H_
 
-#include <algorithm>
-#include <utility>
+//#include <algorithm>
+//#include <utility>
 
 /*              +--------+-----------+--------+---------+
  *              | ILP32  |   LP64    |  ILP64 | (LL)P64 |
@@ -86,12 +86,19 @@
 #define __STDC_LIMIT_MACROS
 #endif
 
-#include <cctype>
-#include <cinttypes>
-#include <climits>
-#include <cstdarg>
-#include <cstddef>
-#include <cstdint>
+//#include <cctype>
+//#include <cinttypes>
+//#include <climits>
+//#include <cstdarg>
+//#include <cstddef>
+//#include <cstdint>
+
+#include <ctype.h>
+#include <inttypes.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <stdint.h>
 // temporary fix for bugreport:4961 (unintended conversion from signed to unsigned)
 // (-20 >= UCHAR_MAX) returns true
 // (-20 >= USHRT_MAX) returns true
@@ -181,7 +188,8 @@ typedef unsigned long int   ppuint32;
 //////////////////////////////////////////////////////////////////////////
 // integer with exact processor width (and best speed)
 //////////////////////////////
-//#include <cstdbool> //boolean
+#include <stddef.h> // size_t
+//#include <stdbool.h> //boolean
 
 #if defined(WIN32) && !defined(MINGW) // does not have a signed size_t
 //////////////////////////////
@@ -232,7 +240,7 @@ typedef uintptr_t uintptr;
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 #define strcasecmp			stricmp
 #define strncasecmp			strnicmp
-#define strncmpi			_strnicmp
+#define strncmpi			strnicmp
 #if defined(__BORLANDC__) || _MSC_VER < 1900
 #define snprintf			_snprintf
 #endif
@@ -258,9 +266,7 @@ typedef uintptr_t uintptr;
 #endif
 #define forceinline __forceinline
 #define ra_align(n) __declspec(align(n))
-#if _MSC_VER <= 1900
- #define _chdir chdir //1900 depreciated
-#endif
+#define _chdir chdir
 #else
 // For GCC
 #define forceinline __attribute__((always_inline)) inline
@@ -285,15 +291,16 @@ typedef char bool;
 //////////////////////////////////////////////////////////////////////////
 // macro tools
 
-#ifdef swap // just to be sure
-#undef swap
+#ifdef SWAP // just to be sure
+#undef SWAP
 #endif
-//#define swap(a,b) { int temp=a; a=b; b=temp;}
+// hmm only ints?
+//#define SWAP(a,b) { int temp=a; a=b; b=temp;}
 // if using macros then something that is type independent
-//#define swap(a,b) ((a == b) || ((a ^= b), (b ^= a), (a ^= b)))
+//#define SWAP(a,b) ((a == b) || ((a ^= b), (b ^= a), (a ^= b)))
 // Avoid "value computed is not used" warning and generates the same assembly code
 #define SWAP(a,b) if (a != b) ((a ^= b), (b ^= a), (a ^= b))
-#define swap_ptr(a,b) std::swap(a,b) 
+#define swap_ptr(a,b) if ((a) != (b)) ((a) = (void*)((intptr_t)(a) ^ (intptr_t)(b)), (b) = (void*)((intptr_t)(a) ^ (intptr_t)(b)), (a) = (void*)((intptr_t)(a) ^ (intptr_t)(b)))
 
 //////////////////////////////////////////////////////////////////////////
 // should not happen
@@ -330,7 +337,7 @@ typedef char bool;
 #define Assert(EX)
 #else
 // extern "C" {
-#include <cassert>
+#include <assert.h>
 // }
 #if !defined(DEFCPP) && defined(WIN32) && !defined(MINGW)
 #include <crtdbg.h>
@@ -342,6 +349,7 @@ typedef char bool;
 //////////////////////////////////////////////////////////////////////////
 // Has to be unsigned to avoid problems in some systems
 // Problems arise when these functions expect an argument in the range [0,256[ and are fed a signed char.
+#include <ctype.h>
 #define ISALNUM(c) (isalnum((unsigned char)(c)))
 #define ISALPHA(c) (isalpha((unsigned char)(c)))
 #define ISCNTRL(c) (iscntrl((unsigned char)(c)))
@@ -363,6 +371,7 @@ typedef char bool;
 
 //////////////////////////////////////////////////////////////////////////
 // Make sure va_copy exists
+#include <stdarg.h> // va_list, va_copy(?)
 #if !defined(va_copy)
 #if defined(__va_copy)
 #define va_copy __va_copy
@@ -384,7 +393,7 @@ typedef char bool;
 
 //////////////////////////////////////////////////////////////////////////
 // Set a pointer variable to a pointer value.
-#ifdef __cplusplus
+/*#ifdef __cplusplus
 template <typename T1, typename T2>
 void SET_POINTER(T1*&var, T2* p)
 {
@@ -401,25 +410,25 @@ void SET_FUNCPOINTER(T1& var, T2 p)
 #else
 #define SET_POINTER(var,p) (var) = (p)
 #define SET_FUNCPOINTER(var,p) (var) = (p)
-#endif
+#endif*/
 
 #ifdef max
 #undef max
 #endif
 
 #ifndef max
-inline int max(int a, int b){ return (a > b) ? a : b; } //default is int
+static inline int max(int a, int b){ return (a > b) ? a : b; } //default is int
 #endif
-inline int8 i8max(int8 a, int8 b){ return (a > b) ? a : b; }
-inline int16 i16max(int16 a, int16 b){ return (a > b) ? a : b; }
-inline int32 i32max(int32 a, int32 b){ return (a > b) ? a : b; }
-inline int64 i64max(int64 a, int64 b){ return (a > b) ? a : b; }
-inline uint32 umax(uint32 a, uint32 b){ return (a > b) ? a : b; }
-inline uint8 u8max(uint8 a, uint8 b){ return (a > b) ? a : b; }
-inline uint16 u16max(uint16 a, uint16 b){ return (a > b) ? a : b; }
-inline uint32 u32max(uint32 a, uint32 b){ return (a > b) ? a : b; }
-inline uint64 u64max(uint64 a, uint64 b){ return (a > b) ? a : b; }
-inline size_t zmax(size_t a, size_t b){ return (a > b) ? a : b; } //cause those varie
+static inline int8 i8max(int8 a, int8 b){ return (a > b) ? a : b; }
+static inline int16 i16max(int16 a, int16 b){ return (a > b) ? a : b; }
+static inline int32 i32max(int32 a, int32 b){ return (a > b) ? a : b; }
+static inline int64 i64max(int64 a, int64 b){ return (a > b) ? a : b; }
+static inline uint32 umax(uint32 a, uint32 b){ return (a > b) ? a : b; }
+static inline uint8 u8max(uint8 a, uint8 b){ return (a > b) ? a : b; }
+static inline uint16 u16max(uint16 a, uint16 b){ return (a > b) ? a : b; }
+static inline uint32 u32max(uint32 a, uint32 b){ return (a > b) ? a : b; }
+static inline uint64 u64max(uint64 a, uint64 b){ return (a > b) ? a : b; }
+static inline size_t zmax(size_t a, size_t b){ return (a > b) ? a : b; } //cause those varie
 
 #ifdef min
 #undef min
