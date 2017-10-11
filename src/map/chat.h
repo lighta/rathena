@@ -7,6 +7,7 @@
 #include "map.h" // struct s_block_list, CHATROOM_TITLE_SIZE
 
 struct s_map_session_data;
+struct s_chat_data;
 
 #define MAX_CHAT_USERS 20
 

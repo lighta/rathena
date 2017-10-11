@@ -22,6 +22,7 @@
 #include "map.h"
 #include "path.h"
 #include "chrif.h"
+#include "clan.h"
 #include "clif.h"
 #include "duel.h"
 #include "intif.h"
@@ -41,6 +42,8 @@
 #include "elemental.h"
 #include "cashshop.h"
 #include "channel.h"
+#include "achievement.h"
+
 #include "guild.h"
 #include "atcommand.h"
 #include "battle.h"
@@ -58,23 +61,30 @@ Sql* mmysql_handle;
 Sql* qsmysql_handle; /// For query_sql
 
 int db_use_sqldbs = 0;
-char buyingstores_db[32] = "buyingstores";
-char buyingstore_items_db[32] = "buyingstore_items";
-char item_db_db[32] = "item_db";
-char item_db2_db[32] = "item_db2";
-char item_db_re_db[32] = "item_db_re";
-char item_cash_db_db[32] = "item_cash_db";
-char item_cash_db2_db[32] = "item_cash_db2";
-char mob_db_db[32] = "mob_db";
-char mob_db_re_db[32] = "mob_db_re";
-char mob_db2_db[32] = "mob_db2";
-char mob_skill_db_db[32] = "mob_skill_db";
-char mob_skill_db_re_db[32] = "mob_skill_db_re";
-char mob_skill_db2_db[32] = "mob_skill_db2";
-char vendings_db[32] = "vendings";
-char vending_items_db[32] = "vending_items";
+char buyingstores_table[32] = "buyingstores";
+char buyingstore_items_table[32] = "buyingstore_items";
+char item_cash_table[32] = "item_cash_db";
+char item_cash2_table[32] = "item_cash_db2";
+#ifdef RENEWAL
+char item_table[32] = "item_db_re";
+char item2_table[32] = "item_db2_re";
+char mob_table[32] = "mob_db_re";
+char mob2_table[32] = "mob_db2_re";
+char mob_skill_table[32] = "mob_skill_db_re";
+char mob_skill2_table[32] = "mob_skill_db2_re";
+#else
+char item_table[32] = "item_db";
+char item2_table[32] = "item_db2";
+char mob_table[32] = "mob_db";
+char mob2_table[32] = "mob_db2";
+char mob_skill_table[32] = "mob_skill_db";
+char mob_skill2_table[32] = "mob_skill_db2";
+#endif
+char sales_table[32] = "sales";
+char vendings_table[32] = "vendings";
+char vending_items_table[32] = "vending_items";
 char market_table[32] = "market";
-char db_roulette_table[32] = "db_roulette";
+char roulette_table[32] = "db_roulette";
 
 // log database
 char log_db_ip[32] = "127.0.0.1";
@@ -106,7 +116,7 @@ static int block_free_count = 0, block_free_lock = 0;
 static struct s_block_list *bl_list[BL_LIST_MAX];
 static int bl_list_count = 0;
 
-#define MAP_MAX_MSG 1500
+#define MAP_MAX_MSG 1550
 
 struct s_map_data map[MAX_MAP_PER_SERVER];
 int map_num = 0;
@@ -119,16 +129,6 @@ bool agit_flag = false;
 bool agit2_flag = false;
 bool agit3_flag = false;
 int night_flag = 0; // 0=day, 1=night [Yor]
-
-const char* MSG_CONF_NAME_RUS;
-const char* MSG_CONF_NAME_SPN;
-const char* MSG_CONF_NAME_GRM;
-const char* MSG_CONF_NAME_CHN;
-const char* MSG_CONF_NAME_MAL;
-const char* MSG_CONF_NAME_IDN;
-const char* MSG_CONF_NAME_FRN;
-const char* MSG_CONF_NAME_POR;
-const char* MSG_CONF_NAME_THA;
 
 #ifdef ADJUST_SKILL_DAMAGE
 struct eri *map_skill_damage_ers = NULL;
@@ -161,6 +161,17 @@ char motd_txt[256] = "conf/motd.txt";
 char help_txt[256] = "conf/help.txt";
 char help2_txt[256] = "conf/help2.txt";
 char charhelp_txt[256] = "conf/charhelp.txt";
+char channel_conf[256] = "conf/channels.conf";
+
+const char *MSG_CONF_NAME_RUS;
+const char *MSG_CONF_NAME_SPN;
+const char *MSG_CONF_NAME_GRM;
+const char *MSG_CONF_NAME_CHN;
+const char *MSG_CONF_NAME_MAL;
+const char *MSG_CONF_NAME_IDN;
+const char *MSG_CONF_NAME_FRN;
+const char *MSG_CONF_NAME_POR;
+const char *MSG_CONF_NAME_THA;
 
 char wisp_server_name[NAME_LENGTH] = "Server"; // can be modified in char-server configuration file
 
@@ -571,210 +582,127 @@ struct s_skill_unit* map_find_skill_unit_oncell(struct s_block_list* target,int1
 /*==========================================
  * Adapted from foreachinarea for an easier invocation. [Skotlex]
  *------------------------------------------*/
-int map_foreachinrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int type, ...)
+int map_foreachinrangeV(int (*func)(struct s_block_list*,va_list),struct block_list* center, int16 range, int type, va_list ap, bool wall_check)
 {
 	int bx, by, m;
 	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
 	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
 	int x0, x1, y0, y1;
-	va_list ap;
-
+	va_list ap_copy;
+	
 	m = center->m;
+	if( m < 0 )
+		return 0;
+
 	x0 = i16max(center->x - range, 0);
 	y0 = i16max(center->y - range, 0);
-	x1 = i16min(center->x + range, map[ m ].xs - 1);
-	y1 = i16min(center->y + range, map[ m ].ys - 1);
+	x1 = i16min(center->x + range, map[m].xs - 1);
+	y1 = i16min(center->y + range, map[m].ys - 1);
 
-	if ( type&~BL_MOB )
-		for ( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
+	if ( type&~BL_MOB ) {
+		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
 			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ ) {
-				for( bl = map[m].block[ bx + by * map[ m ].bxs ]; bl != NULL; bl = bl->next ) {
+				for(bl = map[m].block[ bx + by * map[m].bxs ]; bl != NULL; bl = bl->next ) {
 					if( bl->type&type
 						&& bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
 #ifdef CIRCULAR_AREA
 						&& check_distance_bl(center, bl, range)
 #endif
-						&& bl_list_count < BL_LIST_MAX )
+						&& ( !wall_check || path_search_long(NULL, center->m, center->x, center->y, bl->x, bl->y, CELL_CHKWALL) )
+					  	&& bl_list_count < BL_LIST_MAX )
 						bl_list[ bl_list_count++ ] = bl;
 				}
 			}
 		}
+	}
 
-	if( type&BL_MOB )
+	if ( type&BL_MOB ) {
 		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
-			for(bx=x0/BLOCK_SIZE;bx<=x1/BLOCK_SIZE;bx++) {
-				for( bl = map[ m ].block_mob[ bx + by * map[ m ].bxs ]; bl != NULL; bl = bl->next ) {
+			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ ) {
+				for(bl = map[m].block_mob[ bx + by * map[m].bxs ]; bl != NULL; bl = bl->next ) {
 					if( bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
 #ifdef CIRCULAR_AREA
 						&& check_distance_bl(center, bl, range)
 #endif
-						&& bl_list_count < BL_LIST_MAX )
+						&& ( !wall_check || path_search_long(NULL, center->m, center->x, center->y, bl->x, bl->y, CELL_CHKWALL) )
+					  	&& bl_list_count < BL_LIST_MAX )
 						bl_list[ bl_list_count++ ] = bl;
 				}
 			}
 		}
+	}
 
 	if( bl_list_count >= BL_LIST_MAX )
 		ShowWarning("map_foreachinrange: block count too many!\n");
 
 	map_freeblock_lock();
 
-	for( i = blockcount; i < bl_list_count; i++ )
+	for( i = blockcount; i < bl_list_count; i++ ) {
 		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
-			va_start(ap, type);
-			returnCount += func(bl_list[ i ], ap);
-			va_end(ap);
+			va_copy(ap_copy, ap);
+			returnCount += func(bl_list[i], ap_copy);
+			va_end(ap_copy);
 		}
+	}
 
 	map_freeblock_unlock();
 
 	bl_list_count = blockcount;
 	return returnCount;	//[Skotlex]
+}
+
+int map_foreachinrange(int (*func)(struct block_list*,va_list), struct block_list* center, int16 range, int type, ...)
+{
+	int returnCount = 0;
+	va_list ap;
+ 	va_start(ap,type);
+	returnCount = map_foreachinrangeV(func,center,range,type,ap,battle_config.skill_wall_check>0);
+ 	va_end(ap);
+	return returnCount;
+}
+
+int map_foreachinallrange(int (*func)(struct block_list*,va_list), struct block_list* center, int16 range, int type, ...)
+{
+	int returnCount = 0;
+	va_list ap;
+ 	va_start(ap,type);
+	returnCount = map_foreachinrangeV(func,center,range,type,ap,false);
+ 	va_end(ap);
+	return returnCount;
 }
 
 /*==========================================
  * Same as foreachinrange, but there must be a shoot-able range between center and target to be counted in. [Skotlex]
  *------------------------------------------*/
-int map_foreachinshootrange(int (*func)(struct s_block_list*,va_list),struct s_block_list* center, int16 range, int type,...)
+int map_foreachinshootrange(int (*func)(struct block_list*,va_list),struct block_list* center, int16 range, int type,...)
 {
-	int bx, by, m;
-	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
-	struct s_block_list *bl;
-	int blockcount = bl_list_count, i;
-	int x0, x1, y0, y1;
+	int returnCount = 0;
 	va_list ap;
-
-	m = center->m;
-	if ( m < 0 )
-		return 0;
-
-	x0 = i16max(center->x-range, 0);
-	y0 = i16max(center->y-range, 0);
-	x1 = i16min(center->x+range, map[m].xs-1);
-	y1 = i16min(center->y+range, map[m].ys-1);
-
-	if ( type&~BL_MOB )
-		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
-			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ ) {
-				for( bl = map[ m ].block[ bx + by * map[ m ].bxs ]; bl != NULL; bl = bl->next ) {
-					if( bl->type&type
-						&& bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
-#ifdef CIRCULAR_AREA
-						&& check_distance_bl(center, bl, range)
-#endif
-						&& path_search_long(NULL, center->m, center->x, center->y, bl->x, bl->y, CELL_CHKWALL)
-					  	&& bl_list_count < BL_LIST_MAX )
-						bl_list[ bl_list_count++ ] = bl;
-				}
-			}
-		}
-	if( type&BL_MOB )
-		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ ) {
-			for( bx=x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ ) {
-				for( bl = map[ m ].block_mob[ bx + by * map[ m ].bxs ]; bl != NULL; bl = bl->next ) {
-					if( bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
-#ifdef CIRCULAR_AREA
-						&& check_distance_bl(center, bl, range)
-#endif
-						&& path_search_long(NULL, center->m, center->x, center->y, bl->x, bl->y, CELL_CHKWALL)
-						&& bl_list_count < BL_LIST_MAX )
-						bl_list[ bl_list_count++ ] = bl;
-				}
-			}
-		}
-
-	if( bl_list_count >= BL_LIST_MAX )
-			ShowWarning("map_foreachinrange: block count too many!\n");
-
-	map_freeblock_lock();
-
-	for( i = blockcount; i < bl_list_count; i++ )
-		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
-			va_start(ap, type);
-			returnCount += func(bl_list[ i ], ap);
-			va_end(ap);
-		}
-
-	map_freeblock_unlock();
-
-	bl_list_count = blockcount;
-	return returnCount;	//[Skotlex]
+ 	va_start(ap,type);
+	returnCount = map_foreachinrangeV(func,center,range,type,ap,true);
+ 	va_end(ap);
+	return returnCount;
 }
 
-/*==========================================
- * range = map m (x0,y0)-(x1,y1)
- * Apply *func with ... arguments for the range.
- * @type = BL_PC/BL_MOB etc..
- *------------------------------------------*/
-int map_foreachinarea(int (*func)(struct s_block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
-{
-	int bx, by;
-	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
-	struct s_block_list *bl;
-	int blockcount = bl_list_count, i;
-	va_list ap;
-
-	if ( m < 0 || m >= map_num)
-		return 0;
-
-	if ( x1 < x0 )
-		SWAP(x0, x1);
-	if ( y1 < y0 )
-		SWAP(y0, y1);
-
-	x0 = i16max(x0, 0);
-	y0 = i16max(y0, 0);
-	x1 = i16min(x1, map[ m ].xs - 1);
-	y1 = i16min(y1, map[ m ].ys - 1);
-	if ( type&~BL_MOB )
-		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ )
-			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ )
-				for( bl = map[ m ].block[ bx + by * map[ m ].bxs ]; bl != NULL; bl = bl->next )
-					if( bl->type&type && bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1 && bl_list_count < BL_LIST_MAX )
-						bl_list[ bl_list_count++ ] = bl;
-
-	if( type&BL_MOB )
-		for( by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++ )
-			for( bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++ )
-				for( bl = map[ m ].block_mob[ bx + by * map[ m ].bxs ]; bl != NULL; bl = bl->next )
-					if( bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1 && bl_list_count < BL_LIST_MAX )
-						bl_list[ bl_list_count++ ] = bl;
-
-	if( bl_list_count >= BL_LIST_MAX )
-		ShowWarning("map_foreachinarea: block count too many!\n");
-
-	map_freeblock_lock();
-
-	for( i = blockcount; i < bl_list_count; i++ )
-		if( bl_list[ i ]->prev ) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
-			va_start(ap, type);
-			returnCount += func(bl_list[ i ], ap);
-			va_end(ap);
-		}
-
-	map_freeblock_unlock();
-
-	bl_list_count = blockcount;
-	return returnCount;	//[Skotlex]
-}
 
 /*========================================== [Playtester]
-* Same as foreachinarea, but there must be a shoot-able range between area center and target.
-* @param m: ID of map
-* @param x0: West end of area
-* @param y0: South end of area
-* @param x1: East end of area
-* @param y1: North end of area
-* @param type: Type of bl to search for
+ * range = map m (x0,y0)-(x1,y1)
+ * Apply *func with ... arguments for the range.
+ * @param m: ID of map
+ * @param x0: West end of area
+ * @param y0: South end of area
+ * @param x1: East end of area
+ * @param y1: North end of area
+ * @param type: Type of bl to search for
 *------------------------------------------*/
-int map_foreachinshootarea(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+int map_foreachinareaV(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, va_list ap, bool wall_check)
 {
 	int bx, by, cx, cy;
 	int returnCount = 0;	//total sum of returned values of func()
 	struct s_block_list *bl;
 	int blockcount = bl_list_count, i;
-	va_list ap;
+	va_list ap_copy;
 
 	if (m < 0 || m >= map_num)
 		return 0;
@@ -789,42 +717,83 @@ int map_foreachinshootarea(int(*func)(struct s_block_list*, va_list), int16 m, i
 	x1 = i16min(x1, map[m].xs - 1);
 	y1 = i16min(y1, map[m].ys - 1);
 
-	cx = x0 + (x1 - x0) / 2;
-	cy = y0 + (y1 - y0) / 2;
+	if( wall_check ) {
+		cx = x0 + (x1 - x0) / 2;
+		cy = y0 + (y1 - y0) / 2;
+	}
 
-	if (type&~BL_MOB)
-		for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
-			for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
-				for (bl = map[m].block[bx + by * map[m].bxs]; bl != NULL; bl = bl->next)
-					if (bl->type&type && bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
-						&& path_search_long(NULL, m, cx, cy, bl->x, bl->y, CELL_CHKWALL)
-						&& bl_list_count < BL_LIST_MAX)
+	if( type&~BL_MOB ) {
+		for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++) {
+			for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++) {
+				for(bl = map[m].block[bx + by * map[m].bxs]; bl != NULL; bl = bl->next) {
+					if ( bl->type&type
+						&& bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
+						&& ( !wall_check || path_search_long(NULL, m, cx, cy, bl->x, bl->y, CELL_CHKWALL) )
+						&& bl_list_count < BL_LIST_MAX )
 						bl_list[bl_list_count++] = bl;
+				}
+			}
+		}
+	}
 
-	if (type&BL_MOB)
-		for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++)
-			for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++)
-				for (bl = map[m].block_mob[bx + by * map[m].bxs]; bl != NULL; bl = bl->next)
-					if (bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
-						&& path_search_long(NULL, m, cx, cy, bl->x, bl->y, CELL_CHKWALL)
-						&& bl_list_count < BL_LIST_MAX)
+	if( type&BL_MOB ) {
+		for (by = y0 / BLOCK_SIZE; by <= y1 / BLOCK_SIZE; by++) {
+			for (bx = x0 / BLOCK_SIZE; bx <= x1 / BLOCK_SIZE; bx++) {
+				for(bl = map[m].block_mob[bx + by * map[m].bxs]; bl != NULL; bl = bl->next) {
+					if ( bl->x >= x0 && bl->x <= x1 && bl->y >= y0 && bl->y <= y1
+						&& ( !wall_check || path_search_long(NULL, m, cx, cy, bl->x, bl->y, CELL_CHKWALL) )
+						&& bl_list_count < BL_LIST_MAX )
 						bl_list[bl_list_count++] = bl;
+				}
+			}
+		}
+	}
 
 	if (bl_list_count >= BL_LIST_MAX)
-		ShowWarning("map_foreachinshootarea: block count too many!\n");
+		ShowWarning("map_foreachinarea: block count too many!\n");
 
 	map_freeblock_lock();
 
-	for (i = blockcount; i < bl_list_count; i++)
+	for (i = blockcount; i < bl_list_count; i++) {
 		if (bl_list[i]->prev) { //func() may delete this bl_list[] slot, checking for prev ensures it wasn't queued for deletion.
-			va_start(ap, type);
-			returnCount += func(bl_list[i], ap);
-			va_end(ap);
+			va_copy(ap_copy, ap);
+			returnCount += func(bl_list[i], ap_copy);
+			va_end(ap_copy);
 		}
+	}
 
 	map_freeblock_unlock();
 
 	bl_list_count = blockcount;
+	return returnCount;
+}
+
+int map_foreachinallarea(int (*func)(struct block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+{
+	int returnCount = 0;
+	va_list ap;
+ 	va_start(ap,type);
+	returnCount = map_foreachinareaV(func,m,x0,y0,x1,y1,type,ap,false);
+ 	va_end(ap);
+	return returnCount;
+}
+
+int map_foreachinshootarea(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+{
+	int returnCount = 0;
+	va_list ap;
+ 	va_start(ap,type);
+	returnCount = map_foreachinareaV(func,m,x0,y0,x1,y1,type,ap,true);
+ 	va_end(ap);
+	return returnCount;
+}
+int map_foreachinarea(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+{
+	int returnCount = 0;
+	va_list ap;
+ 	va_start(ap,type);
+	returnCount = map_foreachinareaV(func,m,x0,y0,x1,y1,type,ap,battle_config.skill_wall_check>0);
+ 	va_end(ap);
 	return returnCount;
 }
 
@@ -929,7 +898,7 @@ int map_forcountinarea(int (*func)(struct s_block_list*,va_list), int16 m, int16
 						bl_list[ bl_list_count++ ] = bl;
 
 	if( bl_list_count >= BL_LIST_MAX )
-		ShowWarning("map_foreachinarea: block count too many!\n");
+		ShowWarning("map_forcountinarea: block count too many!\n");
 
 	map_freeblock_lock();
 
@@ -1668,7 +1637,7 @@ int map_search_freecell(struct s_block_list *src, int16 m, int16 *x,int16 *y, in
 			if(flag&4) {
 				if (spawn >= 100) return 0; //Limit of retries reached.
 				if (spawn++ < battle_config.no_spawn_on_player &&
-					map_foreachinarea(map_count_sub, m,
+					map_foreachinallarea(map_count_sub, m,
 						*x-AREA_SIZE, *y-AREA_SIZE,
 					  	*x+AREA_SIZE, *y+AREA_SIZE, BL_PC)
 				)
@@ -1971,6 +1940,13 @@ void map_deliddb(struct s_block_list *bl)
 int map_quit(struct s_map_session_data *sd) {
 	int i;
 
+	if (sd->state.keepshop == false) { // Close vending/buyingstore
+		if (sd->state.vending)
+			vending_closevending(sd);
+		else if (sd->state.buyingstore)
+			buyingstore_close(sd);
+	}
+
 	if(!sd->state.active) { //Removing a player that is not active.
 		struct s_auth_node *node = chrif_search(sd->status.account_id);
 		if (node && node->char_id == sd->status.char_id &&
@@ -1996,6 +1972,9 @@ int map_quit(struct s_map_session_data *sd) {
 	if( sd->bg_id )
 		bg_team_leave(sd,1);
 
+	if( sd->status.clan_id )
+		clan_member_left(sd);
+
 	pc_itemcd_do(sd,false);
 
 	npc_script_event(sd, NPCE_LOGOUT);
@@ -2018,6 +1997,8 @@ int map_quit(struct s_map_session_data *sd) {
 		status_change_end(&sd->bl, SC_CHASEWALK2, INVALID_TIMER);
 		if(sd->sc.data[SC_ENDURE] && sd->sc.data[SC_ENDURE]->val4)
 			status_change_end(&sd->bl, SC_ENDURE, INVALID_TIMER); //No need to save infinite endure.
+		if(sd->sc.data[SC_PROVOKE] && sd->sc.data[SC_PROVOKE]->timer == INVALID_TIMER)
+			status_change_end(&sd->bl, SC_PROVOKE, INVALID_TIMER); //Infinite provoke ends on logout
 		status_change_end(&sd->bl, SC_WEIGHT50, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_WEIGHT90, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SATURDAYNIGHTFEVER, INVALID_TIMER);
@@ -2027,9 +2008,11 @@ int map_quit(struct s_map_session_data *sd) {
 		status_change_end(&sd->bl, SC_READYDOWN, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_READYTURN, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_READYCOUNTER, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_DODGE, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_CBC, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_EQC, INVALID_TIMER);
 		status_change_end(&sd->bl, SC_SPRITEMABLE, INVALID_TIMER);
+		status_change_end(&sd->bl, SC_SV_ROOTTWIST, INVALID_TIMER);
 		// Remove visuals effect from headgear
 		status_change_end(&sd->bl, SC_MOONSTAR, INVALID_TIMER); 
 		status_change_end(&sd->bl, SC_SUPER_STAR, INVALID_TIMER); 
@@ -2081,8 +2064,6 @@ int map_quit(struct s_map_session_data *sd) {
 	if (sd->ed) // Remove effects here rather than unit_remove_map_pc so we don't clear on Teleport/map change.
 		elemental_clean_effect(sd->ed);
 
-	if( sd->state.storage_flag == 1 ) sd->state.storage_flag = 0; // No need to Double Save Storage on Quit.
-
 	if (sd->state.permanent_speed == 1) sd->state.permanent_speed = 0; // Remove lock so speed is set back to normal at login.
 
 	if( map[sd->bl.m].instance_id )
@@ -2118,7 +2099,7 @@ int map_quit(struct s_map_session_data *sd) {
 	pc_makesavestatus(sd);
 	pc_clean_skilltree(sd);
 	pc_crimson_marker_clear(sd);
-	chrif_save(sd,1);
+	chrif_save(sd, CSAVE_QUIT|CSAVE_INVENTORY|CSAVE_CART);
 	unit_free_pc(sd);
 	return 0;
 }
@@ -2195,7 +2176,7 @@ struct s_map_session_data* map_charid2sd(int charid)
  * (without sensitive case if necessary)
  * return map_session_data pointer or NULL
  *------------------------------------------*/
-struct s_map_session_data * map_nick2sd(const char *nick)
+struct s_map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 {
 	struct s_map_session_data* sd;
 	struct s_map_session_data* found_sd;
@@ -2212,7 +2193,7 @@ struct s_map_session_data * map_nick2sd(const char *nick)
 	found_sd = NULL;
 	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
 	{
-		if( battle_config.partial_name_scan )
+		if( allow_partial && battle_config.partial_name_scan )
 		{// partial name search
 			if( strnicmp(sd->status.name, nick, nicklen) == 0 )
 			{
@@ -2230,6 +2211,7 @@ struct s_map_session_data * map_nick2sd(const char *nick)
 		else if( strcasecmp(sd->status.name, nick) == 0 )
 		{// exact search only
 			found_sd = sd;
+			qty = 1;
 			break;
 		}
 	}
@@ -3860,7 +3842,7 @@ int map_config_read(const char *cfgName)
 		else if (strcmpi(w1, "delmap") == 0)
 			map_delmap(w2);
 		else if (strcmpi(w1, "npc") == 0)
-			npc_addsrcfile(w2);
+			npc_addsrcfile(w2, false);
 		else if (strcmpi(w1, "delnpc") == 0)
 			npc_delsrcfile(w2);
 		else if (strcmpi(w1, "autosave_time") == 0) {
@@ -3883,6 +3865,8 @@ int map_config_read(const char *cfgName)
 			strcpy(help2_txt, w2);
 		else if (strcmpi(w1, "charhelp_txt") == 0)
 			strcpy(charhelp_txt, w2);
+		else if (strcmpi(w1, "channel_conf") == 0)
+			safestrncpy(channel_conf, w2, sizeof(channel_conf));
 		else if(strcmpi(w1,"db_path") == 0)
 			safestrncpy(db_path,w2,ARRAYLENGTH(db_path));
 		else if (strcmpi(w1, "console") == 0) {
@@ -3937,7 +3921,7 @@ void map_reloadnpc_sub(const char *cfgName)
 		*ptr = '\0';
 
 		if (strcmpi(w1, "npc") == 0)
-			npc_addsrcfile(w2);
+			npc_addsrcfile(w2, false);
 		else if (strcmpi(w1, "delnpc") == 0)
 			npc_delsrcfile(w2);
 		else if (strcmpi(w1, "import") == 0)
@@ -3952,7 +3936,7 @@ void map_reloadnpc_sub(const char *cfgName)
 void map_reloadnpc(bool clear)
 {
 	if (clear)
-		npc_addsrcfile("clear"); // this will clear the current script list
+		npc_addsrcfile("clear", false); // this will clear the current script list
 
 #ifdef RENEWAL
 	map_reloadnpc_sub("npc/re/scripts_main.conf");
@@ -3978,40 +3962,48 @@ int inter_config_read(const char *cfgName)
 		if( sscanf(line,"%1023[^:]: %1023[^\r\n]",w1,w2) < 2 )
 			continue;
 
+#define RENEWALPREFIX "renewal-"
+		if (!strncmpi(w1, RENEWALPREFIX, strlen(RENEWALPREFIX))) {
+#ifdef RENEWAL
+			// Move the original name to the beginning of the string
+			memmove(w1, w1 + strlen(RENEWALPREFIX), strlen(w1) - strlen(RENEWALPREFIX) + 1);
+#else
+			// In Pre-Renewal the Renewal specific configurations can safely be ignored
+			continue;
+#endif
+		}
+#undef RENEWALPREFIX
+
 		if( strcmpi( w1, "buyingstore_db" ) == 0 )
-			strcpy( buyingstores_db, w2 );
-		else if( strcmpi( w1, "buyingstore_items_db" ) == 0 )
-			strcpy( buyingstore_items_db, w2 );
-		else if(strcmpi(w1,"item_db_db")==0)
-			strcpy(item_db_db,w2);
-		else if(strcmpi(w1,"item_db2_db")==0)
-			strcpy(item_db2_db,w2);
-		else if(strcmpi(w1,"item_db_re_db")==0)
-			strcpy(item_db_re_db,w2);
-		else if(strcmpi(w1,"mob_db_db")==0)
-			strcpy(mob_db_db,w2);
-		else if(strcmpi(w1,"mob_db_re_db")==0)
-			strcpy(mob_db_re_db,w2);
-		else if(strcmpi(w1,"mob_db2_db")==0)
-			strcpy(mob_db2_db,w2);
-		else if(strcmpi(w1,"mob_skill_db_db")==0)
-			strcpy(mob_skill_db_db,w2);
-		else if(strcmpi(w1,"mob_skill_db_re_db")==0)
-			strcpy(mob_skill_db_re_db,w2);
-		else if(strcmpi(w1,"mob_skill_db2_db")==0)
-			strcpy(mob_skill_db2_db,w2);
-		else if( strcmpi( w1, "item_cash_db_db" ) == 0 )
-			strcpy( item_cash_db_db, w2 );
-		else if( strcmpi( w1, "item_cash_db2_db" ) == 0 )
-			strcpy( item_cash_db2_db, w2 );
+			strcpy( buyingstores_table, w2 );
+		else if( strcmpi( w1, "buyingstore_items_table" ) == 0 )
+			strcpy( buyingstore_items_table, w2 );
+		else if(strcmpi(w1,"item_table")==0)
+			strcpy(item_table,w2);
+		else if(strcmpi(w1,"item2_table")==0)
+			strcpy(item2_table,w2);
+		else if(strcmpi(w1,"mob_table")==0)
+			strcpy(mob_table,w2);
+		else if(strcmpi(w1,"mob2_table")==0)
+			strcpy(mob2_table,w2);
+		else if(strcmpi(w1,"mob_skill_table")==0)
+			strcpy(mob_skill_table,w2);
+		else if(strcmpi(w1,"mob_skill2_table")==0)
+			strcpy(mob_skill2_table,w2);
+		else if( strcmpi( w1, "item_cash_table" ) == 0 )
+			strcpy( item_cash_table, w2 );
+		else if( strcmpi( w1, "item_cash2_table" ) == 0 )
+			strcpy( item_cash2_table, w2 );
 		else if( strcmpi( w1, "vending_db" ) == 0 )
-			strcpy( vendings_db, w2 );
-		else if( strcmpi( w1, "vending_items_db" ) == 0 )
-			strcpy(vending_items_db, w2);
-		else if( strcmpi(w1, "db_roulette_table") == 0)
-			strcpy(db_roulette_table, w2);
+			strcpy( vendings_table, w2 );
+		else if( strcmpi( w1, "vending_items_table" ) == 0 )
+			strcpy(vending_items_table, w2);
+		else if( strcmpi(w1, "roulette_table") == 0)
+			strcpy(roulette_table, w2);
 		else if (strcmpi(w1, "market_table") == 0)
 			strcpy(market_table, w2);
+		else if (strcmpi(w1, "sales_table") == 0)
+			strcpy(sales_table, w2);
 		else
 		//Map Server SQL DB
 		if(strcmpi(w1,"map_server_ip")==0)
@@ -4389,7 +4381,7 @@ void do_final(void)
 		ShowStatus("Cleaning up maps [%d/%d]: %s..." CL_CLL "\r", i+1, map_num, map[i].name);
 		if (map[i].m >= 0) {
 			map_foreachinmap(cleanup_sub, i, BL_ALL);
-			channel_delete(map[i].channel);
+			channel_delete(map[i].channel,false);
 		}
 	}
 	ShowStatus("Cleaned up %d maps." CL_CLL "\n", map_num);
@@ -4401,9 +4393,11 @@ void do_final(void)
 	do_final_atcommand();
 	do_final_battle();
 	do_final_chrif();
+	do_final_clan();
 	do_final_clif();
 	do_final_npc();
 	do_final_quest();
+	do_final_achievement();
 	do_final_script();
 	do_final_instance();
 	do_final_itemdb();
@@ -4414,7 +4408,7 @@ void do_final(void)
 	do_final_pet();
 	do_final_homunculus();
 	do_final_mercenary();
-	do_final_mob();
+	do_final_mob(false);
 	do_final_msg();
 	do_final_skill();
 	do_final_status();
@@ -4471,7 +4465,7 @@ void do_final(void)
 
 static int map_abort_sub(struct s_map_session_data* sd, va_list ap)
 {
-	chrif_save(sd,1);
+	chrif_save(sd, CSAVE_QUIT|CSAVE_INVENTORY|CSAVE_CART);
 	return 1;
 }
 
@@ -4670,6 +4664,9 @@ int do_init(int argc, char *argv[])
 	rnd_init();
 	map_config_read(MAP_CONF_NAME);
 
+	if (save_settings == CHARSAVE_NONE)
+		ShowWarning("Value of 'save_settings' is not set, player's data only will be saved every 'autosave_time' (%d seconds).\n", autosave_interval/1000);
+
 	// loads npcs
 	map_reloadnpc(false);
 
@@ -4713,7 +4710,7 @@ int do_init(int argc, char *argv[])
 	iwall_db = strdb_alloc(DB_OPT_RELEASE_DATA,2*NAME_LENGTH+2+1); // [Zephyrus] Invisible Walls
 
 #ifdef ADJUST_SKILL_DAMAGE
-	map_skill_damage_ers = ers_new(sizeof(struct s_skill_damage), "map.c:map_skill_damage_ers", ERS_OPT_NONE);
+	map_skill_damage_ers = ers_new(sizeof(struct s_skill_damage), "map.cpp:map_skill_damage_ers", ERS_OPT_NONE);
 #endif
 
 	map_sql_init();
@@ -4736,11 +4733,12 @@ int do_init(int argc, char *argv[])
 	do_init_atcommand();
 	do_init_battle();
 	do_init_instance();
-	do_init_channel();
 	do_init_chrif();
+	do_init_clan();
 	do_init_clif();
 	do_init_script();
 	do_init_itemdb();
+	do_init_channel();
 	do_init_cashshop();
 	do_init_skill();
 	do_init_mob();
@@ -4754,6 +4752,7 @@ int do_init(int argc, char *argv[])
 	do_init_mercenary();
 	do_init_elemental();
 	do_init_quest();
+	do_init_achievement();
 	do_init_npc();
 	do_init_unit();
 	do_init_battleground();
@@ -4773,10 +4772,6 @@ int do_init(int argc, char *argv[])
 		shutdown_callback = do_shutdown;
 		runflag = MAPSERVER_ST_RUNNING;
 	}
-#if defined(BUILDBOT)
-	if( buildbotflag )
-		exit(EXIT_FAILURE);
-#endif
 
 	if( console ){ //start listening
 		add_timer_func_list(parse_console_timer, "parse_console_timer");

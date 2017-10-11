@@ -37,7 +37,7 @@ bool atcommand_exists(const char* name);
 // @commands (script based)
 struct s_atcmd_binding_data {
 	char command[50];
-	char npc_event[50];
+	char npc_event[EVENT_NAME_LENGTH];
 	int level;
 	int level2;
 };

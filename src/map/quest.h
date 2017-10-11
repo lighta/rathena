@@ -30,6 +30,7 @@ struct s_quest_db {
 	// TODO: find out if signed or unsigned in client
 	int id;
 	unsigned int time;
+	bool time_type;
 	uint8 objectives_count;
 	struct s_quest_objective *objectives;
 	uint8 dropitem_count;

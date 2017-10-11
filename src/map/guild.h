@@ -67,7 +67,6 @@ void guild_skillup(struct s_map_session_data* sd, uint16 skill_id);
 void guild_block_skill(struct s_map_session_data *sd, int time);
 int guild_reqalliance(struct s_map_session_data *sd,struct s_map_session_data *tsd);
 int guild_reply_reqalliance(struct s_map_session_data *sd,uint32 account_id,int flag);
-int guild_alliance(int guild_id1,int guild_id2,uint32 account_id1,uint32 account_id2);
 int guild_allianceack(int guild_id1,int guild_id2,uint32 account_id1,uint32 account_id2,
 	int flag,const char *name1,const char *name2);
 int guild_delalliance(struct s_map_session_data *sd,int guild_id,int flag);
@@ -90,22 +89,22 @@ int guild_send_dot_remove(struct s_map_session_data *sd);
 int guild_skillupack(int guild_id,uint16 skill_id,uint32 account_id);
 int guild_break(struct s_map_session_data *sd,char *name);
 int guild_broken(int guild_id,int flag);
-int guild_gm_change(int guild_id, struct s_map_session_data *sd);
-int guild_gm_changed(int guild_id, uint32 account_id, uint32 char_id);
+int guild_gm_change(int guild_id, uint32 char_id);
+int guild_gm_changed(int guild_id, uint32 account_id, uint32 char_id, time_t time);
 
 void guild_castle_map_init(void);
 int guild_castledatasave(int castle_id,int index,int value);
 int guild_castledataloadack(int len, struct s_guild_castle *gc);
 void guild_castle_reconnect(int castle_id, int index, int value);
 
-void guild_agit_start(void);
-void guild_agit_end(void);
+bool guild_agit_start(void);
+bool guild_agit_end(void);
 
-void guild_agit2_start(void);
-void guild_agit2_end(void);
+bool guild_agit2_start(void);
+bool guild_agit2_end(void);
 
-void guild_agit3_start(void);
-void guild_agit3_end(void);
+bool guild_agit3_start(void);
+bool guild_agit3_end(void);
 
 /* guild flag cachin */
 void guild_flag_add(struct s_npc_data *nd);

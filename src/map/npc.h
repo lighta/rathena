@@ -8,6 +8,7 @@
 #include "status.h" // struct s_status_change
 #include "unit.h" // struct s_unit_data
 
+struct s_block_list;
 struct s_npc_data;
 struct s_view_data;
 
@@ -59,6 +60,7 @@ struct s_npc_data {
 	void* chatdb; // pointer to a npc_parse struct (see npc_chat.c)
 	char* path;/* path dir */
 	enum e_npc_subtype subtype;
+	bool trigger_on_hidden;
 	int src_id;
 	union {
 		struct {
@@ -90,7 +92,17 @@ struct s_npc_data {
 			int spawn_timer;
 		} tomb;
 	} u;
+
+	struct sc_display_entry **sc_display;
+	unsigned char sc_display_count;
+
+	struct {
+		unsigned int timeout;
+		unsigned long color;
+	} progressbar;
 };
+
+extern struct eri *npc_sc_display_ers;
 
 #define START_NPC_NUM 110000000
 
@@ -107,7 +119,7 @@ enum e_actor_classes
 #define MAX_NPC_CLASS 1000
 // New NPC range
 #define MAX_NPC_CLASS2_START 10000
-#define MAX_NPC_CLASS2_END 10208
+#define MAX_NPC_CLASS2_END 10280
 
 //Checks if a given id is a valid npc id. [Skotlex]
 //Since new npcs are added all the time, the max valid value is the one before the first mob (Scorpion = 1001)
@@ -149,6 +161,7 @@ void npc_parse_mob2(struct s_spawn_data* mob);
 bool npc_viewisid(const char * viewid);
 struct s_npc_data* npc_add_warp(char* name, short from_mapid, short from_x, short from_y, short xs, short ys, unsigned short to_mapindex, short to_x, short to_y);
 int npc_globalmessage(const char* name,const char* mes);
+const char *npc_get_script_event_name(int npce_index);
 
 void npc_setcells(struct s_npc_data* nd);
 void npc_unsetcells(struct s_npc_data* nd);
@@ -162,18 +175,18 @@ bool npc_isnear(struct s_block_list * bl);
 
 int npc_get_new_npc_id(void);
 
-int npc_addsrcfile(const char* name);
+int npc_addsrcfile(const char* name, bool loadscript);
 void npc_delsrcfile(const char* name);
 int npc_parsesrcfile(const char* filepath, bool runOnInit);
 void do_clear_npc(void);
 void do_final_npc(void);
 void do_init_npc(void);
 void npc_event_do_oninit(void);
-int npc_do_ontimer(int npc_id, int option);
 
 int npc_event_do(const char* name);
 int npc_event_do_id(const char* name, int rid);
 int npc_event_doall(const char* name);
+void npc_event_runall( const char* eventname );
 int npc_event_doall_id(const char* name, int rid);
 
 int npc_timerevent_start(struct s_npc_data* nd, int rid);
@@ -190,6 +203,7 @@ int npc_script_event(struct s_map_session_data* sd, enum e_npce_event type);
 
 int npc_duplicate4instance(struct s_npc_data *snd, int16 m);
 int npc_instanceinit(struct s_npc_data* nd);
+int npc_instancedestroy(struct s_npc_data* nd);
 int npc_cashshop_buy(struct s_map_session_data *sd, unsigned short nameid, int amount, int points);
 
 void npc_shop_currency_type(struct s_map_session_data *sd, struct s_npc_data *nd, int cost[2], bool display);

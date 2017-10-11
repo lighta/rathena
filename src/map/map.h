@@ -21,14 +21,6 @@ struct s_npc_data;
 struct s_item_data;
 struct s_Channel;
 
-enum e_Mobsize {
-	SZ_SMALL = 0,
-	SZ_MEDIUM,
-	SZ_BIG,
-	SZ_ALL,
-	SZ_MAX
-};
-
 enum E_MAPSERVER_ST {
 	MAPSERVER_ST_RUNNING = CORE_ST_LAST,
 	MAPSERVER_ST_STARTING,
@@ -43,6 +35,40 @@ int map_msg_config_read(const char *cfgName,int lang);
 const char* map_msg_txt(struct s_map_session_data *sd,int msg_number);
 void map_do_final_msg(void);
 void map_msg_reload(void);
+
+#define MAX_NPC_PER_MAP 512
+#define AREA_SIZE battle_config.area_size
+#define DAMAGELOG_SIZE 30
+#define LOOTITEM_SIZE 10
+#define MAX_MOBSKILL 50		//Max 128, see mob skill_idx type if need this higher
+#define MAX_MOB_LIST_PER_MAP 128
+#define MAX_EVENTQUEUE 2
+#define MAX_EVENTTIMER 32
+#define NATURAL_HEAL_INTERVAL 500
+#define MIN_FLOORITEM 2
+#define MAX_FLOORITEM START_ACCOUNT_NUM
+#define MAX_LEVEL 175
+#define MAX_DROP_PER_MAP 48
+#define MAX_IGNORE_LIST 20 	// official is 14
+#define MAX_VENDING 12
+#define MAX_MAP_SIZE 512*512 	// Wasn't there something like this already? Can't find it.. [Shinryo]
+
+//The following system marks a different job ID system used by the map server,
+//which makes a lot more sense than the normal one. [Skotlex]
+//
+//These marks the "level" of the job.
+#define JOBL_2_1 0x100 //256
+#define JOBL_2_2 0x200 //512
+#define JOBL_2 0x300 //768
+
+#define JOBL_UPPER 0x1000 //4096
+#define JOBL_BABY 0x2000  //8192
+#define JOBL_THIRD 0x4000 //16384
+
+//for filtering and quick checking.
+#define MAPID_BASEMASK 0x00ff
+#define MAPID_UPPERMASK 0x0fff
+#define MAPID_THIRDMASK (JOBL_THIRD|MAPID_UPPERMASK)
 
 //First Jobs
 //Note the oddity of the novice:
@@ -67,7 +93,7 @@ enum e_mapid {
 	MAPID_OKTOBERFEST,
 	MAPID_SUMMONER,
 //2-1 Jobs
-	MAPID_SUPER_NOVICE = JOBL_2_1|0x0,
+	MAPID_SUPER_NOVICE = JOBL_2_1|MAPID_NOVICE,
 	MAPID_KNIGHT,
 	MAPID_WIZARD,
 	MAPID_HUNTER,
@@ -75,20 +101,20 @@ enum e_mapid {
 	MAPID_BLACKSMITH,
 	MAPID_ASSASSIN,
 	MAPID_STAR_GLADIATOR,
-	MAPID_REBELLION = JOBL_2_1 | 0x09,
-	MAPID_KAGEROUOBORO = JOBL_2_1|0x0A,
-	MAPID_DEATH_KNIGHT = JOBL_2_1|0x0E,
+	MAPID_REBELLION = JOBL_2_1|MAPID_GUNSLINGER,
+	MAPID_KAGEROUOBORO,
+	MAPID_DEATH_KNIGHT = JOBL_2_1|MAPID_GANGSI,
 //2-2 Jobs
-	MAPID_CRUSADER = JOBL_2_2|0x1,
+	MAPID_CRUSADER = JOBL_2_2|MAPID_SWORDMAN,
 	MAPID_SAGE,
 	MAPID_BARDDANCER,
 	MAPID_MONK,
 	MAPID_ALCHEMIST,
 	MAPID_ROGUE,
 	MAPID_SOUL_LINKER,
-	MAPID_DARK_COLLECTOR = JOBL_2_2|0x0E,
+	MAPID_DARK_COLLECTOR = JOBL_2_2|MAPID_GANGSI,
 //Trans Novice And Trans 1-1 Jobs
-	MAPID_NOVICE_HIGH = JOBL_UPPER|0x0,
+	MAPID_NOVICE_HIGH = JOBL_UPPER|MAPID_NOVICE,
 	MAPID_SWORDMAN_HIGH,
 	MAPID_MAGE_HIGH,
 	MAPID_ARCHER_HIGH,
@@ -96,44 +122,52 @@ enum e_mapid {
 	MAPID_MERCHANT_HIGH,
 	MAPID_THIEF_HIGH,
 //Trans 2-1 Jobs
-	MAPID_LORD_KNIGHT = JOBL_UPPER|JOBL_2_1|0x1,
+	MAPID_LORD_KNIGHT = JOBL_UPPER|MAPID_KNIGHT,
 	MAPID_HIGH_WIZARD,
 	MAPID_SNIPER,
 	MAPID_HIGH_PRIEST,
 	MAPID_WHITESMITH,
 	MAPID_ASSASSIN_CROSS,
 //Trans 2-2 Jobs
-	MAPID_PALADIN = JOBL_UPPER|JOBL_2_2|0x1,
+	MAPID_PALADIN = JOBL_UPPER|MAPID_CRUSADER,
 	MAPID_PROFESSOR,
 	MAPID_CLOWNGYPSY,
 	MAPID_CHAMPION,
 	MAPID_CREATOR,
 	MAPID_STALKER,
 //Baby Novice And Baby 1-1 Jobs
-	MAPID_BABY = JOBL_BABY|0x0,
+	MAPID_BABY = JOBL_BABY|MAPID_NOVICE,
 	MAPID_BABY_SWORDMAN,
 	MAPID_BABY_MAGE,
 	MAPID_BABY_ARCHER,
 	MAPID_BABY_ACOLYTE,
 	MAPID_BABY_MERCHANT,
 	MAPID_BABY_THIEF,
+	MAPID_BABY_TAEKWON,
+	MAPID_BABY_GUNSLINGER = JOBL_BABY|MAPID_GUNSLINGER,
+	MAPID_BABY_NINJA,
+	MAPID_BABY_SUMMONER = JOBL_BABY|MAPID_SUMMONER,
 //Baby 2-1 Jobs
-	MAPID_SUPER_BABY = JOBL_BABY|JOBL_2_1|0x0,
+	MAPID_SUPER_BABY = JOBL_BABY|MAPID_SUPER_NOVICE,
 	MAPID_BABY_KNIGHT,
 	MAPID_BABY_WIZARD,
 	MAPID_BABY_HUNTER,
 	MAPID_BABY_PRIEST,
 	MAPID_BABY_BLACKSMITH,
 	MAPID_BABY_ASSASSIN,
+	MAPID_BABY_STAR_GLADIATOR,
+	MAPID_BABY_REBELLION = JOBL_BABY|MAPID_REBELLION,
+	MAPID_BABY_KAGEROUOBORO,
 //Baby 2-2 Jobs
-	MAPID_BABY_CRUSADER = JOBL_BABY|JOBL_2_2|0x1,
+	MAPID_BABY_CRUSADER = JOBL_BABY|MAPID_CRUSADER,
 	MAPID_BABY_SAGE,
 	MAPID_BABY_BARDDANCER,
 	MAPID_BABY_MONK,
 	MAPID_BABY_ALCHEMIST,
 	MAPID_BABY_ROGUE,
+	MAPID_BABY_SOUL_LINKER,
 //3-1 Jobs
-	MAPID_SUPER_NOVICE_E = JOBL_THIRD|JOBL_2_1|0x0,
+	MAPID_SUPER_NOVICE_E = JOBL_THIRD|MAPID_SUPER_NOVICE,
 	MAPID_RUNE_KNIGHT,
 	MAPID_WARLOCK,
 	MAPID_RANGER,
@@ -141,28 +175,28 @@ enum e_mapid {
 	MAPID_MECHANIC,
 	MAPID_GUILLOTINE_CROSS,
 //3-2 Jobs
-	MAPID_ROYAL_GUARD = JOBL_THIRD|JOBL_2_2|0x1,
+	MAPID_ROYAL_GUARD = JOBL_THIRD|MAPID_CRUSADER,
 	MAPID_SORCERER,
 	MAPID_MINSTRELWANDERER,
 	MAPID_SURA,
 	MAPID_GENETIC,
 	MAPID_SHADOW_CHASER,
 //Trans 3-1 Jobs
-	MAPID_RUNE_KNIGHT_T = JOBL_THIRD|JOBL_UPPER|JOBL_2_1|0x1,
+	MAPID_RUNE_KNIGHT_T = JOBL_THIRD|MAPID_LORD_KNIGHT,
 	MAPID_WARLOCK_T,
 	MAPID_RANGER_T,
 	MAPID_ARCH_BISHOP_T,
 	MAPID_MECHANIC_T,
 	MAPID_GUILLOTINE_CROSS_T,
 //Trans 3-2 Jobs
-	MAPID_ROYAL_GUARD_T = JOBL_THIRD|JOBL_UPPER|JOBL_2_2|0x1,
+	MAPID_ROYAL_GUARD_T = JOBL_THIRD|MAPID_PALADIN,
 	MAPID_SORCERER_T,
 	MAPID_MINSTRELWANDERER_T,
 	MAPID_SURA_T,
 	MAPID_GENETIC_T,
 	MAPID_SHADOW_CHASER_T,
 //Baby 3-1 Jobs
-	MAPID_SUPER_BABY_E = JOBL_THIRD|JOBL_BABY|JOBL_2_1|0x0,
+	MAPID_SUPER_BABY_E = JOBL_THIRD|MAPID_SUPER_BABY,
 	MAPID_BABY_RUNE,
 	MAPID_BABY_WARLOCK,
 	MAPID_BABY_RANGER,
@@ -170,7 +204,7 @@ enum e_mapid {
 	MAPID_BABY_MECHANIC,
 	MAPID_BABY_CROSS,
 //Baby 3-2 Jobs
-	MAPID_BABY_GUARD = JOBL_THIRD|JOBL_BABY|JOBL_2_2|0x1,
+	MAPID_BABY_GUARD = JOBL_THIRD|MAPID_BABY_CRUSADER,
 	MAPID_BABY_SORCERER,
 	MAPID_BABY_MINSTRELWANDERER,
 	MAPID_BABY_SURA,
@@ -280,6 +314,7 @@ enum e_race2 : uint8 {
 	RC2_BIOLAB,
 	RC2_MANUK,
 	RC2_SPLENDIDE,
+	RC2_SCARABA,
 	RC2_MAX
 };
 
@@ -645,6 +680,7 @@ struct s_map_data {
 		unsigned nocostume : 1; // Disable costume sprites [Cydh]
 		unsigned gvg_te : 1; // GVG WOE:TE. This was added as purpose to change 'gvg' for GVG TE, so item_noequp, skill_nocast exlude GVG TE maps from 'gvg' (flag &4)
 		unsigned gvg_te_castle : 1; // GVG WOE:TE Castle
+		unsigned hidemobhpbar : 1;
 #ifdef ADJUST_SKILL_DAMAGE
 		unsigned skill_damage : 1;
 #endif
@@ -723,6 +759,7 @@ extern char motd_txt[];
 extern char help_txt[];
 extern char help2_txt[];
 extern char charhelp_txt[];
+extern char channel_conf[];
 
 extern char wisp_server_name[];
 
@@ -761,8 +798,10 @@ int map_addblock(struct s_block_list* bl);
 int map_delblock(struct s_block_list* bl);
 int map_moveblock(struct s_block_list *, int, int, unsigned int);
 int map_foreachinrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int type, ...);
+int map_foreachinallrange(int (*func)(struct s_block_list*,va_list), struct block_list* center, int16 range, int type, ...);
 int map_foreachinshootrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int type, ...);
 int map_foreachinarea(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...);
+int map_foreachinallarea(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...);
 int map_foreachinshootarea(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...);
 int map_forcountinrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int count, int type, ...);
 int map_forcountinarea(int (*func)(struct s_block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int count, int type, ...);
@@ -826,7 +865,7 @@ void map_foreachmob(int (*func)(struct s_mob_data* md, va_list args), ...);
 void map_foreachnpc(int (*func)(struct s_npc_data* nd, va_list args), ...);
 void map_foreachregen(int (*func)(struct s_block_list* bl, va_list args), ...);
 void map_foreachiddb(int (*func)(struct s_block_list* bl, va_list args), ...);
-struct s_map_session_data * map_nick2sd(const char*);
+struct s_map_session_data * map_nick2sd(const char* nick, bool allow_partial);
 struct s_mob_data * map_getmob_boss(int16 m);
 struct s_mob_data * map_id2boss(int id);
 
@@ -860,7 +899,7 @@ bool                    mapit_exists(struct s_mapiterator* mapit);
 int map_check_dir(int s_dir,int t_dir);
 uint8 map_calc_dir(struct s_block_list *src,int16 x,int16 y);
 uint8 map_calc_dir_xy(int16 srcx, int16 srcy, int16 x, int16 y, uint8 srcdir);
-int map_random_dir(struct s_block_list *bl, short *x, short *y); // [Skotlex]
+int map_random_dir(struct s_block_list *bl, int16 *x, int16 *y); // [Skotlex]
 
 int cleanup_sub(struct s_block_list *bl, va_list ap);
 
@@ -874,7 +913,6 @@ void map_iwall_remove(const char *wall_name);
 int map_addmobtolist(unsigned short m, struct s_spawn_data *spawn);	// [Wizputer]
 void map_spawnmobs(int16 m); // [Wizputer]
 void map_removemobs(int16 m); // [Wizputer]
-void do_reconnect_map(void); //Invoked on map-char reconnection [Skotlex]
 void map_addmap2db(struct s_map_data *m);
 void map_removemapdb(struct s_map_data *m);
 
@@ -950,21 +988,18 @@ extern Sql* mmysql_handle;
 extern Sql* qsmysql_handle;
 extern Sql* logmysql_handle;
 
-extern char buyingstores_db[32];
-extern char buyingstore_items_db[32];
-extern char item_db_db[32];
-extern char item_db2_db[32];
-extern char item_db_re_db[32];
-extern char mob_db_db[32];
-extern char mob_db_re_db[32];
-extern char mob_db2_db[32];
-extern char mob_skill_db_db[32];
-extern char mob_skill_db_re_db[32];
-extern char mob_skill_db2_db[32];
-extern char vendings_db[32];
-extern char vending_items_db[32];
+extern char buyingstores_table[32];
+extern char buyingstore_items_table[32];
+extern char item_table[32];
+extern char item2_table[32];
+extern char mob_table[32];
+extern char mob2_table[32];
+extern char mob_skill_table[32];
+extern char mob_skill2_table[32];
+extern char vendings_table[32];
+extern char vending_items_table[32];
 extern char market_table[32];
-extern char db_roulette_table[32];
+extern char roulette_table[32];
 
 void do_shutdown(void);
 

@@ -1,5 +1,6 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
+#include "elemental.h"
 
 #include <cstdlib>
 #include <cmath>
@@ -17,7 +18,6 @@
 
 #include "log.h"
 #include "clif.h"
-#include "elemental.h"
 #include "intif.h"
 #include "itemdb.h"
 #include "pc.h"
@@ -84,7 +84,7 @@ int elemental_create(struct s_map_session_data *sd, int class_, unsigned int lif
 	//Caster's MDEF + (Caster's INT / (5 - Elemental Summon Skill Level)
 	ele.mdef = sd->battle_status.mdef + sd->battle_status.int_ / (5-i);
 	//Caster's FLEE + (Caster's Base Level / (5 - Elemental Summon Skill Level)
-	ele.flee = sd->status.base_level / (5-i);
+	ele.flee = sd->battle_status.flee + sd->status.base_level / (5-i);
 
 	//per individual bonuses
 	switch(db->class_){
@@ -712,7 +712,7 @@ static int elemental_ai_sub_timer(struct s_elemental_data *ed, struct s_map_sess
 		target = map_id2bl(ed->ud.target);
 
 		if( !target )
-			map_foreachinrange(elemental_ai_sub_timer_activesearch, &ed->bl, view_range, BL_CHAR, ed, &target, status_get_mode(&ed->bl));
+			map_foreachinallrange(elemental_ai_sub_timer_activesearch, &ed->bl, view_range, BL_CHAR, ed, &target, status_get_mode(&ed->bl));
 
 		if( !target ) { //No targets available.
 			elemental_unlocktarget(ed);

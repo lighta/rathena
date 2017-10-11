@@ -40,7 +40,7 @@
 /// Pushes a copy of a string into the stack
 #define script_pushstrcopy(st,val) push_str((st)->stack, C_STR, aStrdup(val))
 /// Pushes a constant string into the stack (must never change or be freed)
-#define script_pushconststr(st,val) push_str((st)->stack, C_CONSTSTR, (val))
+#define script_pushconststr(st,val) push_str((st)->stack, C_CONSTSTR, const_cast<char *>(val))
 /// Pushes a nil into the stack
 #define script_pushnil(st) push_val((st)->stack, C_NOP, 0)
 /// Pushes a copy of the data in the target index
@@ -150,6 +150,7 @@ struct s_Script_Config {
 	int input_min_value;
 	int input_max_value;
 
+	// PC related
 	const char *die_event_name;
 	const char *kill_pc_event_name;
 	const char *kill_mob_event_name;
@@ -160,9 +161,50 @@ struct s_Script_Config {
 	const char *joblvup_event_name;
 	const char *stat_calc_event_name;
 
-	const char* ontouch_name;
-	const char* ontouch2_name;
+	// NPC related
+	const char* ontouch_event_name;
+	const char* ontouch2_event_name;
+	const char* ontouchnpc_event_name;
 	const char* onwhisper_event_name;
+	const char* oncommand_event_name;
+	const char* onbuy_event_name;
+	const char* onsell_event_name;
+
+	// Init related
+	const char* init_event_name;
+	const char* inter_init_event_name;
+	const char* inter_init_once_event_name;
+
+	// Guild related
+	const char* guild_break_event_name;
+	const char* agit_start_event_name;
+	const char* agit_init_event_name;
+	const char* agit_end_event_name;
+	const char* agit_start2_event_name;
+	const char* agit_init2_event_name;
+	const char* agit_end2_event_name;
+	const char* agit_start3_event_name;
+	const char* agit_init3_event_name;
+	const char* agit_end3_event_name;
+
+	// Timer related
+	const char* timer_event_name;
+	const char* timer_quit_event_name;
+	const char* timer_minute_event_name;
+	const char* timer_hour_event_name;
+	const char* timer_clock_event_name;
+	const char* timer_day_event_name;
+	const char* timer_sunday_event_name;
+	const char* timer_monday_event_name;
+	const char* timer_tuesday_event_name;
+	const char* timer_wednesday_event_name;
+	const char* timer_thursday_event_name;
+	const char* timer_friday_event_name;
+	const char* timer_saturday_event_name;
+
+	// Instance related
+	const char* instance_init_event_name;
+	const char* instance_destroy_event_name;
 };
 extern struct s_Script_Config script_config;
 
@@ -645,6 +687,24 @@ enum e_random_option_attribute {
 	ROA_VALUE,
 	ROA_PARAM,
 };
+
+enum instance_info_type {
+	IIT_ID,
+	IIT_TIME_LIMIT,
+	IIT_IDLE_TIMEOUT,
+	IIT_ENTER_MAP,
+	IIT_ENTER_X,
+	IIT_ENTER_Y,
+	IIT_MAPCOUNT,
+	IIT_MAP
+};
+
+enum vip_status_type {
+	VIP_STATUS_ACTIVE = 1,
+	VIP_STATUS_EXPIRE,
+	VIP_STATUS_REMAINING
+};
+
 /**
  * used to generate quick script_array entries
  **/
@@ -659,20 +719,21 @@ const char* skip_space(const char* p);
 void script_error(const char* src, const char* file, int start_line, const char* error_msg, const char* error_pos);
 void script_warning(const char* src, const char* file, int start_line, const char* error_msg, const char* error_pos);
 
+bool is_number(const char *p);
 struct s_script_code* parse_script(const char* src,const char* file,int line,int options);
-void run_script_sub(struct s_script_code *rootscript,int pos,int rid,int oid, char* file, int lineno);
 void run_script(struct s_script_code *rootscript,int pos,int rid,int oid);
 
-int set_reg(struct s_script_state* st, struct s_map_session_data* sd, int64 num, const char* name, const void* value, struct s_reg_db *ref);
+int set_reg(struct s_script_state* st, s_map_session_data* sd, int64 num, const char* name, const void* value, struct s_reg_db *ref);
 int set_var(struct s_map_session_data *sd, char *name, void *val);
 int conv_num(struct s_script_state *st,struct s_script_data *data);
 const char* conv_str(struct s_script_state *st,struct s_script_data *data);
 void pop_stack(struct s_script_state* st, int start, int end);
 int run_script_timer(int tid, unsigned int tick, int id, intptr_t data);
-void run_script_main(struct s_script_state *st);
+void script_stop_sleeptimers(int id);
+struct linkdb_node *script_erase_sleepdb(struct linkdb_node *n);
+void run_script_main(struct script_state *st);
 
-void script_stop_instances(struct s_script_code *code);
-struct s_linkdb_node* script_erase_sleepdb(struct s_linkdb_node *n);
+void script_stop_scriptinstances(struct s_script_code *code);
 void script_free_code(struct s_script_code* code);
 void script_free_vars(struct s_DBMap *storage);
 struct s_script_state* script_alloc_state(struct s_script_code* rootscript, int pos, int rid, int oid);
@@ -682,8 +743,9 @@ struct s_DBMap* script_get_label_db(void);
 struct s_DBMap* script_get_userfunc_db(void);
 void script_run_autobonus(const char *autobonus, struct s_map_session_data *sd, unsigned int pos);
 
+bool script_get_parameter(const char* name, int* value);
 bool script_get_constant(const char* name, int* value);
-void script_set_constant(const char* name, int value, bool isparameter);
+void script_set_constant(const char* name, int value, bool isparameter, bool deprecated);
 void script_hardcoded_constants(void);
 
 void script_cleararray_pc(struct s_map_session_data* sd, const char* varname, void* value);
@@ -697,7 +759,7 @@ const char* get_str(int id);
 void script_reload(void);
 
 // @commands (script based)
-void setd_sub(struct s_script_state *st, struct s_map_session_data *sd, const char *varname, int elem, void *value, struct s_reg_db *ref);
+void setd_sub(struct s_script_state *st, s_map_session_data *sd, const char *varname, int elem, void *value, struct s_reg_db *ref);
 
 /**
  * Array Handling

@@ -200,7 +200,7 @@ bool path_search_long(struct s_shootpath_data *spd,int16 m,int16 x0,int16 y0,int
 static void heap_push_node(struct node_heap *heap, struct path_node *node)
 {
 #ifndef __clang_analyzer__ // TODO: Figure out why clang's static analyzer doesn't like this
-	BHEAP_ENSURE(*heap, 1, 256, struct path_node**);
+	BHEAP_ENSURE(*heap, 1, 256);
 	BHEAP_PUSH2(*heap, node, NODE_MINTOPCMP, swap_ptr);
 #endif // __clang_analyzer__
 }
@@ -332,7 +332,7 @@ bool path_search(struct s_walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16
 		struct path_node *current, *it;
 		int xs = md->xs - 1;
 		int ys = md->ys - 1;
-		unsigned char len = 0;
+		int len = 0;
 		int j;
 
 		// A* (A-star) pathfinding

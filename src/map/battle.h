@@ -105,6 +105,8 @@ int64 battle_calc_bg_damage(struct s_block_list *src,struct s_block_list *bl,int
 void battle_damage(struct s_block_list *src, struct s_block_list *target, int64 damage, int delay, uint16 skill_lv, uint16 skill_id, enum e_damage_lv dmg_lv, unsigned short attack_type, bool additional_effects, unsigned int tick, bool spdamage);
 int battle_delay_damage (unsigned int tick, int amotion, struct s_block_list *src, struct s_block_list *target, int attack_type, uint16 skill_id, uint16 skill_lv, int64 damage, enum e_damage_lv dmg_lv, int ddelay, bool additional_effects, bool spdamage);
 
+int battle_calc_chorusbonus(struct s_map_session_data *sd);
+
 // Summary normal attack treatment (basic attack)
 enum e_damage_lv battle_weapon_attack( struct s_block_list *bl,struct s_block_list *target,unsigned int tick,int flag);
 
@@ -124,6 +126,16 @@ void battle_consume_ammo(struct s_map_session_data* sd, int skill, int lv);
 bool is_infinite_defense(struct s_block_list *target, int flag);
 
 // Settings
+
+#define MIN_HAIR_STYLE battle_config.min_hair_style
+#define MAX_HAIR_STYLE battle_config.max_hair_style
+#define MIN_HAIR_COLOR battle_config.min_hair_color
+#define MAX_HAIR_COLOR battle_config.max_hair_color
+#define MIN_CLOTH_COLOR battle_config.min_cloth_color
+#define MAX_CLOTH_COLOR battle_config.max_cloth_color
+#define MIN_BODY_STYLE battle_config.min_body_style
+#define MAX_BODY_STYLE battle_config.max_body_style
+
 struct s_Battle_Config
 {
 	int warp_point_debug;
@@ -225,6 +237,7 @@ struct s_Battle_Config
 	int pet_max_atk2; //[Skotlex]
 	int pet_no_gvg; //Disables pets in gvg. [Skotlex]
 	int pet_equip_required;
+	int pet_master_dead;
 
 	int skill_min_damage;
 	int finger_offensive_type;
@@ -324,6 +337,7 @@ struct s_Battle_Config
 	int item_drop_adddrop_min,item_drop_adddrop_max; //[Skotlex]
 
 	int prevent_logout;	// Added by RoVeRT
+	int prevent_logout_trigger;
 
 	int alchemist_summon_reward;	// [Valaris]
 	int drops_by_luk;
@@ -334,6 +348,7 @@ struct s_Battle_Config
 	int multi_level_up;
 	int max_exp_gain_rate; //Max amount of exp bar % you can get in one go.
 	int pk_mode;
+	int pk_mode_mes;
 	int pk_level_range;
 
 	int manner_system; // end additions [Valaris]
@@ -360,8 +375,6 @@ struct s_Battle_Config
 	int day_duration; // added by [Yor]
 	int night_duration; // added by [Yor]
 	int ban_hack_trade; // added by [Yor]
-	int packet_ver_flag; // added by [Yor]
-	int packet_ver_flag2; // expend of packet_ver_flag
 
 	int min_hair_style; // added by [MouseJstr]
 	int max_hair_style; // added by [MouseJstr]
@@ -558,7 +571,6 @@ struct s_Battle_Config
 	int fame_pharmacy_7;
 	int fame_pharmacy_10;
 
-	int disp_serverbank_msg;
 	int disp_servervip_msg;
 	int warg_can_falcon;
 	int path_blown_halt;
@@ -605,25 +617,31 @@ struct s_Battle_Config
 	int can_damage_skill; //Which BL types can damage traps
 	int atcommand_levelup_events;
 	int block_account_in_same_party;
+	int tarotcard_equal_chance; //Official or equal chance for each card
+	int change_party_leader_samemap;
+	int dispel_song; //Can songs be dispelled?
+	int guild_maprespawn_clones; // Should clones be killed by maprespawnguildid?
+	int hide_fav_sell;
+	int mail_daily_count;
+	int mail_zeny_fee;
+	int mail_attachment_price;
+	int mail_attachment_weight;
+	int banana_bomb_duration;
+	int guild_leaderchange_delay;
+	int guild_leaderchange_woe;
+	int guild_alliance_onlygm;
+	int feature_achievement;
+	int allow_bound_sell;
+	int event_refine_chance;
 
 #include "../custom/battle_config_struct.inc"
 };
 
 extern struct s_Battle_Config battle_config;
 
-#define MIN_HAIR_STYLE battle_config.min_hair_style
-#define MAX_HAIR_STYLE battle_config.max_hair_style
-#define MIN_HAIR_COLOR battle_config.min_hair_color
-#define MAX_HAIR_COLOR battle_config.max_hair_color
-#define MIN_CLOTH_COLOR battle_config.min_cloth_color
-#define MAX_CLOTH_COLOR battle_config.max_cloth_color
-#define MIN_BODY_STYLE battle_config.min_body_style
-#define MAX_BODY_STYLE battle_config.max_body_style
-
 void do_init_battle(void);
 void do_final_battle(void);
 extern int battle_config_read(const char *cfgName);
-extern void battle_validate_conf(void);
 extern void battle_set_defaults(void);
 int battle_set_value(const char* w1, const char* w2);
 int battle_get_value(const char* w1);

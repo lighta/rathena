@@ -9,6 +9,17 @@
 #include <ctime>
 
 enum e_sd_state { ST_LOGIN, ST_LOGOUT, ST_MAPCHANGE };
+
+enum e_chrif_save_opt {
+	CSAVE_NORMAL = 0x00,		/// Normal
+	CSAVE_QUIT = 0x01,				/// Character quitting
+	CSAVE_CHANGE_MAPSERV = 0x02,	/// Character changing map server
+	CSAVE_AUTOTRADE = 0x04,		/// Character entering autotrade state
+	CSAVE_INVENTORY = 0x08,		/// Inventory data changed
+	CSAVE_CART = 0x10,				/// Cart data changed
+	CSAVE_QUITTING = CSAVE_QUIT|CSAVE_CHANGE_MAPSERV|CSAVE_AUTOTRADE,
+};
+
 struct s_auth_node {
 	uint32 account_id, char_id;
 	int login_id1, login_id2, sex, fd;
@@ -60,15 +71,13 @@ int chrif_char_reset_offline(void);
 int send_users_tochar(void);
 int chrif_char_online(struct s_map_session_data *sd);
 int chrif_changesex(struct s_map_session_data *sd, bool change_account);
-int chrif_chardisconnect(struct s_map_session_data *sd);
 int chrif_divorce(int partner_id1, int partner_id2);
 
 int chrif_removefriend(uint32 char_id, int friend_id);
-int chrif_send_report(char* buf, int len);
 
 void chrif_parse_ack_vipActive(int fd);
 
-int chrif_req_charban(int aid, const char* character_name, int timediff);
+int chrif_req_charban(int aid, const char* character_name, int32 timediff);
 int chrif_req_charunban(int aid, const char* character_name);
 
 int chrif_bsdata_request(uint32 char_id);

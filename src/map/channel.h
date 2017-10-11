@@ -16,10 +16,17 @@ struct s_DBMap;
 #define CHAN_MSG_LENGTH 150
 
 enum e_Channel_Opt {
-	CHAN_OPT_BASE		= 0,
-	CHAN_OPT_ANNOUNCE_JOIN	= 1,	//display message when join or leave
-	CHAN_OPT_MSG_DELAY	= 2,
-	CHAN_OPT_COLOR_OVERRIDE = 3,
+	CHAN_OPT_NONE		    = 0,	///< None
+	CHAN_OPT_ANNOUNCE_SELF  = 0x01,	///< Shows info when player joined/left channel to self
+	CHAN_OPT_ANNOUNCE_JOIN  = 0x02,	///< Shows info if player joined the channel
+	CHAN_OPT_ANNOUNCE_LEAVE = 0x04,	///< Shows info if player left the channel
+	CHAN_OPT_MSG_DELAY	    = 0x08,	///< Enables chat delay
+	CHAN_OPT_COLOR_OVERRIDE = 0x10,	///< Enables color channel be override by player's font color
+	CHAN_OPT_CAN_CHAT		= 0x20,	///< Allows player to chat in the channel
+	CHAN_OPT_CAN_LEAVE		= 0x40,	///< Allows player to leave the channel
+	CHAN_OPT_AUTOJOIN		= 0x80,	///< Player will be autojoined to the channel
+
+	CHAN_OPT_BASE = CHAN_OPT_ANNOUNCE_SELF|CHAN_OPT_MSG_DELAY|CHAN_OPT_CAN_CHAT|CHAN_OPT_CAN_LEAVE,
 };
 
 enum e_Channel_Type {
@@ -29,43 +36,69 @@ enum e_Channel_Type {
 	CHAN_TYPE_ALLY		= 3,	//guild
 };
 
+struct s_Channel {
+	//unsigned short id;			  ///< Channel ID (unused yet)
+	char name[CHAN_NAME_LENGTH];  ///< Channel Name
+	char pass[CHAN_NAME_LENGTH];  ///< Channe display name
+	char alias[CHAN_NAME_LENGTH]; ///< Password
+	enum Channel_Type type;		  ///< Channel type @see enum Channel_Type
+	unsigned long color;		  ///< Channel color in BGR
+	unsigned char opt;			  ///< Channel options @see enum Channel_Opt
+	unsigned short msg_delay;	  ///< Chat delay in miliseconds
+	unsigned int char_id;		  ///< If CHAN_TYPE_PRIVATE, owner is char_id of channel creator
+	uint16 m;					  ///< If CHAN_TYPE_MAP, owner is map id
+	int gid;					  ///< If CHAN_TYPE_ALLY, owner is first logged guild_id
+	s_DBMap *users;				  ///< List of users
+	s_DBMap *banned;				  ///< List of banned chars -> char_id
+	unsigned short group_count;	  ///< Number of group id
+	unsigned short *groups;		  ///< List of group id, only these groups can join the channel
+};
+
+struct s_chan_banentry {
+	uint32 char_id;
+	char char_name[NAME_LENGTH];
+};
+extern s_chan_banentry chan_banentry;
+
 struct s_Channel_Config {
-	unsigned long *colors;		//color avail int list
-	char **colors_name;		//colors avail name list
-	unsigned char colors_count;	//color avail count
-	unsigned char map_chcolor, ally_chcolor; //msg color for map, ally
-	bool map_enable, ally_enable, user_chenable; //map, ally, users channels enable ?
-	bool map_autojoin, ally_autojoin;	//do user auto join in mapchange, guildjoin ?
-	char map_chname[CHAN_NAME_LENGTH], ally_chname[CHAN_NAME_LENGTH]; //channel name for map and ally
-	bool closing;			//server is closing
+	unsigned long *colors;		///< List of available colors
+	char **colors_name;			///< Name list of available colors
+	unsigned char colors_count;	///< Number of available colors
+
+	/// Private channel default configs
+	struct {
+		unsigned char opt;			 ///< Options @see enum Channel_Opt
+		unsigned long color;		 ///< Default color
+		unsigned int delay;			 ///< Message delay
+		unsigned short max_member;	 ///< Max member for each channel
+		unsigned allow : 1;			 ///< Allow private channel creation?
+		unsigned ban : 1;			 ///< Allow player to ban
+		unsigned kick : 1;			 ///< Allow player to kick
+		unsigned color_override : 1; ///< Owner cannot change the color_override
+		unsigned change_delay : 1;	 ///< Owner cannot change the delay
+	} private_channel;
+
+	s_Channel map_tmpl;  ///< Map channel default config
+	s_Channel ally_tmpl; ///< Alliance channel default config
+
+	bool closing; ///< Server is closing
 };
 extern struct s_Channel_Config channel_config;
 
-struct s_Channel {
-	char name[CHAN_NAME_LENGTH];	//channel name
-	char pass[CHAN_NAME_LENGTH];	//channel password
-	unsigned char color;		//msg color
-	s_DBMap *users;			//users in channel charid list
-	s_DBMap *banned;			//users banned from channel charid list
-	enum e_Channel_Opt opt;		//flag for some treatement
-	enum e_Channel_Type type;		//type of channel
-	unsigned int owner;		//if chan_type private charid of creator
-	uint16 m;			//if chan_type map guild_id
-	int gid;			//if chan_type guild type guild_id
-	unsigned char msg_delay;	//delay in second if opt_msg_delay
-};
+DBMap* channel_get_db(void);
 
-s_DBMap* channel_get_db(void);
+struct Channel* channel_create(struct s_Channel *tmp_chan);
+struct Channel* channel_create_simple(char *name, char *pass, enum Channel_Type chantype, unsigned int owner);
+int channel_delete(struct s_Channel *channel, bool force);
 
-struct s_Channel* channel_create(char *name, char *pass, unsigned char color, enum e_Channel_Type chantype, int val);
-int channel_delete(struct s_Channel *channel);
+int channel_join(struct s_Channel *channel, struct map_session_data *sd);
+int channel_mjoin(struct map_session_data *sd);
+int channel_gjoin(struct map_session_data *sd, int flag);
+int channel_ajoin(struct guild *g);
+int channel_clean(struct s_Channel *channel, struct map_session_data *sd, int flag);
+int channel_pcquit(struct map_session_data *sd, int type);
 
-int channel_join(struct s_Channel *channel, struct s_map_session_data *sd);
-int channel_mjoin(struct s_map_session_data *sd);
-int channel_gjoin(struct s_map_session_data *sd, int flag);
-int channel_ajoin(struct s_guild *g);
-int channel_clean(struct s_Channel *channel, struct s_map_session_data *sd, int flag);
-int channel_pcquit(struct s_map_session_data *sd, int type);
+unsigned long channel_getColor(const char *color_str);
 
 int channel_send(struct s_Channel *channel, struct s_map_session_data *sd, const char *msg);
 void channel_read_config(void);
@@ -77,6 +110,9 @@ int channel_haspcbanned(struct s_Channel *channel,struct s_map_session_data *sd)
 int channel_pc_haschan(struct s_map_session_data *sd, struct s_Channel *channel);
 int channel_display_list(struct s_map_session_data *sd, char *option);
 
+void channel_autojoin(struct map_session_data *sd);
+bool channel_pccheckgroup(struct s_Channel *channel, int group_id);
+
 int channel_pccreate(struct s_map_session_data *sd, char *chname, char *pass);
 int channel_pcdelete(struct s_map_session_data *sd, char *chname);
 int channel_pcjoin(struct s_map_session_data *sd, char *chname, char *pass);
@@ -85,6 +121,7 @@ int channel_pccolor(struct s_map_session_data *sd, char *chname, char *color);
 int channel_pcbind(struct s_map_session_data *sd, char *chname);
 int channel_pcunbind(struct s_map_session_data *sd);
 int channel_pcban(struct s_map_session_data *sd, char *chname, char *pname, int flag);
+int channel_pckick(struct map_session_data *sd, char *chname, char *pname);
 int channel_pcsetopt(struct s_map_session_data *sd, char *chname, const char *option, const char *val);
 
 void do_init_channel(void);

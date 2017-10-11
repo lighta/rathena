@@ -6,6 +6,7 @@
 //#define DEBUG_RUN
 //#define DEBUG_HASH
 //#define DEBUG_DUMP_STACK
+#include "script.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -35,14 +36,15 @@
 	#include "../common_old/mutex.h"
 #endif
 
-#include "script.h"
+
 #include "map.h"
 #include "path.h"
+#include "clan.h"
 #include "clif.h"
 #include "chrif.h"
+#include "date.h" // date type enum, date_get()
 #include "itemdb.h"
 #include "pc.h"
-#include "pc_groups.h"
 #include "storage.h"
 #include "pet.h"
 #include "mapreg.h"
@@ -62,6 +64,9 @@
 #include "battle.h"
 #include "log.h"
 #include "mob.h"
+
+#include "channel.h"
+#include "achievement.h"
 
 struct s_eri *array_ers;
 s_DBMap *st_db;
@@ -84,10 +89,13 @@ static bool script_accid2sd_(struct s_script_state *st, uint8 loc, struct s_map_
 		int id_ = script_getnum(st, loc);
 		if (!(*sd = map_id2sd(id_)))
 			ShowError("%s: Player with account id '%d' is not found.\n", func, id_);
+			return false;
+		}else{
+			return true;
+		}
 	}
 	else
-		*sd = script_rid2sd(st);
-	return (*sd) ? true : false;
+		return script_rid2sd_(st,sd,func);
 }
 
 /**

@@ -90,12 +90,12 @@ int pet_create_egg(struct s_map_session_data *sd, unsigned short item_id)
 		return 0; // Inventory full
 
 	sd->catch_target_class = pet_db[pet_id].class_;
-	intif_create_pet(sd->status.account_id, sd->status.char_id,
-		(short)pet_db[pet_id].class_,
-		(short)mob_db(pet_db[pet_id].class_)->lv,
-		(short)pet_db[pet_id].EggID, 0,
-		(short)pet_db[pet_id].intimate,
-		100, 0, 1, pet_db[pet_id].jname);
+	intif_create_pet(sd->status.account_id, sd->status.char_id, 
+  pet_db[pet_id].class_, 
+  mob_db(pet_db[pet_id].class_)->lv, 
+  pet_db[pet_id].EggID,  0, 
+  pet_db[pet_id].intimate, 
+  100, 0, 1, pet_db[pet_id].jname);
 
 	return 1;
 }
@@ -156,9 +156,9 @@ int pet_attackskill(struct s_pet_data *pd, int target_id)
 
 /**
  * Make sure pet can attack from given config values.
- * @param sd : player requesting (owner)
- * @param bl : target
- * @param type : pet's attack rate type
+ * @param pd: pet data
+ * @param bl: target
+ * @param type: pet's attack rate type
  * @return 0
  */
 int pet_target_check(struct s_pet_data *pd,struct s_block_list *bl,int type)
@@ -178,6 +178,11 @@ int pet_target_check(struct s_pet_data *pd,struct s_block_list *bl,int type)
 	if(pd->bl.m != bl->m ||
 		!check_distance_bl(&pd->bl, bl, pd->db->range2))
 		return 0;
+
+	if (!battle_config.pet_master_dead && pc_isdead(pd->master)) {
+		pet_unlocktarget(pd);
+		return 0;
+	}
 
 	if (!status_check_skilluse(&pd->bl, bl, 0, 0))
 		return 0;
@@ -516,7 +521,7 @@ int pet_birth_process(struct s_map_session_data *sd, struct s_pet *pet)
 	intif_save_petdata(sd->status.account_id,pet);
 	
 	if (save_settings&CHARSAVE_PET)
-		chrif_save(sd,0); //is it REALLY Needed to save the char for hatching a pet? [Skotlex]
+		chrif_save(sd, CSAVE_INVENTORY); //is it REALLY Needed to save the char for hatching a pet? [Skotlex]
 
 	if(sd->bl.prev != NULL) {
 		if(map_addblock(&sd->pd->bl))
@@ -561,8 +566,8 @@ int pet_recv_petdata(uint32 account_id,struct s_pet *p,int flag)
 
 		//Delete egg from inventory. [Skotlex]
 		for (i = 0; i < MAX_INVENTORY; i++) {
-			if(sd->status.inventory[i].card[0] == CARD0_PET &&
-				p->pet_id == MakeDWord(sd->status.inventory[i].card[1], sd->status.inventory[i].card[2]))
+			if(sd->inventory.u.items_inventory[i].card[0] == CARD0_PET &&
+				p->pet_id == MakeDWord(sd->inventory.u.items_inventory[i].card[1], sd->inventory.u.items_inventory[i].card[2]))
 				break;
 		}
 
@@ -606,8 +611,8 @@ int pet_select_egg(struct s_map_session_data *sd,short egg_index)
 	if(egg_index < 0 || egg_index >= MAX_INVENTORY)
 		return 0; //Forged packet!
 
-	if(sd->status.inventory[egg_index].card[0] == CARD0_PET)
-		intif_request_petdata(sd->status.account_id, sd->status.char_id, MakeDWord(sd->status.inventory[egg_index].card[1], sd->status.inventory[egg_index].card[2]) );
+	if(sd->inventory.u.items_inventory[egg_index].card[0] == CARD0_PET)
+		intif_request_petdata(sd->status.account_id, sd->status.char_id, MakeDWord(sd->inventory.u.items_inventory[egg_index].card[1], sd->inventory.u.items_inventory[egg_index].card[2]) );
 	else
 		ShowError("wrong egg item inventory %d\n",egg_index);
 
@@ -677,11 +682,11 @@ int pet_catch_process2(struct s_map_session_data* sd, int target_id)
 		pet_catch_rate = (pet_catch_rate*battle_config.pet_catch_rate)/100;
 
 	if(rnd()%10000 < pet_catch_rate) {
+		achievement_update_objective(sd, AG_TAMING, 1, md->mob_id);
 		unit_remove_map(&md->bl,CLR_OUTSIGHT);
 		status_kill(&md->bl);
 		clif_pet_roulette(sd,1);
-		intif_create_pet(sd->status.account_id,sd->status.char_id,pet_db[i].class_,mob_db(pet_db[i].class_)->lv,
-			pet_db[i].EggID,0,pet_db[i].intimate,100,0,1,pet_db[i].jname);
+		intif_create_pet(sd->status.account_id, sd->status.char_id, pet_db[i].class_, mob_db(pet_db[i].class_)->lv, pet_db[i].EggID, 0, pet_db[i].intimate, 100, 0, 1, pet_db[i].jname);
 	} else {
 		clif_pet_roulette(sd,0);
 		sd->catch_target_class = -1;
@@ -869,7 +874,7 @@ int pet_equipitem(struct s_map_session_data *sd,int index)
 	if (!pd)
 		return 1;
 
-	nameid = sd->status.inventory[index].nameid;
+	nameid = sd->inventory.u.items_inventory[index].nameid;
 
 	if(pd->petDB->AcceID == 0 || nameid != pd->petDB->AcceID || pd->pet.equip != 0) {
 		clif_equipitemack(sd,0,0,ITEM_EQUIP_ACK_FAIL);

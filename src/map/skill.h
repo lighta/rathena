@@ -252,7 +252,7 @@ struct s_skill_nounit_layout {
 	int dy[MAX_SKILL_UNIT_COUNT];
 };
 
-
+#define MAX_SKILLTIMERSKILL 50
 struct s_skill_timerskill {
 	int timer;
 	int src_id;
@@ -264,6 +264,7 @@ struct s_skill_timerskill {
 	int flag;
 };
 
+#define MAX_SKILLUNITGROUP 25 /// Maximum skill unit group (for same skill each source)
 /// Skill unit group
 struct s_skill_unit_group {
 	int src_id; /// Caster ID/RID, if player is account_id
@@ -305,6 +306,7 @@ struct s_skill_unit {
 	unsigned hidden : 1;
 };
 
+#define MAX_SKILLUNITGROUPTICKSET 25
 struct s_skill_unit_group_tickset {
 	unsigned int tick;
 	int id;
@@ -326,10 +328,22 @@ enum e_skill_unit_flag {
 	UF_DUALMODE         = 0x00800,	// Spells should trigger both ontimer and onplace/onout/onleft effects.
 	UF_NOKNOCKBACK      = 0x01000,	// Skill unit cannot be knocked back
 	UF_RANGEDSINGLEUNIT = 0x02000,	// hack for ranged layout, only display center
-	UF_REM_CRAZYWEED    = 0x04000,	// removed by Crazyweed
+	UF_CRAZYWEED_IMMUNE = 0x04000,	// Immune to Crazy Weed removal
 	UF_REM_FIRERAIN     = 0x08000,	// removed by Fire Rain
 	UF_KNOCKBACK_GROUP  = 0x10000,	// knockback skill unit with its group instead of single unit
 	UF_HIDDEN_TRAP      = 0x20000,	// Hidden trap [Cydh]
+};
+
+/// Enum for skill_blown
+enum e_skill_blown	{
+	BLOWN_NONE					= 0x00,
+	BLOWN_DONT_SEND_PACKET		= 0x01, // Position update packets must not be sent to the client
+	BLOWN_IGNORE_NO_KNOCKBACK	= 0x02, // Ignores players' special_state.no_knockback
+	// These flags return 'count' instead of 0 if target is cannot be knocked back
+	BLOWN_NO_KNOCKBACK_MAP		= 0x04, // On a WoE/BG map
+	BLOWN_MD_KNOCKBACK_IMMUNE	= 0x08, // If target is MD_KNOCKBACK_IMMUNE
+	BLOWN_TARGET_NO_KNOCKBACK	= 0x10, // If target has 'special_state.no_knockback'
+	BLOWN_TARGET_BASILICA		= 0x20, // If target is in Basilica area
 };
 
 /// Create Database item
@@ -473,20 +487,11 @@ struct s_skill_condition skill_get_requirement(struct s_map_session_data *sd, ui
 int skill_disable_check(struct s_status_change *sc, uint16 skill_id);
 
 int skill_check_pc_partner(struct s_map_session_data *sd, uint16 skill_id, uint16 *skill_lv, int range, int cast_flag);
-// -- moonsoul	(added skill_check_unit_cell)
-int skill_check_unit_cell(uint16 skill_id,int16 m,int16 x,int16 y,int unit_id);
-int skill_unit_out_all( struct s_block_list *bl,unsigned int tick,int range);
 int skill_unit_move(struct s_block_list *bl,unsigned int tick,int flag);
 void skill_unit_move_unit_group( struct s_skill_unit_group *group, int16 m,int16 dx,int16 dy);
 void skill_unit_move_unit(struct s_block_list *bl, int dx, int dy);
 
-struct s_skill_unit_group *skill_check_dancing( struct s_block_list *src );
-
-// Chant canceled
-int skill_castcancel(struct s_block_list *bl,int type);
-
 int skill_sit (struct s_map_session_data *sd, int type);
-void skill_overbrand(struct s_block_list* src, uint16 skill_id, uint16 skill_lv, uint16 x, uint16 y, unsigned int tick, int flag);
 void skill_repairweapon(struct s_map_session_data *sd, int idx);
 void skill_identify(struct s_map_session_data *sd,int idx);
 void skill_weaponrefine(struct s_map_session_data *sd,int idx); // [Celest]
@@ -499,7 +504,7 @@ bool skill_check_cloaking(struct s_block_list *bl, struct s_status_change_entry 
 // Abnormal status
 void skill_enchant_elemental_end(struct s_block_list *bl, int type);
 bool skill_isNotOk(uint16 skill_id, struct s_map_session_data *sd);
-bool skill_isNotOk_hom(uint16 skill_id, struct s_homun_data *hd);
+bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv);
 bool skill_isNotOk_mercenary(uint16 skill_id, struct s_mercenary_data *md);
 
 bool skill_isNotOk_npcRange(struct s_block_list *src, uint16 skill_id, uint16 skill_lv, int pos_x, int pos_y);
@@ -1786,6 +1791,21 @@ enum e_skill {
 	SU_TUNAPARTY,
 	SU_BUNCHOFSHRIMP,
 	SU_FRESHSHRIMP,
+	SU_CN_METEOR2,
+	SU_LUNATICCARROTBEAT2,
+	SU_SOULATTACK,
+	SU_POWEROFFLOCK,
+	SU_SVG_SPIRIT,
+	SU_HISS,
+	SU_NYANGGRASS,
+	SU_GROOMING,
+	SU_PURRING,
+	SU_SHRIMPARTY,
+	SU_SPIRITOFLIFE,
+	SU_MEOWMEOW,
+	SU_SPIRITOFLAND,
+	SU_CHATTERING,
+	SU_SPIRITOFSEA,
 
 	HLIF_HEAL = 8001,
 	HLIF_AVOID,
@@ -2058,7 +2078,7 @@ enum s_skill_unit_id {
 	UNT_FIRE_RAIN,
 
 	UNT_CATNIPPOWDER,
-	UNT_SV_ROOTTWIST,
+	UNT_NYANGGRASS,
 
 	/**
 	 * Guild Auras

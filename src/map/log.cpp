@@ -1,6 +1,6 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
-
+#include "log.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -11,7 +11,7 @@
 #include "map.h"
 #include "battle.h"
 #include "itemdb.h"
-#include "log.h"
+
 #include "homunculus.h"
 #include "mob.h"
 #include "pet.h"
@@ -101,6 +101,7 @@ static char log_chattype2char(e_log_chat_type type)
 		case LOG_CHAT_PARTY:    return 'P';  // (P)arty
 		case LOG_CHAT_GUILD:    return 'G';  // (G)uild
 		case LOG_CHAT_MAINCHAT: return 'M';  // (M)ain chat
+		case LOG_CHAT_CLAN:     return 'C';  // (C)lan
 	}
 
 	// should not get here, fallback
@@ -220,7 +221,7 @@ void log_pick(int id, int16 m, e_log_pick_type type, int amount, struct s_item* 
 #ifdef BETA_THREAD_TEST
 		char entry[512];
 		int e_length = 0;
-		e_length = sprintf(entry, LOG_QUERY " INTO `%s` (`time`, `char_id`, `type`, `nameid`, `amount`, `refine`, `card0`, `card1`, `card2`, `card3`, `map`, `unique_id`, `bound`) VALUES (NOW(), '%d', '%c', '%hu', '%d', '%d', '%hu', '%hu', '%hu', '%hu', '%s', '%llu', '%d')",
+		e_length = sprintf(entry, LOG_QUERY " INTO `%s` (`time`, `char_id`, `type`, `nameid`, `amount`, `refine`, `card0`, `card1`, `card2`, `card3`, `map`, `unique_id`, `bound`) VALUES (NOW(), '%d', '%c', '%hu', '%d', '%d', '%hu', '%hu', '%hu', '%hu', '%s', '%" PRIu64 "', '%d')",
 				log_config.log_pick, id, log_picktype2char(type), itm->nameid, amount, itm->refine, itm->card[0], itm->card[1], itm->card[2], itm->card[3], map[m].name?map[m].name:"", itm->unique_id, itm->bound);
 		queryThread_log(entry,e_length);
 #else
