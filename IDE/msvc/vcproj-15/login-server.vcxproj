@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -68,22 +68,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -99,8 +99,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\Win32\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\Win32\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\Win32\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -114,8 +117,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\x64\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\x64\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\x64\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -133,8 +139,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\Win32\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\Win32\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\Win32\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -152,26 +161,29 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\x64\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\x64\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\x64\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="../../src/login/account.h" />
-    <ClInclude Include="../../src/login/ipban.h" />
-    <ClInclude Include="../../src/login/login.h" />
-    <ClInclude Include="../../src/login/loginchrif.h" />
-    <ClInclude Include="../../src/login/loginclif.h" />
-    <ClInclude Include="../../src/login/logincnslif.h" />
-    <ClInclude Include="../../src/login/loginlog.h" />
+    <ClInclude Include="../../../src/login/account.h" />
+    <ClInclude Include="../../../src/login/ipban.h" />
+    <ClInclude Include="../../../src/login/login.h" />
+    <ClInclude Include="../../../src/login/loginchrif.h" />
+    <ClInclude Include="../../../src/login/loginclif.h" />
+    <ClInclude Include="../../../src/login/logincnslif.h" />
+    <ClInclude Include="../../../src/login/loginlog.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="../../src/login/account.cpp" />
-    <ClCompile Include="../../src/login/ipban.cpp" />
-    <ClCompile Include="../../src/login/login.cpp" />
-    <ClCompile Include="../../src/login/loginchrif.cpp" />
-    <ClCompile Include="../../src/login/loginclif.cpp" />
-    <ClCompile Include="../../src/login/logincnslif.cpp" />
-    <ClCompile Include="../../src/login/loginlog.cpp" />
+    <ClCompile Include="../../../src/login/account.cpp" />
+    <ClCompile Include="../../../src/login/ipban.cpp" />
+    <ClCompile Include="../../../src/login/login.cpp" />
+    <ClCompile Include="../../../src/login/loginchrif.cpp" />
+    <ClCompile Include="../../../src/login/loginclif.cpp" />
+    <ClCompile Include="../../../src/login/logincnslif.cpp" />
+    <ClCompile Include="../../../src/login/loginlog.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

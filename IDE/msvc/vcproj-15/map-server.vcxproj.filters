@@ -11,240 +11,240 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="../../src/map/atcommand.h">
+    <ClInclude Include="../../../src/map/atcommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/battle.h">
+    <ClInclude Include="../../../src/map/battle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/battleground.h">
+    <ClInclude Include="../../../src/map/battleground.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/buyingstore.h">
+    <ClInclude Include="../../../src/map/buyingstore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/cashshop.h">
+    <ClInclude Include="../../../src/map/cashshop.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/channel.h">
+    <ClInclude Include="../../../src/map/channel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/chat.h">
+    <ClInclude Include="../../../src/map/chat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/chrif.h">
+    <ClInclude Include="../../../src/map/chrif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/clif.h">
+    <ClInclude Include="../../../src/map/clif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/date.h">
+    <ClInclude Include="../../../src/map/date.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/duel.h">
+    <ClInclude Include="../../../src/map/duel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/elemental.h">
+    <ClInclude Include="../../../src/map/elemental.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/guild.h">
+    <ClInclude Include="../../../src/map/guild.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/homunculus.h">
+    <ClInclude Include="../../../src/map/homunculus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/instance.h">
+    <ClInclude Include="../../../src/map/instance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/intif.h">
+    <ClInclude Include="../../../src/map/intif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/itemdb.h">
+    <ClInclude Include="../../../src/map/itemdb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/log.h">
+    <ClInclude Include="../../../src/map/log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/mail.h">
+    <ClInclude Include="../../../src/map/mail.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/map.h">
+    <ClInclude Include="../../../src/map/map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/mapreg.h">
+    <ClInclude Include="../../../src/map/mapreg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/mercenary.h">
+    <ClInclude Include="../../../src/map/mercenary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/mob.h">
+    <ClInclude Include="../../../src/map/mob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/npc.h">
+    <ClInclude Include="../../../src/map/npc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/party.h">
+    <ClInclude Include="../../../src/map/party.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/path.h">
+    <ClInclude Include="../../../src/map/path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/pc.h">
+    <ClInclude Include="../../../src/map/pc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/pc_groups.h">
+    <ClInclude Include="../../../src/map/pc_groups.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/pet.h">
+    <ClInclude Include="../../../src/map/pet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/quest.h">
+    <ClInclude Include="../../../src/map/quest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/script.h">
+    <ClInclude Include="../../../src/map/script.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/searchstore.h">
+    <ClInclude Include="../../../src/map/searchstore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/skill.h">
+    <ClInclude Include="../../../src/map/skill.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/status.h">
+    <ClInclude Include="../../../src/map/status.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/storage.h">
+    <ClInclude Include="../../../src/map/storage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/trade.h">
+    <ClInclude Include="../../../src/map/trade.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/unit.h">
+    <ClInclude Include="../../../src/map/unit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/vending.h">
+    <ClInclude Include="../../../src/map/vending.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/map/script_constants.h">
+    <ClInclude Include="../../../src/map/script_constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="../../src/map/atcommand.cpp">
+    <ClCompile Include="../../../src/map/atcommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/battle.cpp">
+    <ClCompile Include="../../../src/map/battle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/battleground.cpp">
+    <ClCompile Include="../../../src/map/battleground.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/buyingstore.cpp">
+    <ClCompile Include="../../../src/map/buyingstore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/cashshop.cpp">
+    <ClCompile Include="../../../src/map/cashshop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/channel.cpp">
+    <ClCompile Include="../../../src/map/channel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/chat.cpp">
+    <ClCompile Include="../../../src/map/chat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/chrif.cpp">
+    <ClCompile Include="../../../src/map/chrif.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/clif.cpp">
+    <ClCompile Include="../../../src/map/clif.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/date.cpp">
+    <ClCompile Include="../../../src/map/date.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/duel.cpp">
+    <ClCompile Include="../../../src/map/duel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/elemental.cpp">
+    <ClCompile Include="../../../src/map/elemental.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/guild.cpp">
+    <ClCompile Include="../../../src/map/guild.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/homunculus.cpp">
+    <ClCompile Include="../../../src/map/homunculus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/instance.cpp">
+    <ClCompile Include="../../../src/map/instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/intif.cpp">
+    <ClCompile Include="../../../src/map/intif.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/itemdb.cpp">
+    <ClCompile Include="../../../src/map/itemdb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/log.cpp">
+    <ClCompile Include="../../../src/map/log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/mail.cpp">
+    <ClCompile Include="../../../src/map/mail.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/map.cpp">
+    <ClCompile Include="../../../src/map/map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/mapreg.cpp">
+    <ClCompile Include="../../../src/map/mapreg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/mercenary.cpp">
+    <ClCompile Include="../../../src/map/mercenary.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/mob.cpp">
+    <ClCompile Include="../../../src/map/mob.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/npc.cpp">
+    <ClCompile Include="../../../src/map/npc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/npc_chat.cpp">
+    <ClCompile Include="../../../src/map/npc_chat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/party.cpp">
+    <ClCompile Include="../../../src/map/party.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/path.cpp">
+    <ClCompile Include="../../../src/map/path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/pc.cpp">
+    <ClCompile Include="../../../src/map/pc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/pc_groups.cpp">
+    <ClCompile Include="../../../src/map/pc_groups.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/pet.cpp">
+    <ClCompile Include="../../../src/map/pet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/quest.cpp">
+    <ClCompile Include="../../../src/map/quest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/script.cpp">
+    <ClCompile Include="../../../src/map/script.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/searchstore.cpp">
+    <ClCompile Include="../../../src/map/searchstore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/skill.cpp">
+    <ClCompile Include="../../../src/map/skill.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/status.cpp">
+    <ClCompile Include="../../../src/map/status.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/storage.cpp">
+    <ClCompile Include="../../../src/map/storage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/trade.cpp">
+    <ClCompile Include="../../../src/map/trade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/unit.cpp">
+    <ClCompile Include="../../../src/map/unit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/map/vending.cpp">
+    <ClCompile Include="../../../src/map/vending.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

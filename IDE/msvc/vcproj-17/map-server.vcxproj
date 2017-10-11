@@ -101,7 +101,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\Win32\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\Win32\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\Win32\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(OutDir)../link_folder.bat"</Command>
@@ -120,7 +120,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\x64\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\x64\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\x64\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(OutDir)../link_folder.bat"</Command>
@@ -143,7 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\Win32\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\Win32\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\Win32\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(OutDir)../link_folder.bat"</Command>
@@ -166,7 +166,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\x64\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\x64\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\x64\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>call "$(OutDir)../link_folder.bat"</Command>

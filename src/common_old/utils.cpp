@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h> // floor()
+#include <algorithm>
 
 #ifdef WIN32
 	#include "winapi.h"
@@ -439,22 +440,24 @@ unsigned int get_percentage(const unsigned int A, const unsigned int B)
  * @author http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#C
  */
 int levenshtein(const char *s1, const char *s2) {
-	unsigned int s1len, s2len, x, y, lastdiag, olddiag, i;
-	unsigned int* column;
+	size_t s1len, s2len, x, y, lastdiag, olddiag;
+	size_t* column;
+  int i;
+
 	s1len = strlen(s1);
 	s2len = strlen(s2);
-	column = (unsigned int*) malloc((s1len+1) * sizeof(unsigned int));
+	column = (size_t*) malloc((s1len+1) * sizeof(size_t));
 	for (y = 1; y <= s1len; y++)
 		column[y] = y;
 	for (x = 1; x <= s2len; x++) {
 		column[0] = x;
 		for (y = 1, lastdiag = x-1; y <= s1len; y++) {
 			olddiag = column[y];
-			column[y] = min(min(column[y] + 1, column[y-1] + 1), lastdiag + (s1[y-1] == s2[x-1] ? 0 : 1));
+			column[y] = std::min(std::min(column[y] + 1, column[y-1] + 1), lastdiag + (s1[y-1] == s2[x-1] ? 0 : 1));
 			lastdiag = olddiag;
 		}
 	}
-	i = column[s1len];
+	i = (int)column[s1len];
 	free(column);
-	return i;
+	return i; //why not size_t idk
 }

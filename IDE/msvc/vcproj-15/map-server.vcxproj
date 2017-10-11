@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -68,22 +68,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\bin\win32\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\bin\win32\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\bin\win32\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\..\bin\win32\$(Platform)</OutDir>
+    <OutDir>$(SolutionDir)..\..\bin\win32\$(PlatformTarget)</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -100,8 +100,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\Win32\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\Win32\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\Win32\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -116,8 +119,11 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\x64\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\x64\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\x64\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -136,8 +142,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\Win32\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\Win32\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\Win32\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -156,90 +165,93 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\zdll.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\pcre.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;$(SolutionDir)build\common.lib;$(SolutionDir)build\libconfig.lib;$(SolutionDir)build\mt19937ar.lib;$(SolutionDir)build\yaml-cpp.lib;$(SolutionDir)..\..\3rdparty\zlib\lib\x64\zlib.lib;$(SolutionDir)..\..\3rdparty\pcre\lib\x64\pcre8.lib;$(SolutionDir)..\..\3rdparty\mysql\lib\x64\libmysql.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>call "$(OutDir)../link_folder.bat"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="../../src/map/atcommand.h" />
-    <ClInclude Include="../../src/map/battle.h" />
-    <ClInclude Include="../../src/map/battleground.h" />
-    <ClInclude Include="../../src/map/buyingstore.h" />
-    <ClInclude Include="../../src/map/cashshop.h" />
-    <ClInclude Include="../../src/map/channel.h" />
-    <ClInclude Include="../../src/map/chat.h" />
-    <ClInclude Include="../../src/map/chrif.h" />
-    <ClInclude Include="../../src/map/clif.h" />
-    <ClInclude Include="../../src/map/date.h" />
-    <ClInclude Include="../../src/map/duel.h" />
-    <ClInclude Include="../../src/map/elemental.h" />
-    <ClInclude Include="../../src/map/guild.h" />
-    <ClInclude Include="../../src/map/homunculus.h" />
-    <ClInclude Include="../../src/map/instance.h" />
-    <ClInclude Include="../../src/map/intif.h" />
-    <ClInclude Include="../../src/map/itemdb.h" />
-    <ClInclude Include="../../src/map/log.h" />
-    <ClInclude Include="../../src/map/mail.h" />
-    <ClInclude Include="../../src/map/map.h" />
-    <ClInclude Include="../../src/map/mapreg.h" />
-    <ClInclude Include="../../src/map/mercenary.h" />
-    <ClInclude Include="../../src/map/mob.h" />
-    <ClInclude Include="../../src/map/npc.h" />
-    <ClInclude Include="../../src/map/party.h" />
-    <ClInclude Include="../../src/map/path.h" />
-    <ClInclude Include="../../src/map/pc.h" />
-    <ClInclude Include="../../src/map/pc_groups.h" />
-    <ClInclude Include="../../src/map/pet.h" />
-    <ClInclude Include="../../src/map/quest.h" />
-    <ClInclude Include="../../src/map/script.h" />
-    <ClInclude Include="../../src/map/script_constants.h" />
-    <ClInclude Include="../../src/map/searchstore.h" />
-    <ClInclude Include="../../src/map/skill.h" />
-    <ClInclude Include="../../src/map/status.h" />
-    <ClInclude Include="../../src/map/storage.h" />
-    <ClInclude Include="../../src/map/trade.h" />
-    <ClInclude Include="../../src/map/unit.h" />
-    <ClInclude Include="../../src/map/vending.h" />
+    <ClInclude Include="../../../src/map/atcommand.h" />
+    <ClInclude Include="../../../src/map/battle.h" />
+    <ClInclude Include="../../../src/map/battleground.h" />
+    <ClInclude Include="../../../src/map/buyingstore.h" />
+    <ClInclude Include="../../../src/map/cashshop.h" />
+    <ClInclude Include="../../../src/map/channel.h" />
+    <ClInclude Include="../../../src/map/chat.h" />
+    <ClInclude Include="../../../src/map/chrif.h" />
+    <ClInclude Include="../../../src/map/clif.h" />
+    <ClInclude Include="../../../src/map/date.h" />
+    <ClInclude Include="../../../src/map/duel.h" />
+    <ClInclude Include="../../../src/map/elemental.h" />
+    <ClInclude Include="../../../src/map/guild.h" />
+    <ClInclude Include="../../../src/map/homunculus.h" />
+    <ClInclude Include="../../../src/map/instance.h" />
+    <ClInclude Include="../../../src/map/intif.h" />
+    <ClInclude Include="../../../src/map/itemdb.h" />
+    <ClInclude Include="../../../src/map/log.h" />
+    <ClInclude Include="../../../src/map/mail.h" />
+    <ClInclude Include="../../../src/map/map.h" />
+    <ClInclude Include="../../../src/map/mapreg.h" />
+    <ClInclude Include="../../../src/map/mercenary.h" />
+    <ClInclude Include="../../../src/map/mob.h" />
+    <ClInclude Include="../../../src/map/npc.h" />
+    <ClInclude Include="../../../src/map/party.h" />
+    <ClInclude Include="../../../src/map/path.h" />
+    <ClInclude Include="../../../src/map/pc.h" />
+    <ClInclude Include="../../../src/map/pc_groups.h" />
+    <ClInclude Include="../../../src/map/pet.h" />
+    <ClInclude Include="../../../src/map/quest.h" />
+    <ClInclude Include="../../../src/map/script.h" />
+    <ClInclude Include="../../../src/map/script_constants.h" />
+    <ClInclude Include="../../../src/map/searchstore.h" />
+    <ClInclude Include="../../../src/map/skill.h" />
+    <ClInclude Include="../../../src/map/status.h" />
+    <ClInclude Include="../../../src/map/storage.h" />
+    <ClInclude Include="../../../src/map/trade.h" />
+    <ClInclude Include="../../../src/map/unit.h" />
+    <ClInclude Include="../../../src/map/vending.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="../../src/map/atcommand.cpp" />
-    <ClCompile Include="../../src/map/battle.cpp" />
-    <ClCompile Include="../../src/map/battleground.cpp" />
-    <ClCompile Include="../../src/map/buyingstore.cpp" />
-    <ClCompile Include="../../src/map/cashshop.cpp" />
-    <ClCompile Include="../../src/map/channel.cpp" />
-    <ClCompile Include="../../src/map/chat.cpp" />
-    <ClCompile Include="../../src/map/chrif.cpp" />
-    <ClCompile Include="../../src/map/clif.cpp" />
-    <ClCompile Include="../../src/map/date.cpp" />
-    <ClCompile Include="../../src/map/duel.cpp" />
-    <ClCompile Include="../../src/map/elemental.cpp" />
-    <ClCompile Include="../../src/map/guild.cpp" />
-    <ClCompile Include="../../src/map/homunculus.cpp" />
-    <ClCompile Include="../../src/map/instance.cpp" />
-    <ClCompile Include="../../src/map/intif.cpp" />
-    <ClCompile Include="../../src/map/itemdb.cpp" />
-    <ClCompile Include="../../src/map/log.cpp" />
-    <ClCompile Include="../../src/map/mail.cpp" />
-    <ClCompile Include="../../src/map/map.cpp" />
-    <ClCompile Include="../../src/map/mapreg.cpp" />
-    <ClCompile Include="../../src/map/mercenary.cpp" />
-    <ClCompile Include="../../src/map/mob.cpp" />
-    <ClCompile Include="../../src/map/npc.cpp" />
-    <ClCompile Include="../../src/map/npc_chat.cpp" />
-    <ClCompile Include="../../src/map/party.cpp" />
-    <ClCompile Include="../../src/map/path.cpp" />
-    <ClCompile Include="../../src/map/pc.cpp" />
-    <ClCompile Include="../../src/map/pc_groups.cpp" />
-    <ClCompile Include="../../src/map/pet.cpp" />
-    <ClCompile Include="../../src/map/quest.cpp" />
-    <ClCompile Include="../../src/map/script.cpp" />
-    <ClCompile Include="../../src/map/searchstore.cpp" />
-    <ClCompile Include="../../src/map/skill.cpp" />
-    <ClCompile Include="../../src/map/status.cpp" />
-    <ClCompile Include="../../src/map/storage.cpp" />
-    <ClCompile Include="../../src/map/trade.cpp" />
-    <ClCompile Include="../../src/map/unit.cpp" />
-    <ClCompile Include="../../src/map/vending.cpp" />
+    <ClCompile Include="../../../src/map/atcommand.cpp" />
+    <ClCompile Include="../../../src/map/battle.cpp" />
+    <ClCompile Include="../../../src/map/battleground.cpp" />
+    <ClCompile Include="../../../src/map/buyingstore.cpp" />
+    <ClCompile Include="../../../src/map/cashshop.cpp" />
+    <ClCompile Include="../../../src/map/channel.cpp" />
+    <ClCompile Include="../../../src/map/chat.cpp" />
+    <ClCompile Include="../../../src/map/chrif.cpp" />
+    <ClCompile Include="../../../src/map/clif.cpp" />
+    <ClCompile Include="../../../src/map/date.cpp" />
+    <ClCompile Include="../../../src/map/duel.cpp" />
+    <ClCompile Include="../../../src/map/elemental.cpp" />
+    <ClCompile Include="../../../src/map/guild.cpp" />
+    <ClCompile Include="../../../src/map/homunculus.cpp" />
+    <ClCompile Include="../../../src/map/instance.cpp" />
+    <ClCompile Include="../../../src/map/intif.cpp" />
+    <ClCompile Include="../../../src/map/itemdb.cpp" />
+    <ClCompile Include="../../../src/map/log.cpp" />
+    <ClCompile Include="../../../src/map/mail.cpp" />
+    <ClCompile Include="../../../src/map/map.cpp" />
+    <ClCompile Include="../../../src/map/mapreg.cpp" />
+    <ClCompile Include="../../../src/map/mercenary.cpp" />
+    <ClCompile Include="../../../src/map/mob.cpp" />
+    <ClCompile Include="../../../src/map/npc.cpp" />
+    <ClCompile Include="../../../src/map/npc_chat.cpp" />
+    <ClCompile Include="../../../src/map/party.cpp" />
+    <ClCompile Include="../../../src/map/path.cpp" />
+    <ClCompile Include="../../../src/map/pc.cpp" />
+    <ClCompile Include="../../../src/map/pc_groups.cpp" />
+    <ClCompile Include="../../../src/map/pet.cpp" />
+    <ClCompile Include="../../../src/map/quest.cpp" />
+    <ClCompile Include="../../../src/map/script.cpp" />
+    <ClCompile Include="../../../src/map/searchstore.cpp" />
+    <ClCompile Include="../../../src/map/skill.cpp" />
+    <ClCompile Include="../../../src/map/status.cpp" />
+    <ClCompile Include="../../../src/map/storage.cpp" />
+    <ClCompile Include="../../../src/map/trade.cpp" />
+    <ClCompile Include="../../../src/map/unit.cpp" />
+    <ClCompile Include="../../../src/map/vending.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

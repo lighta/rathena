@@ -11,48 +11,48 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="../../src/login/account.h">
+    <ClInclude Include="../../../src/login/account.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/login/ipban.h">
+    <ClInclude Include="../../../src/login/ipban.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/login/login.h">
+    <ClInclude Include="../../../src/login/login.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/login/loginchrif.h">
+    <ClInclude Include="../../../src/login/loginchrif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/login/loginclif.h">
+    <ClInclude Include="../../../src/login/loginclif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/login/logincnslif.h">
+    <ClInclude Include="../../../src/login/logincnslif.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="../../src/login/loginlog.h">
+    <ClInclude Include="../../../src/login/loginlog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="../../src/login/account.cpp">
+    <ClCompile Include="../../../src/login/account.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/login/ipban.cpp">
+    <ClCompile Include="../../../src/login/ipban.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/login/login.cpp">
+    <ClCompile Include="../../../src/login/login.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/login/loginchrif.cpp">
+    <ClCompile Include="../../../src/login/loginchrif.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/login/loginclif.cpp">
+    <ClCompile Include="../../../src/login/loginclif.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/login/logincnslif.cpp">
+    <ClCompile Include="../../../src/login/logincnslif.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="../../src/login/loginlog.cpp">
+    <ClCompile Include="../../../src/login/loginlog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

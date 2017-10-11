@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="../../src/tool/mapcache.cpp">
+    <ClCompile Include="../../../src/tool/mapcache.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -12,6 +12,8 @@ Thumbs.db
 /*.exe
 /*.exe.*
 /*.ilk
+/*.iobj
+/*.ipdb
 /*.log
 /*.ncb
 /*.opensdf
@@ -24,6 +26,13 @@ Thumbs.db
 *.o
 *.a
 *.yml
+*.exe
+*.ilk
+*.suo
+*.pdb
+*.ipdb
+*.iobj
+*.sdf
 
 *.VC.db
 *.VC.opendb
@@ -37,7 +46,16 @@ Thumbs.db
 /build/
 /cbuild/
 /lib/
-
+/bin/*/conf
+/bin/*/*/conf
+/bin/*/db
+/bin/*/*/db
+/bin/*/npc
+/bin/*/*/npc
+/bin/*/doc
+/bin/*/*/doc
+/bin/*/log
+/bin/*/*/log
 
 
 # /3rdparty/libconfig/
@@ -48,6 +66,9 @@ Thumbs.db
 # /3rdparty/mt19937ar/
 /3rdparty/mt19937ar/Makefile
 /3rdparty/mt19937ar/*.o
+
+# /3rdparty/yaml-cpp/
+/3rdparty/yaml-cpp/Makefile
 
 # /db/
 /db/import

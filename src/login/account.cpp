@@ -531,43 +531,25 @@ namespace ra {
         return false;
       }
 
-      Sql_GetData(sql_handle, 0, &data, &out_len);
-      acc->account_id = atoi(data);
-      Sql_GetData(sql_handle, 1, &data, &out_len);
-      acc->userid = std::string(data, out_len);
-      Sql_GetData(sql_handle, 2, &data, &out_len);
-      acc->pass = std::string(data, out_len);
-      Sql_GetData(sql_handle, 3, &data, &out_len);
-      acc->sex = data[0];
-      Sql_GetData(sql_handle, 4, &data, &out_len);
-      acc->email = std::string(data, out_len);
-      Sql_GetData(sql_handle, 5, &data, &out_len);
-      acc->group_id = atoi(data);
-      Sql_GetData(sql_handle, 6, &data, &out_len);
-      acc->state = strtoul(data, NULL, 10);
-      Sql_GetData(sql_handle, 7, &data, &out_len);
-      acc->unban_time = atol(data);
-      Sql_GetData(sql_handle, 8, &data, &out_len);
-      acc->expiration_time = atol(data);
-      Sql_GetData(sql_handle, 9, &data, &out_len);
-      acc->logincount = strtoul(data, nullptr, 10);
-      Sql_GetData(sql_handle, 10, &data, &out_len);
-      acc->lastlogin = std::string(data, out_len);
-      Sql_GetData(sql_handle, 11, &data, &out_len);
-      acc->last_ip = std::string(data, out_len);
-      Sql_GetData(sql_handle, 12, &data, &out_len);
-      acc->birthdate = std::string(data, out_len);
-      Sql_GetData(sql_handle, 13, &data, &out_len);
-      acc->char_slots = atoi(data);
-      Sql_GetData(sql_handle, 14, &data, &out_len);
-      acc->pincode = std::string(data, out_len);
-      Sql_GetData(sql_handle, 15, &data, &out_len);
-      acc->pincode_change = atol(data);
+      Sql_GetData(sql_handle, 0, &data, &out_len);  acc->account_id = atoi(data);
+      Sql_GetData(sql_handle, 1, &data, &out_len);  acc->userid = std::string(data, out_len);
+      Sql_GetData(sql_handle, 2, &data, &out_len);  acc->pass = std::string(data, out_len);
+      Sql_GetData(sql_handle, 3, &data, &out_len);  acc->sex = data[0];
+      Sql_GetData(sql_handle, 4, &data, &out_len);  acc->email = std::string(data, out_len);
+      Sql_GetData(sql_handle, 5, &data, &out_len);  acc->group_id = atoi(data);
+      Sql_GetData(sql_handle, 6, &data, &out_len);  acc->state = strtoul(data, NULL, 10);
+      Sql_GetData(sql_handle, 7, &data, &out_len);  acc->unban_time = atol(data);
+      Sql_GetData(sql_handle, 8, &data, &out_len);  acc->expiration_time = atol(data);
+      Sql_GetData(sql_handle, 9, &data, &out_len);  acc->logincount = strtoul(data, nullptr, 10);
+      Sql_GetData(sql_handle, 10, &data, &out_len); acc->lastlogin = std::string(data, out_len);
+      Sql_GetData(sql_handle, 11, &data, &out_len); acc->last_ip = std::string(data, out_len);
+      Sql_GetData(sql_handle, 12, &data, &out_len); acc->birthdate = std::string(data, out_len);
+      Sql_GetData(sql_handle, 13, &data, &out_len); acc->char_slots = atoi(data);
+      Sql_GetData(sql_handle, 14, &data, &out_len); acc->pincode = std::string(data, out_len);
+      Sql_GetData(sql_handle, 15, &data, &out_len); acc->pincode_change = atol(data);
 #ifdef VIP_ENABLE
-      Sql_GetData(sql_handle, 16, &data, &out_len);
-      acc->vip_time = atol(data);
-      Sql_GetData(sql_handle, 17, &data, &out_len);
-      acc->old_group = atoi(data);
+      Sql_GetData(sql_handle, 16, &data, &out_len); acc->vip_time = atol(data);
+      Sql_GetData(sql_handle, 17, &data, &out_len); acc->old_group = atoi(data);
 #endif
       Sql_FreeResult(sql_handle);
 
@@ -724,7 +706,7 @@ namespace ra {
       Sql* sql_handle = ((AccountDB_SQL*) self)->accounts;
       AccountDB_SQL* db = (AccountDB_SQL*) self;
       char* data;
-      int plen = 0;
+      size_t plen = 0;
       size_t len;
 
       if (SQL_ERROR == Sql_Query(sql_handle, "SELECT `key`, `index`, `value` FROM `%s` WHERE `account_id`='%d'", db->global_acc_reg_str_table.c_str(), account_id))
@@ -773,7 +755,7 @@ namespace ra {
         WFIFOW(fd, 14) += 1;
 
         if (plen > 60000) {
-          WFIFOW(fd, 2) = plen;
+          WFIFOW(fd, 2) = static_cast<uint16>(plen);
           WFIFOSET(fd, plen);
 
           // prepare follow up
@@ -789,7 +771,7 @@ namespace ra {
         }
       }
 
-      WFIFOW(fd, 2) = plen;
+      WFIFOW(fd, 2) = static_cast<uint16>(plen);
       WFIFOSET(fd, plen);
 
       Sql_FreeResult(sql_handle);
@@ -836,7 +818,7 @@ namespace ra {
         WFIFOW(fd, 14) += 1;
 
         if (plen > 60000) {
-          WFIFOW(fd, 2) = plen;
+          WFIFOW(fd, 2) = static_cast<uint16>(plen);
           WFIFOSET(fd, plen);
 
           // prepare follow up
@@ -854,7 +836,7 @@ namespace ra {
       }
 
       WFIFOB(fd, 12) = 1;
-      WFIFOW(fd, 2) = plen;
+      WFIFOW(fd, 2) = static_cast<uint16>(plen);
       WFIFOSET(fd, plen);
 
       Sql_FreeResult(sql_handle);

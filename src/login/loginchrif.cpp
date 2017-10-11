@@ -270,7 +270,7 @@ namespace ra {
       std::string email;
       int group_id = 0;
       std::string birthdate;
-      std::string pincode;
+      std::string pincode="";
       char isvip = false;
       uint8 char_slots = MIN_CHARS, char_vip = 0, char_billing = 0;
       s_AccountDB* accounts = login_get_accounts_db();

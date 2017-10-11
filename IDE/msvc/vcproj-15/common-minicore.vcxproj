@@ -19,59 +19,59 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\common\atomic.h" />
-    <ClInclude Include="..\..\src\common\cbasetypes.h" />
-    <ClInclude Include="..\..\src\common\cli.h" />
-    <ClInclude Include="..\..\src\common\conf.h" />
-    <ClInclude Include="..\..\src\common\core.h" />
-    <ClInclude Include="..\..\src\common\db.h" />
-    <ClInclude Include="..\..\src\common\des.h" />
-    <ClInclude Include="..\..\src\common\ers.h" />
-    <ClInclude Include="..\..\src\common\grfio.h" />
-    <ClInclude Include="..\..\src\common\malloc.h" />
-    <ClInclude Include="..\..\src\common\mapindex.h" />
-    <ClInclude Include="..\..\src\common\md5calc.h" />
-    <ClInclude Include="..\..\src\common\mempool.h" />
-    <ClInclude Include="..\..\src\common\mmo.h" />
-    <ClInclude Include="..\..\src\common\msg_conf.h" />
-    <ClInclude Include="..\..\src\common\mutex.h" />
-    <ClInclude Include="..\..\src\common\nullpo.h" />
-    <ClInclude Include="..\..\src\common\raconf.h" />
-    <ClInclude Include="..\..\src\common\random.h" />
-    <ClInclude Include="..\..\src\common\showmsg.h" />
-    <ClInclude Include="..\..\src\common\socket.h" />
-    <ClInclude Include="..\..\src\common\spinlock.h" />
-    <ClInclude Include="..\..\src\common\sql.h" />
-    <ClInclude Include="..\..\src\common\strlib.h" />
-    <ClInclude Include="..\..\src\common\thread.h" />
-    <ClInclude Include="..\..\src\common\timer.h" />
-    <ClInclude Include="..\..\src\common\utils.h" />
-    <ClInclude Include="..\..\src\common\winapi.h" />
+    <ClInclude Include="..\..\..\src\common_old\atomic.h" />
+    <ClInclude Include="..\..\..\src\common_old\cbasetypes.h" />
+    <ClInclude Include="..\..\..\src\common_old\cli.h" />
+    <ClInclude Include="..\..\..\src\common_old\conf.h" />
+    <ClInclude Include="..\..\..\src\common_old\core.h" />
+    <ClInclude Include="..\..\..\src\common_old\db.h" />
+    <ClInclude Include="..\..\..\src\common_old\des.h" />
+    <ClInclude Include="..\..\..\src\common_old\ers.h" />
+    <ClInclude Include="..\..\..\src\common_old\grfio.h" />
+    <ClInclude Include="..\..\..\src\common_old\malloc.h" />
+    <ClInclude Include="..\..\..\src\common_old\mapindex.h" />
+    <ClInclude Include="..\..\..\src\common_old\md5calc.h" />
+    <ClInclude Include="..\..\..\src\common_old\mempool.h" />
+    <ClInclude Include="..\..\..\src\common_old\mmo.h" />
+    <ClInclude Include="..\..\..\src\common_old\msg_conf.h" />
+    <ClInclude Include="..\..\..\src\common_old\mutex.h" />
+    <ClInclude Include="..\..\..\src\common_old\nullpo.h" />
+    <ClInclude Include="..\..\..\src\common_old\raconf.h" />
+    <ClInclude Include="..\..\..\src\common_old\random.h" />
+    <ClInclude Include="..\..\..\src\common_old\showmsg.h" />
+    <ClInclude Include="..\..\..\src\common_old\socket.h" />
+    <ClInclude Include="..\..\..\src\common_old\spinlock.h" />
+    <ClInclude Include="..\..\..\src\common_old\sql.h" />
+    <ClInclude Include="..\..\..\src\common_old\strlib.h" />
+    <ClInclude Include="..\..\..\src\common_old\thread.h" />
+    <ClInclude Include="..\..\..\src\common_old\timer.h" />
+    <ClInclude Include="..\..\..\src\common_old\utils.h" />
+    <ClInclude Include="..\..\..\src\common_old\winapi.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\common\cli.cpp" />
-    <ClCompile Include="..\..\src\common\conf.cpp" />
-    <ClCompile Include="..\..\src\common\core.cpp" />
-    <ClCompile Include="..\..\src\common\db.cpp" />
-    <ClCompile Include="..\..\src\common\des.cpp" />
-    <ClCompile Include="..\..\src\common\ers.cpp" />
-    <ClCompile Include="..\..\src\common\grfio.cpp" />
-    <ClCompile Include="..\..\src\common\malloc.cpp" />
-    <ClCompile Include="..\..\src\common\mapindex.cpp" />
-    <ClCompile Include="..\..\src\common\md5calc.cpp" />
-    <ClCompile Include="..\..\src\common\mempool.cpp" />
-    <ClCompile Include="..\..\src\common\msg_conf.cpp" />
-    <ClCompile Include="..\..\src\common\mutex.cpp" />
-    <ClCompile Include="..\..\src\common\nullpo.cpp" />
-    <ClCompile Include="..\..\src\common\raconf.cpp" />
-    <ClCompile Include="..\..\src\common\random.cpp" />
-    <ClCompile Include="..\..\src\common\showmsg.cpp" />
-    <ClCompile Include="..\..\src\common\socket.cpp" />
-    <ClCompile Include="..\..\src\common\sql.cpp" />
-    <ClCompile Include="..\..\src\common\strlib.cpp" />
-    <ClCompile Include="..\..\src\common\thread.cpp" />
-    <ClCompile Include="..\..\src\common\timer.cpp" />
-    <ClCompile Include="..\..\src\common\utils.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\cli.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\conf.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\core.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\db.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\des.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\ers.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\grfio.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\malloc.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\mapindex.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\md5calc.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\mempool.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\msg_conf.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\mutex.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\nullpo.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\raconf.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\random.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\showmsg.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\socket.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\sql.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\strlib.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\thread.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\timer.cpp" />
+    <ClCompile Include="..\..\..\src\common_old\utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{352B45B3-FE88-4431-9D89-48CF811446DB}</ProjectGuid>
@@ -82,26 +82,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
