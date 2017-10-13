@@ -24,7 +24,7 @@ enum e_mail_attach_result {
 void mail_clear(s_map_session_data *sd);
 int mail_removeitem(s_map_session_data *sd, short flag, int idx, int amount);
 bool mail_removezeny(s_map_session_data *sd, bool flag);
-enum mail_attach_result mail_setitem(s_map_session_data *sd, short idx, uint32 amount);
+enum e_mail_attach_result mail_setitem(s_map_session_data *sd, short idx, uint32 amount);
 bool mail_setattachment(s_map_session_data *sd, s_mail_message *msg);
 void mail_getattachment(s_map_session_data* sd, s_mail_message* msg, int zeny, s_item* item);
 int mail_openmail(s_map_session_data *sd);

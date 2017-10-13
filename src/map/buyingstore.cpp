@@ -16,7 +16,7 @@
 #include "buyingstore.h"  // struct s_buyingstore
 #include "clif.h"  // clif_buyingstore_*
 #include "log.h"  // log_pick_pc, log_zeny
-#include "pc.h"  // struct s_map_session_data
+#include "pc.h"  // s_map_session_data
 #include "chrif.h"
 #include "npc.h"
 
@@ -66,7 +66,7 @@ static unsigned int buyingstore_getuid(void)
 * @param slots Number of item on the list
 * @return 0 If success, 1 - Cannot open, 2 - Manner penalty, 3 - Mapflag restiction, 4 - Cell restriction
 */
-int8 buyingstore_setup(struct s_map_session_data* sd, unsigned char slots){
+int8 buyingstore_setup(s_map_session_data* sd, unsigned char slots){
 	nullpo_retr(1, sd);
 
 	if (!battle_config.feature_buying_store || sd->state.vending || sd->state.buyingstore || sd->state.trading || slots == 0) {
@@ -113,7 +113,7 @@ int8 buyingstore_setup(struct s_map_session_data* sd, unsigned char slots){
 * @param at Autotrader info, or NULL if requetsed not from autotrade persistance
 * @return 0 If success, 1 - Cannot open, 2 - Manner penalty, 3 - Mapflag restiction, 4 - Cell restriction, 5 - Invalid count/result, 6 - Cannot give item, 7 - Will be overweight
 */
-int8 buyingstore_create(struct s_map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const uint8* itemlist, unsigned int count, struct s_autotrader *at)
+int8 buyingstore_create(s_map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const uint8* itemlist, unsigned int count, struct s_autotrader *at)
 {
 	unsigned int i, weight, listidx;
 	char message_sql[MESSAGE_SIZE*2];
@@ -258,7 +258,7 @@ int8 buyingstore_create(struct s_map_session_data* sd, int zenylimit, unsigned c
 * Close buying store and clear buying store data from tables
 * @param sd
 */
-void buyingstore_close(struct s_map_session_data* sd) {
+void buyingstore_close(s_map_session_data* sd) {
 	nullpo_retv(sd);
 
 	if( sd->state.buyingstore ) {
@@ -284,9 +284,9 @@ void buyingstore_close(struct s_map_session_data* sd) {
 * @param sd Player
 * @param account_id Buyer account ID
 */
-void buyingstore_open(struct s_map_session_data* sd, uint32 account_id)
+void buyingstore_open(s_map_session_data* sd, uint32 account_id)
 {
-	struct s_map_session_data* pl_sd;
+	s_map_session_data* pl_sd;
 
 	nullpo_retv(sd);
 
@@ -322,11 +322,11 @@ void buyingstore_open(struct s_map_session_data* sd, uint32 account_id)
 * @param *itemlist List of sold items { <index>.W, <nameid>.W, <amount>.W }*
 * @param count Number of item on the itemlist
 */
-void buyingstore_trade(struct s_map_session_data* sd, uint32 account_id, unsigned int buyer_id, const uint8* itemlist, unsigned int count)
+void buyingstore_trade(s_map_session_data* sd, uint32 account_id, unsigned int buyer_id, const uint8* itemlist, unsigned int count)
 {
 	int zeny = 0;
 	unsigned int i, weight, listidx, k;
-	struct s_map_session_data* pl_sd;
+	s_map_session_data* pl_sd;
 
 	nullpo_retv(sd);
 
@@ -511,7 +511,7 @@ void buyingstore_trade(struct s_map_session_data* sd, uint32 account_id, unsigne
 
 
 /// Checks if an item is being bought in given player's buying store.
-bool buyingstore_search(struct s_map_session_data* sd, unsigned short nameid)
+bool buyingstore_search(s_map_session_data* sd, unsigned short nameid)
 {
 	unsigned int i;
 
@@ -534,7 +534,7 @@ bool buyingstore_search(struct s_map_session_data* sd, unsigned short nameid)
 
 /// Searches for all items in a buyingstore, that match given ids, price and possible cards.
 /// @return Whether or not the search should be continued.
-bool buyingstore_searchall(struct s_map_session_data* sd, const struct s_search_store_search* s)
+bool buyingstore_searchall(s_map_session_data* sd, const struct s_search_store_search* s)
 {
 	unsigned int i, idx;
 	struct s_buyingstore_item* it;
@@ -583,7 +583,7 @@ bool buyingstore_searchall(struct s_map_session_data* sd, const struct s_search_
 * Open buyingstore for Autotrader
 * @param sd Player as autotrader
 */
-void buyingstore_reopen( struct s_map_session_data* sd ){
+void buyingstore_reopen( s_map_session_data* sd ){
 	struct s_autotrader *at = NULL;
 	int8 fail = -1;
 
@@ -697,7 +697,7 @@ void do_init_buyingstore_autotrade( void ) {
 					at->sit = battle_config.feature_autotrade_sit;
 
 				// initialize player
-				CREATE(at->sd, struct s_map_session_data, 1);
+				CREATE(at->sd, s_map_session_data, 1);
 				pc_setnewpc(at->sd, at->account_id, at->char_id, 0, gettick(), at->sex, 0);
 				at->sd->state.autotrade = 1|4;
 				at->sd->state.monster_ignore = (battle_config.autotrade_monsterignore);

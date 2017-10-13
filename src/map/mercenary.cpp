@@ -81,7 +81,7 @@ short mercenary_skill_get_index(uint16 skill_id) {
 * @param lifetime Contract duration
 * @return false if failed, true otherwise
 **/
-bool mercenary_create(struct s_map_session_data *sd, int class_, unsigned int lifetime) {
+bool mercenary_create(s_map_session_data *sd, int class_, unsigned int lifetime) {
 	struct s_mercenary merc;
 	struct s_mercenary_db *db;
 	int16 i;
@@ -148,7 +148,7 @@ int mercenary_get_guild(struct s_mercenary_data *md){
 * @return the Faith value
 **/
 int mercenary_get_faith(struct s_mercenary_data *md) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	uint16 class_;
 
 	if( md == NULL || md->db == NULL || (sd = md->master) == NULL )
@@ -172,7 +172,7 @@ int mercenary_get_faith(struct s_mercenary_data *md) {
 * @param value Faith Value
 **/
 void mercenary_set_faith(struct s_mercenary_data *md, int value) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	uint16 class_;
 	int *faith;
 
@@ -201,7 +201,7 @@ void mercenary_set_faith(struct s_mercenary_data *md, int value) {
 * @return Number of calls
 **/
 int mercenary_get_calls(struct s_mercenary_data *md) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	uint16 class_;
 
 	if( md == NULL || md->db == NULL || (sd = md->master) == NULL )
@@ -225,7 +225,7 @@ int mercenary_get_calls(struct s_mercenary_data *md) {
 * @param value
 **/
 void mercenary_set_calls(struct s_mercenary_data *md, int value) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	uint16 class_;
 	int *calls;
 
@@ -263,7 +263,7 @@ void mercenary_save(struct s_mercenary_data *md) {
 * Ends contract of Mercenary
 **/
 static int merc_contract_end(int tid, unsigned int tick, int id, intptr_t data) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	struct s_mercenary_data *md;
 
 	if( (sd = map_id2sd(id)) == NULL )
@@ -289,7 +289,7 @@ static int merc_contract_end(int tid, unsigned int tick, int id, intptr_t data) 
 * @param reply
 **/
 int mercenary_delete(struct s_mercenary_data *md, int reply) {
-	struct s_map_session_data *sd = md->master;
+	s_map_session_data *sd = md->master;
 	md->mercenary.life_time = 0;
 
 	mercenary_contract_stop(md);
@@ -343,7 +343,7 @@ void merc_contract_init(struct s_mercenary_data *md) {
  */
 bool mercenary_recv_data(struct s_mercenary *merc, bool flag)
 {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	struct s_mercenary_data *md;
 	struct s_mercenary_db *db;
 	int i = mercenary_search_index(merc->class_);

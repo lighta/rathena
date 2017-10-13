@@ -24,7 +24,7 @@ struct s_auth_node {
 	uint32 account_id, char_id;
 	int login_id1, login_id2, sex, fd;
 	time_t expiration_time; // # of seconds 1/1/1970 (timestamp): Validity limit of the account (0 = unlimited)
-	struct s_map_session_data *sd;	//Data from logged on char.
+	s_map_session_data *sd;	//Data from logged on char.
 	struct s_mmo_charstatus *char_dat;	//Data from char server.
 	unsigned int node_created; //timestamp for node timeouts
 	enum e_sd_state state; //To track whether player was login in/out or changing maps.
@@ -45,32 +45,32 @@ extern int other_mapserver_count;
 struct s_auth_node* chrif_search(uint32 account_id);
 struct s_auth_node* chrif_auth_check(uint32 account_id, uint32 char_id, enum e_sd_state state);
 bool chrif_auth_delete(uint32 account_id, uint32 char_id, enum e_sd_state state);
-bool chrif_auth_finished(struct s_map_session_data* sd);
+bool chrif_auth_finished(s_map_session_data* sd);
 
-void chrif_authreq(struct s_map_session_data* sd, bool autotrade);
+void chrif_authreq(s_map_session_data* sd, bool autotrade);
 void chrif_authok(int fd);
 int chrif_scdata_request(uint32 account_id, uint32 char_id);
 int chrif_skillcooldown_request(uint32 account_id, uint32 char_id);
-int chrif_skillcooldown_save(struct s_map_session_data *sd);
+int chrif_skillcooldown_save(s_map_session_data *sd);
 int chrif_skillcooldown_load(int fd);
 
-int chrif_save(struct s_map_session_data* sd, int flag);
-int chrif_charselectreq(struct s_map_session_data* sd, uint32 s_ip);
-int chrif_changemapserver(struct s_map_session_data* sd, uint32 ip, uint16 port);
+int chrif_save(s_map_session_data* sd, int flag);
+int chrif_charselectreq(s_map_session_data* sd, uint32 s_ip);
+int chrif_changemapserver(s_map_session_data* sd, uint32 ip, uint16 port);
 
 int chrif_searchcharid(uint32 char_id);
 int chrif_changeemail(int id, const char *actual_email, const char *new_email);
 int chrif_req_login_operation(int aid, const char* character_name, enum chrif_req_op operation_type, int32 timediff, int val1, int val2);
-int chrif_updatefamelist(struct s_map_session_data *sd);
+int chrif_updatefamelist(s_map_session_data *sd);
 int chrif_buildfamelist(void);
-int chrif_save_scdata(struct s_map_session_data *sd);
+int chrif_save_scdata(s_map_session_data *sd);
 int chrif_ragsrvinfo(int base_rate,int job_rate, int drop_rate);
-int chrif_char_offline(struct s_map_session_data *sd);
+int chrif_char_offline(s_map_session_data *sd);
 int chrif_char_offline_nsd(uint32 account_id, uint32 char_id);
 int chrif_char_reset_offline(void);
 int send_users_tochar(void);
-int chrif_char_online(struct s_map_session_data *sd);
-int chrif_changesex(struct s_map_session_data *sd, bool change_account);
+int chrif_char_online(s_map_session_data *sd);
+int chrif_changesex(s_map_session_data *sd, bool change_account);
 int chrif_divorce(int partner_id1, int partner_id2);
 
 int chrif_removefriend(uint32 char_id, int friend_id);
@@ -81,7 +81,7 @@ int chrif_req_charban(int aid, const char* character_name, int32 timediff);
 int chrif_req_charunban(int aid, const char* character_name);
 
 int chrif_bsdata_request(uint32 char_id);
-int chrif_bsdata_save(struct s_map_session_data *sd, bool quit);
+int chrif_bsdata_save(s_map_session_data *sd, bool quit);
 
 void do_final_chrif(void);
 void do_init_chrif(void);

@@ -54,7 +54,7 @@ static int vending_getuid(void)
  * Make a player close his shop
  * @param sd : player session
  */
-void vending_closevending(struct s_map_session_data* sd)
+void vending_closevending(s_map_session_data* sd)
 {
 	nullpo_retv(sd);
 
@@ -76,9 +76,9 @@ void vending_closevending(struct s_map_session_data* sd)
  * @param sd : player requestion the list
  * @param id : vender account id (gid)
  */
-void vending_vendinglistreq(struct s_map_session_data* sd, int id)
+void vending_vendinglistreq(s_map_session_data* sd, int id)
 {
-	struct s_map_session_data* vsd;
+	s_map_session_data* vsd;
 	nullpo_retv(sd);
 
 	if( (vsd = map_id2sd(id)) == NULL )
@@ -105,12 +105,12 @@ void vending_vendinglistreq(struct s_map_session_data* sd, int id)
  *	data := {<index>.w <amount>.w }[count]
  * @param count : number of different items he's trying to buy
  */
-void vending_purchasereq(struct s_map_session_data* sd, int aid, int uid, const uint8* data, int count)
+void vending_purchasereq(s_map_session_data* sd, int aid, int uid, const uint8* data, int count)
 {
 	int i, j, cursor, w, new_ = 0, blank, vend_list[MAX_VENDING];
 	double z;
 	struct s_vending vending[MAX_VENDING]; // against duplicate packets
-	struct s_map_session_data* vsd = map_id2sd(aid);
+	s_map_session_data* vsd = map_id2sd(aid);
 
 	nullpo_retv(sd);
 	if( vsd == NULL || !vsd->state.vending || vsd->bl.id == sd->bl.id )
@@ -282,7 +282,7 @@ void vending_purchasereq(struct s_map_session_data* sd, int aid, int uid, const 
  * @param at Autotrader info, or NULL if requetsed not from autotrade persistance
  * @return 0 If success, 1 - Cannot open (die, not state.prevend, trading), 2 - No cart, 3 - Count issue, 4 - Cart data isn't saved yet, 5 - No valid item found
  */
-int8 vending_openvending(struct s_map_session_data* sd, const char* message, const uint8* data, int count, struct s_autotrader *at)
+int8 vending_openvending(s_map_session_data* sd, const char* message, const uint8* data, int count, struct s_autotrader *at)
 {
 	int i, j;
 	int vending_skill_lvl;
@@ -385,7 +385,7 @@ int8 vending_openvending(struct s_map_session_data* sd, const char* message, con
  * @param nameid : item id
  * @return 0:not selling it, 1: yes
  */
-bool vending_search(struct s_map_session_data* sd, unsigned short nameid)
+bool vending_search(s_map_session_data* sd, unsigned short nameid)
 {
 	int i;
 
@@ -407,7 +407,7 @@ bool vending_search(struct s_map_session_data* sd, unsigned short nameid)
  * @param s : parameter of the search (see s_search_store_search)
  * @return Whether or not the search should be continued.
  */
-bool vending_searchall(struct s_map_session_data* sd, const struct s_search_store_search* s)
+bool vending_searchall(s_map_session_data* sd, const struct s_search_store_search* s)
 {
 	int i, c, slot;
 	unsigned int idx, cidx;
@@ -461,7 +461,7 @@ bool vending_searchall(struct s_map_session_data* sd, const struct s_search_stor
 * Open vending for Autotrader
 * @param sd Player as autotrader
 */
-void vending_reopen( struct s_map_session_data* sd )
+void vending_reopen( s_map_session_data* sd )
 {
 	struct s_autotrader *at = NULL;
 	int8 fail = -1;
@@ -583,7 +583,7 @@ void do_init_vending_autotrade(void)
 					at->sit = battle_config.feature_autotrade_sit;
 
 				// initialize player
-				CREATE(at->sd, struct s_map_session_data, 1);
+				CREATE(at->sd, s_map_session_data, 1);
 				pc_setnewpc(at->sd, at->account_id, at->char_id, 0, gettick(), at->sex, 0);
 				at->sd->state.autotrade = 1|2;
 				at->sd->state.monster_ignore = (battle_config.autotrade_monsterignore);

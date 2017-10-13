@@ -62,7 +62,7 @@ struct s_homun_data {
 	struct s_homunculus homunculus;	//[orn]
 
 	int masterteleport_timer;
-	struct s_map_session_data *master; //pointer back to its master
+	s_map_session_data *master; //pointer back to its master
 	int hungry_timer;	//[orn]
 	unsigned int exp_next;
 	char blockskill[MAX_SKILL];	// [orn]
@@ -157,20 +157,20 @@ int hom_levelup(struct s_homun_data *hd);
 int hom_evolution(struct s_homun_data *hd);
 int hom_mutate(struct s_homun_data *hd,int homun_id);
 void hom_heal(struct s_homun_data *hd);
-int hom_vaporize(struct s_map_session_data *sd, int flag);
-int hom_ressurect(struct s_map_session_data *sd, unsigned char per, short x, short y);
+int hom_vaporize(s_map_session_data *sd, int flag);
+int hom_ressurect(s_map_session_data *sd, unsigned char per, short x, short y);
 void hom_revive(struct s_homun_data *hd, unsigned int hp, unsigned int sp);
 void hom_reset_stats(struct s_homun_data *hd);
 int hom_shuffle(struct s_homun_data *hd); // [Zephyrus]
 void hom_save(struct s_homun_data *hd);
-bool hom_call(struct s_map_session_data *sd);
-bool hom_create_request(struct s_map_session_data *sd, int class_);
+bool hom_call(s_map_session_data *sd);
+bool hom_create_request(s_map_session_data *sd, int class_);
 int hom_search(int key,int type);
-void hom_menu(struct s_map_session_data *sd,int type);
-int hom_food(struct s_map_session_data *sd, struct s_homun_data *hd);
+void hom_menu(s_map_session_data *sd,int type);
+int hom_food(s_map_session_data *sd, struct s_homun_data *hd);
 int hom_hungry_timer_delete(struct s_homun_data *hd);
-int hom_change_name(struct s_map_session_data *sd,char *name);
-void hom_change_name_ack(struct s_map_session_data *sd, char* name, int flag);
+int hom_change_name(s_map_session_data *sd,char *name);
+void hom_change_name_ack(s_map_session_data *sd, char* name, int flag);
 #define hom_stop_walking(hd, type) unit_stop_walking(&(hd)->bl, type)
 #define hom_stop_attack(hd) unit_stop_attack(&(hd)->bl)
 int hom_increase_intimacy(struct s_homun_data * hd, unsigned int value);

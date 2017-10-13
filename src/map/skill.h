@@ -439,10 +439,10 @@ uint16 skill_idx2id(uint16 idx);
 
 uint16 SKILL_MAX_DB(void);
 
-int skill_isammotype(struct s_map_session_data *sd, unsigned short skill_id);
+int skill_isammotype(s_map_session_data *sd, unsigned short skill_id);
 int skill_castend_id(int tid, unsigned int tick, int id, intptr_t data);
 int skill_castend_pos(int tid, unsigned int tick, int id, intptr_t data);
-int skill_castend_map( struct s_map_session_data *sd,uint16 skill_id, const char *map);
+int skill_castend_map( s_map_session_data *sd,uint16 skill_id, const char *map);
 
 int skill_cleartimerskill(struct s_block_list *src);
 int skill_addtimerskill(struct s_block_list *src,unsigned int tick,int target,int x,int y,uint16 skill_id,uint16 skill_lv,int type,int flag);
@@ -479,23 +479,23 @@ int skill_delayfix(struct s_block_list *bl, uint16 skill_id, uint16 skill_lv);
 void skill_toggle_magicpower(struct s_block_list *bl, uint16 skill_id);
 
 // Skill conditions check and remove [Inkfish]
-bool skill_check_condition_castbegin(struct s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
-bool skill_check_condition_castend(struct s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
+bool skill_check_condition_castbegin(s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
+bool skill_check_condition_castend(s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
 int skill_check_condition_char_sub (struct s_block_list *bl, va_list ap);
-void skill_consume_requirement(struct s_map_session_data *sd, uint16 skill_id, uint16 skill_lv, short type);
-struct s_skill_condition skill_get_requirement(struct s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
+void skill_consume_requirement(s_map_session_data *sd, uint16 skill_id, uint16 skill_lv, short type);
+struct s_skill_condition skill_get_requirement(s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
 int skill_disable_check(struct s_status_change *sc, uint16 skill_id);
 
-int skill_check_pc_partner(struct s_map_session_data *sd, uint16 skill_id, uint16 *skill_lv, int range, int cast_flag);
+int skill_check_pc_partner(s_map_session_data *sd, uint16 skill_id, uint16 *skill_lv, int range, int cast_flag);
 int skill_unit_move(struct s_block_list *bl,unsigned int tick,int flag);
 void skill_unit_move_unit_group( struct s_skill_unit_group *group, int16 m,int16 dx,int16 dy);
 void skill_unit_move_unit(struct s_block_list *bl, int dx, int dy);
 
-int skill_sit (struct s_map_session_data *sd, int type);
-void skill_repairweapon(struct s_map_session_data *sd, int idx);
-void skill_identify(struct s_map_session_data *sd,int idx);
-void skill_weaponrefine(struct s_map_session_data *sd,int idx); // [Celest]
-int skill_autospell(struct s_map_session_data *md,uint16 skill_id);
+int skill_sit (s_map_session_data *sd, int type);
+void skill_repairweapon(s_map_session_data *sd, int idx);
+void skill_identify(s_map_session_data *sd,int idx);
+void skill_weaponrefine(s_map_session_data *sd,int idx); // [Celest]
+int skill_autospell(s_map_session_data *md,uint16 skill_id);
 
 int skill_calc_heal(struct s_block_list *src, struct s_block_list *target, uint16 skill_id, uint16 skill_lv, bool heal);
 
@@ -503,26 +503,26 @@ bool skill_check_cloaking(struct s_block_list *bl, struct s_status_change_entry 
 
 // Abnormal status
 void skill_enchant_elemental_end(struct s_block_list *bl, int type);
-bool skill_isNotOk(uint16 skill_id, struct s_map_session_data *sd);
+bool skill_isNotOk(uint16 skill_id, s_map_session_data *sd);
 bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv);
 bool skill_isNotOk_mercenary(uint16 skill_id, struct s_mercenary_data *md);
 
 bool skill_isNotOk_npcRange(struct s_block_list *src, uint16 skill_id, uint16 skill_lv, int pos_x, int pos_y);
 
 // Item creation
-short skill_can_produce_mix( struct s_map_session_data *sd, unsigned short nameid, int trigger, int qty);
-bool skill_produce_mix( struct s_map_session_data *sd, uint16 skill_id, unsigned short nameid, int slot1, int slot2, int slot3, int qty, short produce_idx );
+short skill_can_produce_mix( s_map_session_data *sd, unsigned short nameid, int trigger, int qty);
+bool skill_produce_mix( s_map_session_data *sd, uint16 skill_id, unsigned short nameid, int slot1, int slot2, int slot3, int qty, short produce_idx );
 
-bool skill_arrow_create( struct s_map_session_data *sd, unsigned short nameid);
+bool skill_arrow_create( s_map_session_data *sd, unsigned short nameid);
 
 // skills for the mob
 int skill_castend_nodamage_id( struct s_block_list *src, struct s_block_list *bl,uint16 skill_id,uint16 skill_lv,unsigned int tick,int flag );
 int skill_castend_damage_id( struct s_block_list* src, struct s_block_list *bl,uint16 skill_id,uint16 skill_lv,unsigned int tick,int flag );
 int skill_castend_pos2( struct s_block_list *src, int x,int y,uint16 skill_id,uint16 skill_lv,unsigned int tick,int flag);
 
-int skill_blockpc_start(struct s_map_session_data*, int, int);
-int skill_blockpc_get(struct s_map_session_data *sd, int skillid);
-int skill_blockpc_clear(struct s_map_session_data *sd);
+int skill_blockpc_start(s_map_session_data*, int, int);
+int skill_blockpc_get(s_map_session_data *sd, int skillid);
+int skill_blockpc_clear(s_map_session_data *sd);
 int skill_blockpc_end(int tid, unsigned int tick, int id, intptr_t data);
 int skill_blockhomun_start (struct s_homun_data*,uint16 skill_id,int);
 int skill_blockmerc_start (struct s_mercenary_data*,uint16 skill_id,int);
@@ -2094,8 +2094,8 @@ enum s_skill_unit_id {
 /**
  * Skill Unit Save
  **/
-void skill_usave_add(struct s_map_session_data * sd, uint16 skill_id, uint16 skill_lv);
-void skill_usave_trigger(struct s_map_session_data *sd);
+void skill_usave_add(s_map_session_data * sd, uint16 skill_id, uint16 skill_lv);
+void skill_usave_trigger(s_map_session_data *sd);
 
 /**
  * Warlock
@@ -2114,7 +2114,7 @@ struct s_skill_spellbook_db {
 };
 extern struct s_skill_spellbook_db skill_spellbook_db[MAX_SKILL_SPELLBOOK_DB];
 extern unsigned short skill_spellbook_count;
-void skill_spellbook(struct s_map_session_data *sd, unsigned short nameid);
+void skill_spellbook(s_map_session_data *sd, unsigned short nameid);
 int skill_block_check(struct s_block_list *bl, enum e_sc_type type, uint16 skill_id);
 
 /**
@@ -2138,20 +2138,20 @@ bool skill_check_camouflage(struct s_block_list *bl, struct s_status_change_entr
 /**
  * Mechanic
  **/
-int skill_magicdecoy(struct s_map_session_data *sd, unsigned short nameid);
+int skill_magicdecoy(s_map_session_data *sd, unsigned short nameid);
 
 /**
  * Guiltoine Cross
  **/
-int skill_poisoningweapon( struct s_map_session_data *sd, unsigned short nameid);
+int skill_poisoningweapon( s_map_session_data *sd, unsigned short nameid);
 
 /**
  * Auto Shadow Spell (Shadow Chaser)
  **/
-int skill_select_menu(struct s_map_session_data *sd,uint16 skill_id);
+int skill_select_menu(s_map_session_data *sd,uint16 skill_id);
 
-int skill_elementalanalysis(struct s_map_session_data *sd, int n, uint16 skill_lv, unsigned short *item_list); // Sorcerer Four Elemental Analisys.
-int skill_changematerial(struct s_map_session_data *sd, int n, unsigned short *item_list);	// Genetic Change Material.
+int skill_elementalanalysis(s_map_session_data *sd, int n, uint16 skill_lv, unsigned short *item_list); // Sorcerer Four Elemental Analisys.
+int skill_changematerial(s_map_session_data *sd, int n, unsigned short *item_list);	// Genetic Change Material.
 int skill_get_elemental_type(uint16 skill_id, uint16 skill_lv);
 
 int skill_is_combo(uint16 skill_id);

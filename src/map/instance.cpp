@@ -66,7 +66,7 @@ static struct s_instance_db *instance_searchname_db(const char *instance_name) {
  * @param sd: Player data to attach
  * @param target: Target display type
  */
-void instance_getsd(unsigned short instance_id, struct s_map_session_data **sd, enum e_send_target *target) {
+void instance_getsd(unsigned short instance_id, s_map_session_data **sd, enum e_send_target *target) {
 	switch(instance_data[instance_id].mode) {
 		case IM_NONE:
 			(*sd) = NULL;
@@ -108,7 +108,7 @@ static int instance_subscription_timer(int tid, unsigned int tick, int id, intpt
 {
 	int i, ret;
 	unsigned short instance_id = instance_wait.id[0];
-	struct s_map_session_data *sd = NULL;
+	s_map_session_data *sd = NULL;
 	struct s_party_data *p = NULL;
 	struct s_guild *g = NULL;
 	struct s_clan *cd = NULL;
@@ -364,7 +364,7 @@ void instance_addnpc(struct s_instance_data *im)
  *--------------------------------------*/
 int instance_create(int owner_id, const char *name, enum e_instance_mode mode) {
 	struct s_instance_db *db = instance_searchname_db(name);
-	struct s_map_session_data *sd = NULL;
+	s_map_session_data *sd = NULL;
 	struct s_party_data *pd = NULL;
 	struct s_guild *gd = NULL;
 	struct s_clan* cd = NULL;
@@ -593,7 +593,7 @@ int16 instance_mapname2mapid(const char *name, unsigned short instance_id)
 int instance_destroy(unsigned short instance_id)
 {
 	struct s_instance_data *im;
-	struct s_map_session_data *sd = NULL;
+	s_map_session_data *sd = NULL;
 	struct s_party_data *pd = NULL;
 	struct s_guild *gd = NULL;
 	struct clan *cd = NULL;
@@ -712,7 +712,7 @@ int instance_destroy(unsigned short instance_id)
 /*==========================================
  * Warp a user into instance
  *------------------------------------------*/
-enum e_instance_enter instance_enter(struct map_session_data *sd, unsigned short instance_id, const char *name, short x, short y)
+enum e_instance_enter instance_enter(s_map_session_data *sd, unsigned short instance_id, const char *name, short x, short y)
 {
 	struct instance_data *im = NULL;
 	struct instance_db *db = NULL;
@@ -809,7 +809,7 @@ enum e_instance_enter instance_enter(struct map_session_data *sd, unsigned short
 /*==========================================
  * Request some info about the instance
  *------------------------------------------*/
-int instance_reqinfo(struct s_map_session_data *sd, unsigned short instance_id)
+int instance_reqinfo(s_map_session_data *sd, unsigned short instance_id)
 {
 	struct s_instance_data *im;
 
@@ -1062,7 +1062,7 @@ void do_reload_instance(void)
 	struct s_instance_data *im;
 	struct s_instance_db *db = NULL;
 	struct s_mapiterator* iter;
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	unsigned short i;
 
 	for( i = 1; i < MAX_INSTANCE_DATA; i++ ) {

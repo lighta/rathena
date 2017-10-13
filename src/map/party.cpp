@@ -38,7 +38,7 @@ int party_create_byscript;
  * Fills the given party_member structure according to the sd provided.
  * Used when creating/adding people to a party. [Skotlex]
  *------------------------------------------*/
-static void party_fill_member(struct s_party_member* member, struct s_map_session_data* sd, unsigned int leader)
+static void party_fill_member(struct s_party_member* member, s_map_session_data* sd, unsigned int leader)
 {
 	member->account_id = sd->status.account_id;
 	member->char_id    = sd->status.char_id;
@@ -52,7 +52,7 @@ static void party_fill_member(struct s_party_member* member, struct s_map_sessio
 
 /// Get the member_id of a party member.
 /// Return -1 if not in party.
-int party_getmemberid(struct s_party_data* p, struct s_map_session_data* sd)
+int party_getmemberid(struct s_party_data* p, s_map_session_data* sd)
 {
 	int member_id;
 	nullpo_retr(-1, p);
@@ -69,7 +69,7 @@ int party_getmemberid(struct s_party_data* p, struct s_map_session_data* sd)
 /*==========================================
  * Request an available sd of this party
  *------------------------------------------*/
-struct s_map_session_data* party_getavailablesd(struct s_party_data *p)
+s_map_session_data* party_getavailablesd(struct s_party_data *p)
 {
 	int i;
 	nullpo_retr(NULL, p);
@@ -140,7 +140,7 @@ struct s_party_data* party_searchname(const char* str)
 	return p;
 }
 
-int party_create(struct s_map_session_data *sd,char *name,int item,int item2)
+int party_create(s_map_session_data *sd,char *name,int item,int item2)
 {
 	struct s_party_member leader;
 	char tname[NAME_LENGTH];
@@ -164,7 +164,7 @@ int party_create(struct s_map_session_data *sd,char *name,int item,int item2)
 
 void party_created(uint32 account_id,uint32 char_id,int fail,int party_id,char *name)
 {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 
 	sd = map_id2sd(account_id);
 
@@ -200,7 +200,7 @@ int party_request_info(int party_id, uint32 char_id)
  * Close trade window if party member is kicked when trade a party bound item
  * @param sd
  **/
-static void party_trade_bound_cancel(struct s_map_session_data *sd) {
+static void party_trade_bound_cancel(s_map_session_data *sd) {
 #ifdef BOUND_ITEMS
 	nullpo_retv(sd);
 	if (sd->state.isBoundTrading&(1<<BOUND_PARTY))
@@ -215,7 +215,7 @@ int party_recv_noinfo(int party_id, uint32 char_id)
 {
 	party_broken(party_id);
 	if( char_id != 0 ) { // requester
-		struct s_map_session_data* sd;
+		s_map_session_data* sd;
 
 		sd = map_charid2sd(char_id);
 
@@ -265,7 +265,7 @@ int party_recv_info(struct s_party* sp, uint32 char_id)
 {
 	struct s_party_data* p;
 	struct s_party_member* member;
-	struct s_map_session_data* sd;
+	s_map_session_data* sd;
 	int removed[MAX_PARTY];// member_id in old data
 	int removed_count = 0;
 	int added[MAX_PARTY];// member_id in new data
@@ -375,7 +375,7 @@ int party_recv_info(struct s_party* sp, uint32 char_id)
 }
 
 ///! TODO: Party invitation cross map-server through inter-server, so does with the reply.
-int party_invite(struct s_map_session_data *sd,struct s_map_session_data *tsd)
+int party_invite(s_map_session_data *sd,s_map_session_data *tsd)
 {
 	struct s_party_data *p;
 	int i;
@@ -445,9 +445,9 @@ int party_invite(struct s_map_session_data *sd,struct s_map_session_data *tsd)
 	return 1;
 }
 
-int party_reply_invite(struct s_map_session_data *sd,int party_id,int flag)
+int party_reply_invite(s_map_session_data *sd,int party_id,int flag)
 {
-	struct s_map_session_data* tsd;
+	s_map_session_data* tsd;
 	struct s_party_member member;
 
 	if( sd->party_invite != party_id ) { // forged
@@ -486,7 +486,7 @@ int party_reply_invite(struct s_map_session_data *sd,int party_id,int flag)
 //- Loads up party data if not in server
 //- Sets up the pointer to him
 //- Player must be authed/active and belong to a party before calling this method
-void party_member_joined(struct s_map_session_data *sd)
+void party_member_joined(s_map_session_data *sd)
 {
 	struct s_party_data* p = party_search(sd->status.party_id);
 	int i;
@@ -511,7 +511,7 @@ void party_member_joined(struct s_map_session_data *sd)
 /// flag: 0-success, 1-failure
 int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 {
-	struct s_map_session_data *sd = map_id2sd(account_id),*sd2;
+	s_map_session_data *sd = map_id2sd(account_id),*sd2;
 	struct s_party_data *p = party_search(party_id);
 	int i;
 
@@ -566,7 +566,7 @@ int party_member_added(int party_id,uint32 account_id,uint32 char_id, int flag)
 }
 
 /// Party member 'sd' requesting kick of member with <account_id, name>.
-int party_removemember(struct s_map_session_data* sd, uint32 account_id, char* name)
+int party_removemember(s_map_session_data* sd, uint32 account_id, char* name)
 {
 	struct s_party_data *p;
 	int i;
@@ -593,7 +593,7 @@ int party_removemember(struct s_map_session_data* sd, uint32 account_id, char* n
 	return 1;
 }
 
-int party_removemember2(struct s_map_session_data *sd,uint32 char_id,int party_id)
+int party_removemember2(s_map_session_data *sd,uint32 char_id,int party_id)
 {
 	if( sd ) {
 		if( !sd->status.party_id )
@@ -618,7 +618,7 @@ int party_removemember2(struct s_map_session_data *sd,uint32 char_id,int party_i
 }
 
 /// Party member 'sd' requesting exit from party.
-int party_leave(struct s_map_session_data *sd)
+int party_leave(s_map_session_data *sd)
 {
 	struct s_party_data *p;
 	int i;
@@ -640,7 +640,7 @@ int party_leave(struct s_map_session_data *sd)
 /// Invoked (from char-server) when a party member leaves the party.
 int party_member_withdraw(int party_id, uint32 account_id, uint32 char_id, char *name, enum e_party_member_withdraw type)
 {
-	struct s_map_session_data* sd = map_charid2sd(char_id);
+	s_map_session_data* sd = map_charid2sd(char_id);
 	struct s_party_data* p = party_search(party_id);
 
 	if( p ) {
@@ -712,7 +712,7 @@ int party_broken(int party_id)
 	return 1;
 }
 
-int party_changeoption(struct s_map_session_data *sd,int exp,int item)
+int party_changeoption(s_map_session_data *sd,int exp,int item)
 {
 	nullpo_ret(sd);
 
@@ -758,7 +758,7 @@ int party_setoption(struct s_party_data *party, int option, int flag)
 int party_optionchanged(int party_id,uint32 account_id,int exp,int item,int flag)
 {
 	struct s_party_data *p;
-	struct s_map_session_data *sd=map_id2sd(account_id);
+	s_map_session_data *sd=map_id2sd(account_id);
 
 	if( (p = party_search(party_id)) == NULL)
 		return 0;
@@ -775,7 +775,7 @@ int party_optionchanged(int party_id,uint32 account_id,int exp,int item,int flag
 	return 0;
 }
 
-int party_changeleader(struct s_map_session_data *sd, struct s_map_session_data *tsd, struct s_party_data *p)
+int party_changeleader(s_map_session_data *sd, s_map_session_data *tsd, struct s_party_data *p)
 {
 	int mi, tmi;
 
@@ -873,7 +873,7 @@ int party_recv_movemap(int party_id,uint32 account_id,uint32 char_id, unsigned s
 	return 0;
 }
 
-void party_send_movemap(struct s_map_session_data *sd)
+void party_send_movemap(s_map_session_data *sd)
 {
 	struct s_party_data *p;
 
@@ -907,12 +907,12 @@ void party_send_movemap(struct s_map_session_data *sd)
 	return;
 }
 
-void party_send_levelup(struct s_map_session_data *sd)
+void party_send_levelup(s_map_session_data *sd)
 {
 	intif_party_changemap(sd,1);
 }
 
-int party_send_logout(struct s_map_session_data *sd)
+int party_send_logout(s_map_session_data *sd)
 {
 	struct s_party_data *p;
 	int i;
@@ -933,7 +933,7 @@ int party_send_logout(struct s_map_session_data *sd)
 	return 1;
 }
 
-int party_send_message(struct s_map_session_data *sd,const char *mes,int len)
+int party_send_message(s_map_session_data *sd,const char *mes,int len)
 {
 	if(sd->status.party_id == 0)
 		return 0;
@@ -955,10 +955,10 @@ int party_recv_message(int party_id,uint32 account_id,const char *mes,int len)
 	return 0;
 }
 
-int party_skill_check(struct s_map_session_data *sd, int party_id, uint16 skill_id, uint16 skill_lv)
+int party_skill_check(s_map_session_data *sd, int party_id, uint16 skill_id, uint16 skill_lv)
 {
 	struct s_party_data *p;
-	struct s_map_session_data *p_sd;
+	s_map_session_data *p_sd;
 	int i;
 
 	if(!party_id || (p = party_search(party_id)) == NULL)
@@ -1024,7 +1024,7 @@ int party_send_xy_timer(int tid, unsigned int tick, int id, intptr_t data)
 
 		// for each member of this party
 		for( i = 0; i < MAX_PARTY; i++ ) {
-			struct s_map_session_data* sd = p->data[i].sd;
+			s_map_session_data* sd = p->data[i].sd;
 
 			if( !sd )
 				continue;
@@ -1073,7 +1073,7 @@ int party_send_xy_clear(struct s_party_data *p)
  **/
 void party_exp_share(struct s_party_data* p, struct s_block_list* src, unsigned int base_exp, unsigned int job_exp, int zeny)
 {
-	struct s_map_session_data* sd[MAX_PARTY];
+	s_map_session_data* sd[MAX_PARTY];
 	unsigned int i, c;
 #ifdef RENEWAL_EXP
 	TBL_MOB *md = BL_CAST(BL_MOB, src);
@@ -1131,7 +1131,7 @@ void party_exp_share(struct s_party_data* p, struct s_block_list* src, unsigned 
 }
 
 //Does party loot. first_charid holds the charid of the player who has time priority to take the item.
-int party_share_loot(struct s_party_data* p, struct s_map_session_data* sd, struct s_item* item, int first_charid)
+int party_share_loot(struct s_party_data* p, s_map_session_data* sd, struct s_item* item, int first_charid)
 {
 	TBL_PC* target = NULL;
 	int i;
@@ -1198,7 +1198,7 @@ int party_share_loot(struct s_party_data* p, struct s_map_session_data* sd, stru
 	return 0;
 }
 
-int party_send_dot_remove(struct s_map_session_data *sd)
+int party_send_dot_remove(s_map_session_data *sd)
 {
 	if (sd->status.party_id)
 		clif_party_xy_remove(sd);
@@ -1214,7 +1214,7 @@ int party_send_dot_remove(struct s_map_session_data *sd)
  */
 int party_sub_count(struct s_block_list *bl, va_list ap)
 {
-	struct s_map_session_data *sd = (TBL_PC *)bl;
+	s_map_session_data *sd = (TBL_PC *)bl;
 
 	if (sd->state.autotrade)
 		return 0;
@@ -1233,7 +1233,7 @@ int party_sub_count(struct s_block_list *bl, va_list ap)
  */
 int party_sub_count_class(struct s_block_list *bl, va_list ap)
 {
-	struct s_map_session_data *sd = (TBL_PC *)bl;
+	s_map_session_data *sd = (TBL_PC *)bl;
 	unsigned int mask = va_arg(ap, unsigned int);
 	unsigned int mapid_class = va_arg(ap, unsigned int);
 
@@ -1247,7 +1247,7 @@ int party_sub_count_class(struct s_block_list *bl, va_list ap)
 }
 
 /// Executes 'func' for each party member on the same map and in range (0:whole map)
-int party_foreachsamemap(int (*func)(struct s_block_list*,va_list),struct s_map_session_data *sd,int range,...)
+int party_foreachsamemap(int (*func)(struct s_block_list*,va_list),s_map_session_data *sd,int range,...)
 {
 	struct s_party_data *p;
 	int i;
@@ -1267,7 +1267,7 @@ int party_foreachsamemap(int (*func)(struct s_block_list*,va_list),struct s_map_
 	y1 = sd->bl.y+range;
 
 	for(i = 0; i < MAX_PARTY; i++) {
-		struct s_map_session_data *psd = p->data[i].sd;
+		s_map_session_data *psd = p->data[i].sd;
 
 		if(!psd)
 			continue;
@@ -1310,7 +1310,7 @@ static struct s_party_booking_ad_info* create_party_booking_data(void)
 	return pb_ad;
 }
 
-void party_booking_register(struct s_map_session_data *sd, short level, short mapid, short* job)
+void party_booking_register(s_map_session_data *sd, short level, short mapid, short* job)
 {
 	struct s_party_booking_ad_info *pb_ad;
 	int i;
@@ -1339,7 +1339,7 @@ void party_booking_register(struct s_map_session_data *sd, short level, short ma
 	clif_PartyBookingInsertNotify(sd, pb_ad); // Notice
 }
 
-void party_booking_update(struct s_map_session_data *sd, short* job)
+void party_booking_update(s_map_session_data *sd, short* job)
 {
 	int i;
 	struct s_party_booking_ad_info *pb_ad;
@@ -1360,7 +1360,7 @@ void party_booking_update(struct s_map_session_data *sd, short* job)
 	clif_PartyBookingUpdateNotify(sd, pb_ad);
 }
 
-void party_booking_search(struct s_map_session_data *sd, short level, short mapid, short job, unsigned long lastindex, short resultcount)
+void party_booking_search(s_map_session_data *sd, short level, short mapid, short job, unsigned long lastindex, short resultcount)
 {
 	struct s_party_booking_ad_info *pb_ad;
 	int i, count=0;
@@ -1398,7 +1398,7 @@ void party_booking_search(struct s_map_session_data *sd, short level, short mapi
 	clif_PartyBookingSearchAck(sd->fd, result_list, count, more_result);
 }
 
-bool party_booking_delete(struct s_map_session_data *sd)
+bool party_booking_delete(s_map_session_data *sd)
 {
 	struct s_party_booking_ad_info* pb_ad;
 

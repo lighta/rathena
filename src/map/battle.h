@@ -90,8 +90,8 @@ struct s_Damage battle_calc_attack_plant(struct s_Damage wd, struct s_block_list
 
 int64 battle_calc_return_damage(struct s_block_list *bl, struct s_block_list *src, int64 *, int flag, uint16 skill_id, bool status_reflect);
 
-void battle_drain(struct s_map_session_data *sd, struct s_block_list *tbl, int64 rdamage, int64 ldamage, int race, int class_);
-bool battle_vanish(struct s_map_session_data *sd, struct s_block_list *target, struct s_Damage *wd);
+void battle_drain(s_map_session_data *sd, struct s_block_list *tbl, int64 rdamage, int64 ldamage, int race, int class_);
+bool battle_vanish(s_map_session_data *sd, struct s_block_list *target, struct s_Damage *wd);
 
 int battle_attr_ratio(int atk_elem,int def_type, int def_lv);
 int64 battle_attr_fix(struct s_block_list *src, struct s_block_list *target, int64 damage,int atk_elem,int def_type, int def_lv);
@@ -105,7 +105,7 @@ int64 battle_calc_bg_damage(struct s_block_list *src,struct s_block_list *bl,int
 void battle_damage(struct s_block_list *src, struct s_block_list *target, int64 damage, int delay, uint16 skill_lv, uint16 skill_id, enum e_damage_lv dmg_lv, unsigned short attack_type, bool additional_effects, unsigned int tick, bool spdamage);
 int battle_delay_damage (unsigned int tick, int amotion, struct s_block_list *src, struct s_block_list *target, int attack_type, uint16 skill_id, uint16 skill_lv, int64 damage, enum e_damage_lv dmg_lv, int ddelay, bool additional_effects, bool spdamage);
 
-int battle_calc_chorusbonus(struct s_map_session_data *sd);
+int battle_calc_chorusbonus(s_map_session_data *sd);
 
 // Summary normal attack treatment (basic attack)
 enum e_damage_lv battle_weapon_attack( struct s_block_list *bl,struct s_block_list *target,unsigned int tick,int flag);
@@ -121,7 +121,7 @@ int battle_check_undead(int race,int element);
 int battle_check_target(struct s_block_list *src, struct s_block_list *target,int flag);
 bool battle_check_range(struct s_block_list *src,struct s_block_list *bl,int range);
 
-void battle_consume_ammo(struct s_map_session_data* sd, int skill, int lv);
+void battle_consume_ammo(s_map_session_data* sd, int skill, int lv);
 
 bool is_infinite_defense(struct s_block_list *target, int flag);
 

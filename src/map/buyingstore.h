@@ -51,21 +51,21 @@ struct s_autotrader {
 	uint32 limit; ///< Maximum zeny to be spent (for buyingstore)
 	uint16 count; ///< Number of item in store
 	struct s_autotrade_entry **entries; ///< Store details
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 };
 
-int8 buyingstore_setup(struct s_map_session_data* sd, unsigned char slots);
-int8 buyingstore_create(struct s_map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const uint8* itemlist, unsigned int count, struct s_autotrader *at);
-void buyingstore_close(struct s_map_session_data* sd);
-void buyingstore_open(struct s_map_session_data* sd, uint32 account_id);
-void buyingstore_trade(struct s_map_session_data* sd, uint32 account_id, unsigned int buyer_id, const uint8* itemlist, unsigned int count);
-bool buyingstore_search(struct s_map_session_data* sd, unsigned short nameid);
-bool buyingstore_searchall(struct s_map_session_data* sd, const struct s_search_store_search* s);
+int8 buyingstore_setup(s_map_session_data* sd, unsigned char slots);
+int8 buyingstore_create(s_map_session_data* sd, int zenylimit, unsigned char result, const char* storename, const uint8* itemlist, unsigned int count, struct s_autotrader *at);
+void buyingstore_close(s_map_session_data* sd);
+void buyingstore_open(s_map_session_data* sd, uint32 account_id);
+void buyingstore_trade(s_map_session_data* sd, uint32 account_id, unsigned int buyer_id, const uint8* itemlist, unsigned int count);
+bool buyingstore_search(s_map_session_data* sd, unsigned short nameid);
+bool buyingstore_searchall(s_map_session_data* sd, const struct s_search_store_search* s);
 struct s_DBMap* buyingstore_getdb(void);
 void do_final_buyingstore(void);
 void do_init_buyingstore(void);
 
 void do_init_buyingstore_autotrade( void );
-void buyingstore_reopen( struct s_map_session_data* sd );
+void buyingstore_reopen( s_map_session_data* sd );
 
 #endif  // _BUYINGSTORE_H_

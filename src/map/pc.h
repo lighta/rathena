@@ -867,7 +867,7 @@ extern struct s_job_info job_info[CLASS_COUNT];
 #define pc_is90overweight(sd) ( (sd)->weight*10 >= (sd)->max_weight*9 )
 
 enum e_wip_block : uint8_t;
-static inline bool pc_hasprogress(struct s_map_session_data *sd, enum e_wip_block progress) {
+static inline bool pc_hasprogress(s_map_session_data *sd, enum e_wip_block progress) {
 	return sd == NULL || (sd->state.workinprogress&progress) == progress;
 }
 
@@ -881,8 +881,8 @@ enum e_params {
 	PARAM_LUK,
 	PARAM_MAX
 };
-short pc_maxparameter(struct s_map_session_data *sd, enum e_params param);
-short pc_maxaspd(struct s_map_session_data *sd);
+short pc_maxparameter(s_map_session_data *sd, enum e_params param);
+short pc_maxaspd(s_map_session_data *sd);
 
 /**
  * Ranger
@@ -946,44 +946,44 @@ short pc_maxaspd(struct s_map_session_data *sd);
 
 int pc_split_atoi(char* str, int* val, char sep, int max);
 int pc_class2idx(int class_);
-int pc_get_group_level(struct s_map_session_data *sd);
-int pc_get_group_id(struct s_map_session_data *sd);
+int pc_get_group_level(s_map_session_data *sd);
+int pc_get_group_id(s_map_session_data *sd);
 int pc_getrefinebonus(int lv,int type);
-bool pc_can_give_items(struct s_map_session_data *sd);
-bool pc_can_give_bounded_items(struct s_map_session_data *sd);
+bool pc_can_give_items(s_map_session_data *sd);
+bool pc_can_give_bounded_items(s_map_session_data *sd);
 
-bool pc_can_use_command(struct s_map_session_data *sd, const char *command, e_atCommandType type);
+bool pc_can_use_command(s_map_session_data *sd, const char *command, e_atCommandType type);
 #define pc_has_permission(sd, permission) ( ((sd)->permissions&permission) != 0 )
-bool pc_should_log_commands(struct s_map_session_data *sd);
+bool pc_should_log_commands(s_map_session_data *sd);
 
-void pc_setrestartvalue(struct s_map_session_data *sd, char type);
-void pc_makesavestatus(struct s_map_session_data *sd);
-void pc_respawn(struct s_map_session_data* sd,enum e_clr_type clrtype);
-void pc_setnewpc(struct s_map_session_data *sd, uint32 account_id, uint32 char_id, int login_id1, unsigned int client_tick, int sex, int fd);
-bool pc_authok(struct s_map_session_data *sd, uint32 login_id2, time_t expiration_time, int group_id, struct s_mmo_charstatus *st, bool changing_mapservers);
-void pc_authfail(struct s_map_session_data *sd);
-void pc_reg_received(struct s_map_session_data *sd);
-void pc_close_npc(struct s_map_session_data *sd,int flag);
+void pc_setrestartvalue(s_map_session_data *sd, char type);
+void pc_makesavestatus(s_map_session_data *sd);
+void pc_respawn(s_map_session_data* sd,enum e_clr_type clrtype);
+void pc_setnewpc(s_map_session_data *sd, uint32 account_id, uint32 char_id, int login_id1, unsigned int client_tick, int sex, int fd);
+bool pc_authok(s_map_session_data *sd, uint32 login_id2, time_t expiration_time, int group_id, struct s_mmo_charstatus *st, bool changing_mapservers);
+void pc_authfail(s_map_session_data *sd);
+void pc_reg_received(s_map_session_data *sd);
+void pc_close_npc(s_map_session_data *sd,int flag);
 int pc_close_npc_timer(int tid, unsigned int tick, int id, intptr_t data);
 
-uint8 pc_isequip(struct s_map_session_data *sd,int n);
-int pc_equippoint(struct s_map_session_data *sd,int n);
-void pc_setinventorydata(struct s_map_session_data *sd);
+uint8 pc_isequip(s_map_session_data *sd,int n);
+int pc_equippoint(s_map_session_data *sd,int n);
+void pc_setinventorydata(s_map_session_data *sd);
 
-int pc_get_skillcooldown(struct s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
-uint8 pc_checkskill(struct s_map_session_data *sd,uint16 skill_id);
-short pc_checkequip(struct s_map_session_data *sd,int pos);
-bool pc_checkequip2(struct s_map_session_data *sd, unsigned short nameid, int min, int max);
+int pc_get_skillcooldown(s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
+uint8 pc_checkskill(s_map_session_data *sd,uint16 skill_id);
+short pc_checkequip(s_map_session_data *sd,int pos);
+bool pc_checkequip2(s_map_session_data *sd, unsigned short nameid, int min, int max);
 
-void pc_scdata_received(struct s_map_session_data *sd);
-void pc_check_expiration(struct s_map_session_data *sd);
+void pc_scdata_received(s_map_session_data *sd);
+void pc_check_expiration(s_map_session_data *sd);
 int pc_expiration_timer(int tid, unsigned int tick, int id, intptr_t data);
 int pc_global_expiration_timer(int tid, unsigned tick, int id, intptr_t data);
-void pc_expire_check(struct s_map_session_data *sd);
+void pc_expire_check(s_map_session_data *sd);
 
-void pc_calc_skilltree(struct s_map_session_data *sd);
-int pc_calc_skilltree_normalize_job(struct s_map_session_data *sd);
-void pc_clean_skilltree(struct s_map_session_data *sd);
+void pc_calc_skilltree(s_map_session_data *sd);
+int pc_calc_skilltree_normalize_job(s_map_session_data *sd);
+void pc_clean_skilltree(s_map_session_data *sd);
 
 #define pc_checkoverhp(sd) ((sd)->battle_status.hp == (sd)->battle_status.max_hp)
 #define pc_checkoversp(sd) ((sd)->battle_status.sp == (sd)->battle_status.max_sp)
@@ -995,53 +995,53 @@ enum e_setpos{
 	SETPOS_AUTOTRADE = 3
 };
 
-enum e_setpos pc_setpos(struct s_map_session_data* sd, unsigned short mapindex, int x, int y, enum e_clr_type clrtype);
-void pc_setsavepoint(struct s_map_session_data *sd, short mapindex,int x,int y);
-char pc_randomwarp(struct s_map_session_data *sd,enum e_clr_type type);
-bool pc_memo(struct s_map_session_data* sd, int pos);
+enum e_setpos pc_setpos(s_map_session_data* sd, unsigned short mapindex, int x, int y, enum e_clr_type clrtype);
+void pc_setsavepoint(s_map_session_data *sd, short mapindex,int x,int y);
+char pc_randomwarp(s_map_session_data *sd,enum e_clr_type type);
+bool pc_memo(s_map_session_data* sd, int pos);
 
-char pc_checkadditem(struct s_map_session_data *sd, unsigned short nameid, int amount);
-uint8 pc_inventoryblank(struct s_map_session_data *sd);
-short pc_search_inventory(struct s_map_session_data *sd, unsigned short nameid);
-char pc_payzeny(struct s_map_session_data *sd, int zeny, enum e_log_pick_type type, struct s_map_session_data *tsd);
-char pc_additem(struct s_map_session_data *sd, s_item *item, int amount, e_log_pick_type log_type);
-char pc_getzeny(struct s_map_session_data *sd, int zeny, enum e_log_pick_type type, struct s_map_session_data *tsd);
-char pc_delitem(struct s_map_session_data *sd, int n, int amount, int type, short reason, e_log_pick_type log_type);
+char pc_checkadditem(s_map_session_data *sd, unsigned short nameid, int amount);
+uint8 pc_inventoryblank(s_map_session_data *sd);
+short pc_search_inventory(s_map_session_data *sd, unsigned short nameid);
+char pc_payzeny(s_map_session_data *sd, int zeny, enum e_log_pick_type type, s_map_session_data *tsd);
+char pc_additem(s_map_session_data *sd, s_item *item, int amount, e_log_pick_type log_type);
+char pc_getzeny(s_map_session_data *sd, int zeny, enum e_log_pick_type type, s_map_session_data *tsd);
+char pc_delitem(s_map_session_data *sd, int n, int amount, int type, short reason, e_log_pick_type log_type);
 
-uint64 pc_generate_unique_id(struct s_map_session_data *sd);
+uint64 pc_generate_unique_id(s_map_session_data *sd);
 
 //Bound items
 int pc_bound_chk(TBL_PC *sd,enum e_bound_type type,int *idxlist);
 
 // Special Shop System
-int pc_paycash( struct s_map_session_data *sd, int price, int points, e_log_pick_type type );
-int pc_getcash( struct s_map_session_data *sd, int cash, int points, e_log_pick_type type );
+int pc_paycash( s_map_session_data *sd, int price, int points, e_log_pick_type type );
+int pc_getcash( s_map_session_data *sd, int cash, int points, e_log_pick_type type );
 
-unsigned char pc_cart_additem(struct s_map_session_data *sd,s_item *item_data,int amount,e_log_pick_type log_type);
-void pc_cart_delitem(struct s_map_session_data *sd,int n,int amount,int type,e_log_pick_type log_type);
-void pc_putitemtocart(struct s_map_session_data *sd,int idx,int amount);
-void pc_getitemfromcart(struct s_map_session_data *sd,int idx,int amount);
-int pc_cartitem_amount(struct s_map_session_data *sd,int idx,int amount);
+unsigned char pc_cart_additem(s_map_session_data *sd,s_item *item_data,int amount,e_log_pick_type log_type);
+void pc_cart_delitem(s_map_session_data *sd,int n,int amount,int type,e_log_pick_type log_type);
+void pc_putitemtocart(s_map_session_data *sd,int idx,int amount);
+void pc_getitemfromcart(s_map_session_data *sd,int idx,int amount);
+int pc_cartitem_amount(s_map_session_data *sd,int idx,int amount);
 
-bool pc_takeitem(struct s_map_session_data *sd,struct s_flooritem_data *fitem);
-bool pc_dropitem(struct s_map_session_data *sd,int n,int amount);
+bool pc_takeitem(s_map_session_data *sd,struct s_flooritem_data *fitem);
+bool pc_dropitem(s_map_session_data *sd,int n,int amount);
 
-bool pc_isequipped(struct s_map_session_data *sd, unsigned short nameid);
-enum e_adopt_responses pc_try_adopt(struct s_map_session_data *p1_sd, struct s_map_session_data *p2_sd, struct s_map_session_data *b_sd);
-bool pc_adoption(struct s_map_session_data *p1_sd, struct s_map_session_data *p2_sd, struct s_map_session_data *b_sd);
+bool pc_isequipped(s_map_session_data *sd, unsigned short nameid);
+enum e_adopt_responses pc_try_adopt(s_map_session_data *p1_sd, s_map_session_data *p2_sd, s_map_session_data *b_sd);
+bool pc_adoption(s_map_session_data *p1_sd, s_map_session_data *p2_sd, s_map_session_data *b_sd);
 
-void pc_updateweightstatus(struct s_map_session_data *sd);
+void pc_updateweightstatus(s_map_session_data *sd);
 
 bool pc_addautobonus(struct s_autobonus *bonus,char max,const char *script,short rate,unsigned int dur,short atk_type,const char *o_script,unsigned int pos,bool onskill);
-void pc_exeautobonus(struct s_map_session_data* sd,struct s_autobonus *bonus);
+void pc_exeautobonus(s_map_session_data* sd,struct s_autobonus *bonus);
 int pc_endautobonus(int tid, unsigned int tick, int id, intptr_t data);
-void pc_delautobonus(struct s_map_session_data* sd,struct s_autobonus *bonus,char max,bool restore);
+void pc_delautobonus(s_map_session_data* sd,struct s_autobonus *bonus,char max,bool restore);
 
-void pc_bonus(struct s_map_session_data *sd, int type, int val);
-void pc_bonus2(struct s_map_session_data *sd, int type, int type2, int val);
-void pc_bonus3(struct s_map_session_data *sd, int type, int type2, int type3, int val);
-void pc_bonus4(struct s_map_session_data *sd, int type, int type2, int type3, int type4, int val);
-void pc_bonus5(struct s_map_session_data *sd, int type, int type2, int type3, int type4, int type5, int val);
+void pc_bonus(s_map_session_data *sd, int type, int val);
+void pc_bonus2(s_map_session_data *sd, int type, int type2, int val);
+void pc_bonus3(s_map_session_data *sd, int type, int type2, int type3, int val);
+void pc_bonus4(s_map_session_data *sd, int type, int type2, int type3, int type4, int val);
+void pc_bonus5(s_map_session_data *sd, int type, int type2, int type3, int type4, int type5, int val);
 
 enum e_addskill_type {
 	ADDSKILL_PERMANENT			= 0,	///< Permanent skill. Remove the skill if level is 0
@@ -1050,79 +1050,79 @@ enum e_addskill_type {
 	ADDSKILL_PERMANENT_GRANTED	= 3,	///< Grant permanent skill, ignore skill tree and learned level
 };
 
-bool pc_skill(struct s_map_session_data *sd, uint16 skill_id, int level, enum e_addskill_type type);
+bool pc_skill(s_map_session_data *sd, uint16 skill_id, int level, enum e_addskill_type type);
 
-int pc_insert_card(struct s_map_session_data *sd,int idx_card,int idx_equip);
+int pc_insert_card(s_map_session_data *sd,int idx_card,int idx_equip);
 
-int pc_steal_item(struct s_map_session_data *sd,struct s_block_list *bl, uint16 skill_lv);
-int pc_steal_coin(struct s_map_session_data *sd,struct s_block_list *bl);
+int pc_steal_item(s_map_session_data *sd,struct s_block_list *bl, uint16 skill_lv);
+int pc_steal_coin(s_map_session_data *sd,struct s_block_list *bl);
 
-int pc_modifybuyvalue(struct s_map_session_data*,int);
-int pc_modifysellvalue(struct s_map_session_data*,int);
+int pc_modifybuyvalue(s_map_session_data*,int);
+int pc_modifysellvalue(s_map_session_data*,int);
 
-int pc_follow(struct s_map_session_data*, int); // [MouseJstr]
-int pc_stop_following(struct s_map_session_data*);
+int pc_follow(s_map_session_data*, int); // [MouseJstr]
+int pc_stop_following(s_map_session_data*);
 
-unsigned int pc_maxbaselv(struct s_map_session_data *sd);
-unsigned int pc_maxjoblv(struct s_map_session_data *sd);
-bool pc_is_maxbaselv(struct s_map_session_data *sd);
-bool pc_is_maxjoblv(struct s_map_session_data *sd);
-int pc_checkbaselevelup(struct s_map_session_data *sd);
-int pc_checkjoblevelup(struct s_map_session_data *sd);
-void pc_gainexp(struct s_map_session_data *sd, struct s_block_list *src, unsigned int base_exp, unsigned int job_exp, uint8 exp_flag);
-void pc_gainexp_disp(struct s_map_session_data *sd, unsigned int base_exp, unsigned int next_base_exp, unsigned int job_exp, unsigned int next_job_exp, bool lost);
-void pc_lostexp(struct s_map_session_data *sd, unsigned int base_exp, unsigned int job_exp);
-unsigned int pc_nextbaseexp(struct s_map_session_data *sd);
-unsigned int pc_nextjobexp(struct s_map_session_data *sd);
+unsigned int pc_maxbaselv(s_map_session_data *sd);
+unsigned int pc_maxjoblv(s_map_session_data *sd);
+bool pc_is_maxbaselv(s_map_session_data *sd);
+bool pc_is_maxjoblv(s_map_session_data *sd);
+int pc_checkbaselevelup(s_map_session_data *sd);
+int pc_checkjoblevelup(s_map_session_data *sd);
+void pc_gainexp(s_map_session_data *sd, struct s_block_list *src, unsigned int base_exp, unsigned int job_exp, uint8 exp_flag);
+void pc_gainexp_disp(s_map_session_data *sd, unsigned int base_exp, unsigned int next_base_exp, unsigned int job_exp, unsigned int next_job_exp, bool lost);
+void pc_lostexp(s_map_session_data *sd, unsigned int base_exp, unsigned int job_exp);
+unsigned int pc_nextbaseexp(s_map_session_data *sd);
+unsigned int pc_nextjobexp(s_map_session_data *sd);
 int pc_gets_status_point(int);
-int pc_need_status_point(struct s_map_session_data *,int,int);
-int pc_maxparameterincrease(struct s_map_session_data*,int);
-bool pc_statusup(struct s_map_session_data*,int,int);
-int pc_statusup2(struct s_map_session_data*,int,int);
-void pc_skillup(struct s_map_session_data*,uint16 skill_id);
-int pc_allskillup(struct s_map_session_data*);
-int pc_resetlvl(struct s_map_session_data*,int type);
-int pc_resetstate(struct s_map_session_data*);
-int pc_resetskill(struct s_map_session_data*, int);
-int pc_resetfeel(struct s_map_session_data*);
-int pc_resethate(struct s_map_session_data*);
-bool pc_equipitem(struct s_map_session_data *sd, short n, int req_pos);
-bool pc_unequipitem(struct s_map_session_data*,int,int);
-void pc_checkitem(struct s_map_session_data*);
-void pc_check_available_item(struct s_map_session_data *sd);
-int pc_useitem(struct s_map_session_data*,int);
+int pc_need_status_point(s_map_session_data *,int,int);
+int pc_maxparameterincrease(s_map_session_data*,int);
+bool pc_statusup(s_map_session_data*,int,int);
+int pc_statusup2(s_map_session_data*,int,int);
+void pc_skillup(s_map_session_data*,uint16 skill_id);
+int pc_allskillup(s_map_session_data*);
+int pc_resetlvl(s_map_session_data*,int type);
+int pc_resetstate(s_map_session_data*);
+int pc_resetskill(s_map_session_data*, int);
+int pc_resetfeel(s_map_session_data*);
+int pc_resethate(s_map_session_data*);
+bool pc_equipitem(s_map_session_data *sd, short n, int req_pos);
+bool pc_unequipitem(s_map_session_data*,int,int);
+void pc_checkitem(s_map_session_data*);
+void pc_check_available_item(s_map_session_data *sd);
+int pc_useitem(s_map_session_data*,int);
 
-int pc_skillatk_bonus(struct s_map_session_data *sd, uint16 skill_id);
-int pc_sub_skillatk_bonus(struct s_map_session_data *sd, uint16 skill_id);
-int pc_skillheal_bonus(struct s_map_session_data *sd, uint16 skill_id);
-int pc_skillheal2_bonus(struct s_map_session_data *sd, uint16 skill_id);
+int pc_skillatk_bonus(s_map_session_data *sd, uint16 skill_id);
+int pc_sub_skillatk_bonus(s_map_session_data *sd, uint16 skill_id);
+int pc_skillheal_bonus(s_map_session_data *sd, uint16 skill_id);
+int pc_skillheal2_bonus(s_map_session_data *sd, uint16 skill_id);
 
-void pc_damage(struct s_map_session_data *sd,struct s_block_list *src,unsigned int hp, unsigned int sp);
-int pc_dead(struct s_map_session_data *sd,struct s_block_list *src);
-void pc_revive(struct s_map_session_data *sd,unsigned int hp, unsigned int sp);
-void pc_heal(struct s_map_session_data *sd,unsigned int hp,unsigned int sp, int type);
-int pc_itemheal(struct s_map_session_data *sd,int itemid, int hp,int sp);
-int pc_percentheal(struct s_map_session_data *sd,int,int);
-bool pc_jobchange(struct s_map_session_data *sd, int job, char upper);
-void pc_setoption(struct s_map_session_data *,int);
-bool pc_setcart(struct s_map_session_data* sd, int type);
-void pc_setfalcon(struct s_map_session_data* sd, int flag);
-void pc_setriding(struct s_map_session_data* sd, int flag);
-void pc_setmadogear(struct s_map_session_data* sd, int flag);
-void pc_changelook(struct s_map_session_data *,int,int);
-void pc_equiplookall(struct s_map_session_data *sd);
-void pc_set_costume_view(struct s_map_session_data *sd);
+void pc_damage(s_map_session_data *sd,struct s_block_list *src,unsigned int hp, unsigned int sp);
+int pc_dead(s_map_session_data *sd,struct s_block_list *src);
+void pc_revive(s_map_session_data *sd,unsigned int hp, unsigned int sp);
+void pc_heal(s_map_session_data *sd,unsigned int hp,unsigned int sp, int type);
+int pc_itemheal(s_map_session_data *sd,int itemid, int hp,int sp);
+int pc_percentheal(s_map_session_data *sd,int,int);
+bool pc_jobchange(s_map_session_data *sd, int job, char upper);
+void pc_setoption(s_map_session_data *,int);
+bool pc_setcart(s_map_session_data* sd, int type);
+void pc_setfalcon(s_map_session_data* sd, int flag);
+void pc_setriding(s_map_session_data* sd, int flag);
+void pc_setmadogear(s_map_session_data* sd, int flag);
+void pc_changelook(s_map_session_data *,int,int);
+void pc_equiplookall(s_map_session_data *sd);
+void pc_set_costume_view(s_map_session_data *sd);
 
-int pc_readparam(struct s_map_session_data *sd, int type);
-bool pc_setparam(struct s_map_session_data *sd, int type, int val);
-int pc_readreg(struct s_map_session_data *sd, int64 reg);
-bool pc_setreg(struct s_map_session_data *sd, int64 reg, int val);
-char *pc_readregstr(struct s_map_session_data *sd, int64 reg);
-bool pc_setregstr(struct s_map_session_data *sd, int64 reg, const char *str);
-int pc_readregistry(struct s_map_session_data *sd, int64 reg);
-bool pc_setregistry(struct s_map_session_data *sd, int64 reg, int val);
-char *pc_readregistry_str(struct s_map_session_data *sd, int64 reg);
-int pc_setregistry_str(struct s_map_session_data *sd, int64 reg, const char *val);
+int pc_readparam(s_map_session_data *sd, int type);
+bool pc_setparam(s_map_session_data *sd, int type, int val);
+int pc_readreg(s_map_session_data *sd, int64 reg);
+bool pc_setreg(s_map_session_data *sd, int64 reg, int val);
+char *pc_readregstr(s_map_session_data *sd, int64 reg);
+bool pc_setregstr(s_map_session_data *sd, int64 reg, const char *str);
+int pc_readregistry(s_map_session_data *sd, int64 reg);
+bool pc_setregistry(s_map_session_data *sd, int64 reg, int val);
+char *pc_readregistry_str(s_map_session_data *sd, int64 reg);
+int pc_setregistry_str(s_map_session_data *sd, int64 reg, const char *val);
 
 #define pc_readglobalreg(sd,reg) pc_readregistry(sd,reg)
 #define pc_setglobalreg(sd,reg,val) pc_setregistry(sd,reg,val)
@@ -1137,31 +1137,31 @@ int pc_setregistry_str(struct s_map_session_data *sd, int64 reg, const char *val
 #define pc_readaccountreg2str(sd,reg) pc_readregistry_str(sd,reg)
 #define pc_setaccountreg2str(sd,reg,val) pc_setregistry_str(sd,reg,val)
 
-bool pc_setreg2(struct s_map_session_data *sd, const char *reg, int val);
-int pc_readreg2(struct s_map_session_data *sd, const char *reg);
+bool pc_setreg2(s_map_session_data *sd, const char *reg, int val);
+int pc_readreg2(s_map_session_data *sd, const char *reg);
 
-bool pc_addeventtimer(struct s_map_session_data *sd,int tick,const char *name);
-bool pc_deleventtimer(struct s_map_session_data *sd,const char *name);
-void pc_cleareventtimer(struct s_map_session_data *sd);
-void pc_addeventtimercount(struct s_map_session_data *sd,const char *name,int tick);
+bool pc_addeventtimer(s_map_session_data *sd,int tick,const char *name);
+bool pc_deleventtimer(s_map_session_data *sd,const char *name);
+void pc_cleareventtimer(s_map_session_data *sd);
+void pc_addeventtimercount(s_map_session_data *sd,const char *name,int tick);
 
-int pc_calc_pvprank(struct s_map_session_data *sd);
+int pc_calc_pvprank(s_map_session_data *sd);
 int pc_calc_pvprank_timer(int tid, unsigned int tick, int id, intptr_t data);
 
-int pc_ismarried(struct s_map_session_data *sd);
-bool pc_marriage(struct s_map_session_data *sd,struct s_map_session_data *dstsd);
-bool pc_divorce(struct s_map_session_data *sd);
-struct s_map_session_data *pc_get_partner(struct s_map_session_data *sd);
-struct s_map_session_data *pc_get_father(struct s_map_session_data *sd);
-struct s_map_session_data *pc_get_mother(struct s_map_session_data *sd);
-struct s_map_session_data *pc_get_child(struct s_map_session_data *sd);
+int pc_ismarried(s_map_session_data *sd);
+bool pc_marriage(s_map_session_data *sd,s_map_session_data *dstsd);
+bool pc_divorce(s_map_session_data *sd);
+s_map_session_data *pc_get_partner(s_map_session_data *sd);
+s_map_session_data *pc_get_father(s_map_session_data *sd);
+s_map_session_data *pc_get_mother(s_map_session_data *sd);
+s_map_session_data *pc_get_child(s_map_session_data *sd);
 
-void pc_bleeding (struct s_map_session_data *sd, unsigned int diff_tick);
-void pc_regen (struct s_map_session_data *sd, unsigned int diff_tick);
+void pc_bleeding (s_map_session_data *sd, unsigned int diff_tick);
+void pc_regen (s_map_session_data *sd, unsigned int diff_tick);
 
-bool pc_setstand(struct s_map_session_data *sd, bool force);
-bool pc_candrop(struct s_map_session_data *sd,struct s_item *item);
-bool pc_can_attack(struct s_map_session_data *sd, int target_id);
+bool pc_setstand(s_map_session_data *sd, bool force);
+bool pc_candrop(s_map_session_data *sd,struct s_item *item);
+bool pc_can_attack(s_map_session_data *sd, int target_id);
 
 int pc_jobid2mapid(unsigned short b_class);	// Skotlex
 int pc_mapid2jobid(unsigned short class_, int sex);	// Skotlex
@@ -1187,14 +1187,14 @@ struct s_sg_data {
 };
 extern const struct s_sg_data sg_info[MAX_PC_FEELHATE];
 
-void pc_setinvincibletimer(struct s_map_session_data* sd, int val);
-void pc_delinvincibletimer(struct s_map_session_data* sd);
+void pc_setinvincibletimer(s_map_session_data* sd, int val);
+void pc_delinvincibletimer(s_map_session_data* sd);
 
-void pc_addspiritball(struct s_map_session_data *sd,int interval,int max);
-void pc_delspiritball(struct s_map_session_data *sd,int count,int type);
-void pc_addfame(struct s_map_session_data *sd,int count);
+void pc_addspiritball(s_map_session_data *sd,int interval,int max);
+void pc_delspiritball(s_map_session_data *sd,int count,int type);
+void pc_addfame(s_map_session_data *sd,int count);
 unsigned char pc_famerank(uint32 char_id, int job);
-bool pc_set_hate_mob(struct s_map_session_data *sd, int pos, struct s_block_list *bl);
+bool pc_set_hate_mob(s_map_session_data *sd, int pos, struct s_block_list *bl);
 
 extern struct s_fame_list smith_fame_list[MAX_FAME_LIST];
 extern struct s_fame_list chemist_fame_list[MAX_FAME_LIST];
@@ -1226,51 +1226,51 @@ int map_day_timer(int tid, unsigned int tick, int id, intptr_t data); // by [yor
 int map_night_timer(int tid, unsigned int tick, int id, intptr_t data); // by [yor]
 
 // Rental System
-void pc_inventory_rentals(struct s_map_session_data *sd);
-void pc_inventory_rental_clear(struct s_map_session_data *sd);
-void pc_inventory_rental_add(struct s_map_session_data *sd, unsigned int seconds);
+void pc_inventory_rentals(s_map_session_data *sd);
+void pc_inventory_rental_clear(s_map_session_data *sd);
+void pc_inventory_rental_add(s_map_session_data *sd, unsigned int seconds);
 
 int pc_read_motd(void); // [Valaris]
-int pc_disguise(struct s_map_session_data *sd, int class_);
-bool pc_isautolooting(struct s_map_session_data *sd, unsigned short nameid);
+int pc_disguise(s_map_session_data *sd, int class_);
+bool pc_isautolooting(s_map_session_data *sd, unsigned short nameid);
 
-void pc_overheat(struct s_map_session_data *sd, int val);
+void pc_overheat(s_map_session_data *sd, int val);
 
-int pc_banding(struct s_map_session_data *sd, uint16 skill_lv);
+int pc_banding(s_map_session_data *sd, uint16 skill_lv);
 
-void pc_itemcd_do(struct s_map_session_data *sd, bool load);
-uint8 pc_itemcd_add(struct s_map_session_data *sd, struct s_item_data *id, unsigned int tick, unsigned short n);
-uint8 pc_itemcd_check(struct s_map_session_data *sd, struct s_item_data *id, unsigned int tick, unsigned short n);
+void pc_itemcd_do(s_map_session_data *sd, bool load);
+uint8 pc_itemcd_add(s_map_session_data *sd, struct s_item_data *id, unsigned int tick, unsigned short n);
+uint8 pc_itemcd_check(s_map_session_data *sd, struct s_item_data *id, unsigned int tick, unsigned short n);
 
-int pc_load_combo(struct s_map_session_data *sd);
+int pc_load_combo(s_map_session_data *sd);
 
-void pc_addspiritcharm(struct s_map_session_data *sd, int interval, int max, int type);
-void pc_delspiritcharm(struct s_map_session_data *sd, int count, int type);
+void pc_addspiritcharm(s_map_session_data *sd, int interval, int max, int type);
+void pc_delspiritcharm(s_map_session_data *sd, int count, int type);
 
-void pc_baselevelchanged(struct s_map_session_data *sd);
+void pc_baselevelchanged(s_map_session_data *sd);
 
-void pc_damage_log_add(struct s_map_session_data *sd, int id);
-void pc_damage_log_clear(struct s_map_session_data *sd, int id);
+void pc_damage_log_add(s_map_session_data *sd, int id);
+void pc_damage_log_clear(s_map_session_data *sd, int id);
 
 enum e_BANKING_DEPOSIT_ACK : uint8;
 enum e_BANKING_WITHDRAW_ACK : uint8;
-enum e_BANKING_DEPOSIT_ACK pc_bank_deposit(struct s_map_session_data *sd, int money);
-enum e_BANKING_WITHDRAW_ACK pc_bank_withdraw(struct s_map_session_data *sd, int money);
+enum e_BANKING_DEPOSIT_ACK pc_bank_deposit(s_map_session_data *sd, int money);
+enum e_BANKING_WITHDRAW_ACK pc_bank_withdraw(s_map_session_data *sd, int money);
 
-void pc_crimson_marker_clear(struct s_map_session_data *sd);
+void pc_crimson_marker_clear(s_map_session_data *sd);
 
-void pc_show_version(struct s_map_session_data *sd);
+void pc_show_version(s_map_session_data *sd);
 
 int pc_bonus_script_timer(int tid, unsigned int tick, int id, intptr_t data);
-void pc_bonus_script(struct s_map_session_data *sd);
-struct s_bonus_script_entry *pc_bonus_script_add(struct s_map_session_data *sd, const char *script_str, uint32 dur, enum e_si_type icon, uint16 flag, uint8 type);
-void pc_bonus_script_clear(struct s_map_session_data *sd, uint16 flag);
+void pc_bonus_script(s_map_session_data *sd);
+struct s_bonus_script_entry *pc_bonus_script_add(s_map_session_data *sd, const char *script_str, uint32 dur, enum e_si_type icon, uint16 flag, uint8 type);
+void pc_bonus_script_clear(s_map_session_data *sd, uint16 flag);
 
-void pc_cell_basilica(struct s_map_session_data *sd);
+void pc_cell_basilica(s_map_session_data *sd);
 
-void pc_itemgrouphealrate_clear(struct s_map_session_data *sd);
-short pc_get_itemgroup_bonus(struct s_map_session_data* sd, unsigned short nameid);
-short pc_get_itemgroup_bonus_group(struct s_map_session_data* sd, uint16 group_id);
+void pc_itemgrouphealrate_clear(s_map_session_data *sd);
+short pc_get_itemgroup_bonus(s_map_session_data* sd, unsigned short nameid);
+short pc_get_itemgroup_bonus_group(s_map_session_data* sd, uint16 group_id);
 
 bool pc_is_same_equip_index(enum e_equip_index eqi, short *equip_index, short index);
 /// Check if player is Taekwon Ranker and the level is >= 90 (battle_config.taekwon_ranker_min_lv)
@@ -1278,10 +1278,10 @@ bool pc_is_same_equip_index(enum e_equip_index eqi, short *equip_index, short in
 
 int pc_autotrade_timer(int tid, unsigned int tick, int id, intptr_t data);
 
-void pc_validate_skill(struct s_map_session_data *sd);
+void pc_validate_skill(s_map_session_data *sd);
 
-void pc_show_questinfo(struct s_map_session_data *sd);
-void pc_show_questinfo_reinit(struct s_map_session_data *sd);
+void pc_show_questinfo(s_map_session_data *sd);
+void pc_show_questinfo_reinit(s_map_session_data *sd);
 
 bool pc_job_can_entermap(enum e_job jobid, int m, int group_lv);
 

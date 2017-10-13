@@ -299,10 +299,10 @@ void mob_free_dynamic_viewdata( struct mob_data* md );
 
 struct s_mob_data *mob_once_spawn_sub(struct s_block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, enum mob_ai ai);
 
-int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y,
+int mob_once_spawn(s_map_session_data* sd, int16 m, int16 x, int16 y,
 	const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);
 
-int mob_once_spawn_area(struct map_session_data* sd, int16 m,
+int mob_once_spawn_area(s_map_session_data* sd, int16 m,
 	int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);
 
 bool mob_ksprotected (struct s_block_list *src, struct s_block_list *target);
@@ -351,7 +351,7 @@ int mob_count_sub(struct s_block_list *bl, va_list ap);
 
 int mob_is_clone(int mob_id);
 
-int mob_clone_spawn(struct s_map_session_data *sd, int16 m, int16 x, int16 y, const char *event, int master_id, e_MonsterMode mode, int flag, unsigned int duration);
+int mob_clone_spawn(s_map_session_data *sd, int16 m, int16 x, int16 y, const char *event, int master_id, e_MonsterMode mode, int flag, unsigned int duration);
 int mob_clone_delete(struct s_mob_data *md);
 
 void mob_reload(void);

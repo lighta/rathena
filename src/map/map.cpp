@@ -96,12 +96,12 @@ Sql* logmysql_handle;
 
 // DBMap declaration
 static s_DBMap* id_db=NULL; /// int id -> struct s_block_list*
-static s_DBMap* pc_db=NULL; /// int id -> struct s_map_session_data*
+static s_DBMap* pc_db=NULL; /// int id -> s_map_session_data*
 static s_DBMap* mobid_db=NULL; /// int id -> struct s_mob_data*
 static s_DBMap* bossid_db=NULL; /// int id -> struct s_mob_data* (MVP db)
 static s_DBMap* map_db=NULL; /// unsigned int mapindex -> struct map_data*
 static s_DBMap* nick_db=NULL; /// uint32 char_id -> struct charid2nick* (requested names of offline characters)
-static s_DBMap* charid_db=NULL; /// uint32 char_id -> struct s_map_session_data*
+static s_DBMap* charid_db=NULL; /// uint32 char_id -> s_map_session_data*
 static s_DBMap* regen_db=NULL; /// int id -> struct s_block_list* (status_natural_heal processing)
 static s_DBMap* map_msg_db=NULL;
 
@@ -1816,7 +1816,7 @@ void map_addnickdb(int charid, const char* nick)
 	safestrncpy(p->nick, nick, sizeof(p->nick));
 
 	while( p->requests ) {
-		struct s_map_session_data* sd;
+		s_map_session_data* sd;
 		struct charid_request* req;
 		req = p->requests;
 		p->requests = req->next;
@@ -1839,7 +1839,7 @@ void map_delnickdb(int charid, const char* name)
 
 	while( p->requests ) {
 		struct charid_request* req;
-		struct s_map_session_data* sd;
+		s_map_session_data* sd;
 		req = p->requests;
 		p->requests = req->next;
 		sd = map_charid2sd(req->charid);
@@ -1853,11 +1853,11 @@ void map_delnickdb(int charid, const char* name)
 /// Notifies sd of the nick of charid.
 /// Uses the name in the character if online.
 /// Uses the name in nick_db if offline.
-void map_reqnickdb(struct s_map_session_data * sd, int charid)
+void map_reqnickdb(s_map_session_data * sd, int charid)
 {
 	struct charid2nick* p;
 	struct charid_request* req;
-	struct s_map_session_data* tsd;
+	s_map_session_data* tsd;
 
 	nullpo_retv(sd);
 
@@ -1937,7 +1937,7 @@ void map_deliddb(struct s_block_list *bl)
 /*==========================================
  * Standard call when a player connection is closed.
  *------------------------------------------*/
-int map_quit(struct s_map_session_data *sd) {
+int map_quit(s_map_session_data *sd) {
 	int i;
 
 	if (sd->state.keepshop == false) { // Close vending/buyingstore
@@ -2107,9 +2107,9 @@ int map_quit(struct s_map_session_data *sd) {
 /*==========================================
  * Lookup, id to session (player,mob,npc,homon,merc..)
  *------------------------------------------*/
-struct s_map_session_data * map_id2sd(int id){
+s_map_session_data * map_id2sd(int id){
 	if (id <= 0) return NULL;
-	return (struct s_map_session_data*)idb_get(pc_db,id);
+	return (s_map_session_data*)idb_get(pc_db,id);
 }
 
 struct s_mob_data * map_id2md(int id){
@@ -2151,7 +2151,7 @@ struct s_chat_data* map_id2cd(int id){
 const char* map_charid2nick(int charid)
 {
 	struct charid2nick *p;
-	struct s_map_session_data* sd;
+	s_map_session_data* sd;
 
 	sd = map_charid2sd(charid);
 	if( sd )
@@ -2165,10 +2165,10 @@ const char* map_charid2nick(int charid)
 	return NULL;
 }
 
-/// Returns the struct s_map_session_data of the charid or NULL if the char is not online.
-struct s_map_session_data* map_charid2sd(int charid)
+/// Returns the s_map_session_data of the charid or NULL if the char is not online.
+s_map_session_data* map_charid2sd(int charid)
 {
-	return (struct s_map_session_data*)uidb_get(charid_db, charid);
+	return (s_map_session_data*)uidb_get(charid_db, charid);
 }
 
 /*==========================================
@@ -2176,10 +2176,10 @@ struct s_map_session_data* map_charid2sd(int charid)
  * (without sensitive case if necessary)
  * return map_session_data pointer or NULL
  *------------------------------------------*/
-struct s_map_session_data * map_nick2sd(const char *nick, bool allow_partial)
+s_map_session_data * map_nick2sd(const char *nick, bool allow_partial)
 {
-	struct s_map_session_data* sd;
-	struct s_map_session_data* found_sd;
+	s_map_session_data* sd;
+	s_map_session_data* found_sd;
 	struct s_mapiterator* iter;
 	size_t nicklen;
 	int qty = 0;
@@ -2268,13 +2268,13 @@ struct s_mob_data * map_id2boss(int id)
 
 /// Applies func to all the players in the db.
 /// Stops iterating if func returns -1.
-void map_foreachpc(int (*func)(struct s_map_session_data* sd, va_list args), ...)
+void map_foreachpc(int (*func)(s_map_session_data* sd, va_list args), ...)
 {
 	s_DBIterator* iter;
-	struct s_map_session_data* sd;
+	s_map_session_data* sd;
 
 	iter = db_iterator(pc_db);
-	for( sd = (struct s_map_session_data*)dbi_first(iter); dbi_exists(iter); sd = (struct s_map_session_data*)dbi_next(iter) )
+	for( sd = (s_map_session_data*)dbi_first(iter); dbi_exists(iter); sd = (s_map_session_data*)dbi_next(iter) )
 	{
 		va_list args;
 		int ret;
@@ -2634,10 +2634,10 @@ int map_addinstancemap(const char *name, unsigned short instance_id)
  *------------------------------------------*/
 static int map_instancemap_leave(struct s_block_list *bl, va_list ap)
 {
-	struct s_map_session_data* sd;
+	s_map_session_data* sd;
 
 	nullpo_retr(0, bl);
-	nullpo_retr(0, sd = (struct s_map_session_data *)bl);
+	nullpo_retr(0, sd = (s_map_session_data *)bl);
 
 	pc_setpos(sd, sd->status.save_point.map, sd->status.save_point.x, sd->status.save_point.y, CLR_TELEPORT);
 
@@ -2653,7 +2653,7 @@ static int map_instancemap_clean(struct s_block_list *bl, va_list ap)
 	switch(bl->type) {
 		/*case BL_PC:
 		// BL_PET, BL_HOM, BL_MER, and BL_ELEM are moved when BL_PC warped out in map_instancemap_leave
-			map_quit((struct s_map_session_data *) bl);
+			map_quit((s_map_session_data *) bl);
 			break;*/
 		case BL_NPC:
 			npc_unload((struct s_npc_data *)bl,true);
@@ -3212,7 +3212,7 @@ bool map_iwall_set(int16 m, int16 x, int16 y, int size, int8 dir, bool shootable
 	return true;
 }
 
-void map_iwall_get(struct s_map_session_data *sd) {
+void map_iwall_get(s_map_session_data *sd) {
 	struct s_iwall_data *iwall;
 	s_DBIterator* iter;
 	int16 x1, y1;
@@ -3720,9 +3720,9 @@ int parse_console(const char* buf){
 	int16 x = 0;
 	int16 y = 0;
 	int n;
-	struct s_map_session_data sd;
+	s_map_session_data sd;
 
-	memset(&sd, 0, sizeof(struct s_map_session_data));
+	memset(&sd, 0, sizeof(s_map_session_data));
 	strcpy(sd.status.name, "console");
 
 	if( ( n = sscanf(buf, "%63[^:]:%63[^:]:%63s %6hd %6hd[^\n]", type, command, mapname, &x, &y) ) < 5 ){
@@ -4266,7 +4266,7 @@ int cleanup_sub(struct s_block_list *bl, va_list ap)
 
 	switch(bl->type) {
 		case BL_PC:
-			map_quit((struct s_map_session_data *) bl);
+			map_quit((s_map_session_data *) bl);
 			break;
 		case BL_NPC:
 			npc_unload((struct s_npc_data *)bl,false);
@@ -4361,7 +4361,7 @@ static int cleanup_db_sub(u_DBKey key, s_DBData *data, va_list va)
 void do_final(void)
 {
 	int i, j;
-	struct s_map_session_data* sd;
+	s_map_session_data* sd;
 	struct s_mapiterator* iter;
 
 	ShowStatus("Terminating...\n");
@@ -4463,7 +4463,7 @@ void do_final(void)
 	ShowStatus("Finished.\n");
 }
 
-static int map_abort_sub(struct s_map_session_data* sd, va_list ap)
+static int map_abort_sub(s_map_session_data* sd, va_list ap)
 {
 	chrif_save(sd, CSAVE_QUIT|CSAVE_INVENTORY|CSAVE_CART);
 	return 1;
@@ -4588,7 +4588,7 @@ int map_msg_config_read(const char *cfgName, int lang){
 	}
 	return 0;
 }
-const char* map_msg_txt(struct s_map_session_data *sd, int msg_number){
+const char* map_msg_txt(s_map_session_data *sd, int msg_number){
 	struct msg_data *mdb;
 	uint8 lang = 0; //default
 	if(sd && sd->langtype) lang = sd->langtype;
@@ -4614,7 +4614,7 @@ void do_shutdown(void)
 		runflag = MAPSERVER_ST_SHUTDOWN;
 		ShowStatus("Shutting down...\n");
 		{
-			struct s_map_session_data* sd;
+			s_map_session_data* sd;
 			struct s_mapiterator* iter = mapit_getallusers();
 			for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
 				clif_GM_kick(NULL, sd);

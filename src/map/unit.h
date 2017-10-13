@@ -110,8 +110,8 @@ enum e_unit_stop_walking {
 // Does walk action for unit
 int unit_walktoxy(struct s_block_list *bl, short x, short y, unsigned char flag);
 int unit_walktobl(struct s_block_list *bl, struct s_block_list *target, int range, unsigned char flag);
-void unit_run_hit(struct s_block_list *bl, struct s_status_change *sc, struct s_map_session_data *sd, enum e_sc_type type);
-bool unit_run(struct s_block_list *bl, struct s_map_session_data *sd, enum e_sc_type type);
+void unit_run_hit(struct s_block_list *bl, struct s_status_change *sc, s_map_session_data *sd, enum e_sc_type type);
+bool unit_run(struct s_block_list *bl, s_map_session_data *sd, enum e_sc_type type);
 int unit_calc_pos(struct s_block_list *bl, int tx, int ty, uint8 dir);
 int unit_delay_walktoxy_timer(int tid, unsigned int tick, int id, intptr_t data);
 int unit_delay_walktobl_timer(int tid, unsigned int tick, int id, intptr_t data);
@@ -162,8 +162,8 @@ void unit_dataset(struct s_block_list *bl);
 
 // Remove unit
 struct s_unit_data* unit_bl2ud(struct s_block_list *bl);
-void unit_remove_map_pc(struct s_map_session_data *sd,enum e_clr_type clrtype);
-void unit_free_pc(struct s_map_session_data *sd);
+void unit_remove_map_pc(s_map_session_data *sd,enum e_clr_type clrtype);
+void unit_free_pc(s_map_session_data *sd);
 #define unit_remove_map(bl,clrtype) unit_remove_map_(bl,clrtype,__FILE__,__LINE__,__func__)
 int unit_remove_map_(struct s_block_list *bl,enum e_clr_type clrtype, const char* file, int line, const char* func);
 int unit_free(struct s_block_list *bl,enum e_clr_type clrtype);

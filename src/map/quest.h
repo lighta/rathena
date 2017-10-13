@@ -47,15 +47,15 @@ enum e_quest_check_type {
 	HUNTING,   ///< Check if the given hunting quest's requirements have been met
 };
 
-int quest_pc_login(struct s_map_session_data *sd);
+int quest_pc_login(s_map_session_data *sd);
 
-int quest_add(struct s_map_session_data * sd, int quest_id);
-int quest_delete(struct s_map_session_data * sd, int quest_id);
-int quest_change(struct s_map_session_data * sd, int qid1, int qid2);
+int quest_add(s_map_session_data * sd, int quest_id);
+int quest_delete(s_map_session_data * sd, int quest_id);
+int quest_change(s_map_session_data * sd, int qid1, int qid2);
 int quest_update_objective_sub(struct s_block_list *bl, va_list ap);
-void quest_update_objective(struct s_map_session_data * sd, int mob_id);
-int quest_update_status(struct s_map_session_data * sd, int quest_id, enum e_quest_state status);
-int quest_check(struct s_map_session_data * sd, int quest_id, enum e_quest_check_type type);
+void quest_update_objective(s_map_session_data * sd, int mob_id);
+int quest_update_status(s_map_session_data * sd, int quest_id, enum e_quest_state status);
+int quest_check(s_map_session_data * sd, int quest_id, enum e_quest_check_type type);
 void quest_clear(void);
 
 struct s_quest_db *quest_search(int quest_id);

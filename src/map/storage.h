@@ -33,12 +33,12 @@ void storage_storageget(s_map_session_data *sd, s_storage *stor, int index, int 
 void storage_storageaddfromcart(s_map_session_data *sd, s_storage *stor, int index, int amount);
 void storage_storagegettocart(s_map_session_data *sd, s_storage *stor, int index, int amount);
 void storage_storagesave(s_map_session_data *sd);
-void storage_storageclose(struct s_map_session_data *sd);
+void storage_storageclose(s_map_session_data *sd);
 void storage_sortitem(struct s_item* items, unsigned int size);
 void do_init_storage(void);
 void do_final_storage(void);
 void do_reconnect_storage(void);
-void storage_storage_quit(struct s_map_session_data *sd, int flag);
+void storage_storage_quit(s_map_session_data *sd, int flag);
 
 s_storage* guild2storage(int guild_id);
 s_storage* guild2storage2(int guild_id);

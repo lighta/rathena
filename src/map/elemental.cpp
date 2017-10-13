@@ -47,7 +47,7 @@ struct s_view_data * elemental_get_viewdata(int class_) {
 	return &elemental_db[i].vd;
 }
 
-int elemental_create(struct s_map_session_data *sd, int class_, unsigned int lifetime) {
+int elemental_create(s_map_session_data *sd, int class_, unsigned int lifetime) {
 	struct s_elemental ele;
 	struct s_elemental_db *db;
 	int i;
@@ -156,7 +156,7 @@ int elemental_save(struct s_elemental_data *ed) {
 }
 
 static int elemental_summon_end(int tid, unsigned int tick, int id, intptr_t data) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	struct s_elemental_data *ed;
 
 	if( (sd = map_id2sd(id)) == NULL )
@@ -183,7 +183,7 @@ void elemental_summon_stop(struct s_elemental_data *ed) {
 }
 
 int elemental_delete(struct s_elemental_data *ed) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 
 	nullpo_ret(ed);
 
@@ -216,7 +216,7 @@ void elemental_summon_init(struct s_elemental_data *ed) {
  * @return 0:failed, 1:sucess
  */
 int elemental_data_received(struct s_elemental *ele, bool flag) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	struct s_elemental_data *ed;
 	struct s_elemental_db *db;
 	int i = elemental_search_index(ele->class_);
@@ -324,7 +324,7 @@ int elemental_clean_single_effect(struct s_elemental_data *ed, uint16 skill_id) 
 }
 
 int elemental_clean_effect(struct s_elemental_data *ed) {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 
 	nullpo_ret(ed);
 
@@ -438,7 +438,7 @@ int elemental_action(struct s_elemental_data *ed, struct s_block_list *bl, unsig
 	req = elemental_skill_get_requirements(skill_id, skill_lv);
 
 	if(req.hp || req.sp){
-		struct s_map_session_data *sd = BL_CAST(BL_PC, battle_get_master(&ed->bl));
+		s_map_session_data *sd = BL_CAST(BL_PC, battle_get_master(&ed->bl));
 		if( sd ){
 			if( sd->skill_id_old != SO_EL_ACTION && //regardless of remaining HP/SP it can be cast
 				(status_get_hp(&ed->bl) < req.hp || status_get_sp(&ed->bl) < req.sp) )
@@ -578,7 +578,7 @@ struct s_skill_condition elemental_skill_get_requirements(uint16 skill_id, uint1
 	return req;
 }
 
-int elemental_set_target( struct s_map_session_data *sd, struct s_block_list *bl ) {
+int elemental_set_target( s_map_session_data *sd, struct s_block_list *bl ) {
 	struct s_elemental_data *ed = sd->ed;
 
 	nullpo_ret(ed);
@@ -632,7 +632,7 @@ static int elemental_ai_sub_timer_activesearch(struct s_block_list *bl, va_list 
 	return 0;
 }
 
-static int elemental_ai_sub_timer(struct s_elemental_data *ed, struct s_map_session_data *sd, unsigned int tick) {
+static int elemental_ai_sub_timer(struct s_elemental_data *ed, s_map_session_data *sd, unsigned int tick) {
 	struct s_block_list *target = NULL;
 	int master_dist, view_range;
 	e_MonsterMode mode;
@@ -742,7 +742,7 @@ static int elemental_ai_sub_timer(struct s_elemental_data *ed, struct s_map_sess
 	return 0;
 }
 
-static int elemental_ai_sub_foreachclient(struct s_map_session_data *sd, va_list ap) {
+static int elemental_ai_sub_foreachclient(s_map_session_data *sd, va_list ap) {
 	unsigned int tick = va_arg(ap,unsigned int);
 	if(sd->status.ele_id && sd->ed)
 		elemental_ai_sub_timer(sd->ed,sd,tick);

@@ -12,7 +12,7 @@
 
 /// information about the search being performed
 struct s_search_store_search {
-	struct s_map_session_data* search_sd;  // sd of the searching player
+	s_map_session_data* search_sd;  // sd of the searching player
 	const unsigned short* itemlist;
 	const unsigned short* cardlist;
 	unsigned int item_count;
@@ -44,15 +44,15 @@ struct s_search_store_info {
 	bool open;
 };
 
-bool searchstore_open(struct s_map_session_data* sd, unsigned int uses, unsigned short effect);
-void searchstore_query(struct s_map_session_data* sd, unsigned char type, unsigned int min_price, unsigned int max_price, const unsigned short* itemlist, unsigned int item_count, const unsigned short* cardlist, unsigned int card_count);
-bool searchstore_querynext(struct s_map_session_data* sd);
-void searchstore_next(struct s_map_session_data* sd);
-void searchstore_clear(struct s_map_session_data* sd);
-void searchstore_close(struct s_map_session_data* sd);
-void searchstore_click(struct s_map_session_data* sd, uint32 account_id, int store_id, unsigned short nameid);
-bool searchstore_queryremote(struct s_map_session_data* sd, uint32 account_id);
-void searchstore_clearremote(struct s_map_session_data* sd);
-bool searchstore_result(struct s_map_session_data* sd, int store_id, uint32 account_id, const char* store_name, unsigned short nameid, unsigned short amount, unsigned int price, const unsigned short* card, unsigned char refine);
+bool searchstore_open(s_map_session_data* sd, unsigned int uses, unsigned short effect);
+void searchstore_query(s_map_session_data* sd, unsigned char type, unsigned int min_price, unsigned int max_price, const unsigned short* itemlist, unsigned int item_count, const unsigned short* cardlist, unsigned int card_count);
+bool searchstore_querynext(s_map_session_data* sd);
+void searchstore_next(s_map_session_data* sd);
+void searchstore_clear(s_map_session_data* sd);
+void searchstore_close(s_map_session_data* sd);
+void searchstore_click(s_map_session_data* sd, uint32 account_id, int store_id, unsigned short nameid);
+bool searchstore_queryremote(s_map_session_data* sd, uint32 account_id);
+void searchstore_clearremote(s_map_session_data* sd);
+bool searchstore_result(s_map_session_data* sd, int store_id, uint32 account_id, const char* store_name, unsigned short nameid, unsigned short amount, unsigned int price, const unsigned short* card, unsigned char refine);
 
 #endif  // _SEARCHSTORE_H_

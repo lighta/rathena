@@ -71,7 +71,7 @@ static struct s_chat_data* chat_createchat(struct s_block_list* bl, const char* 
  * @param pub : public or private
  * @return 0
  */
-int chat_createpcchat(struct s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
+int chat_createpcchat(s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
 {
 	struct s_chat_data* cd;
 
@@ -122,7 +122,7 @@ int chat_createpcchat(struct s_map_session_data* sd, const char* title, const ch
  * @param pass : password of chat room
  * @return 0
  */
-int chat_joinchat(struct s_map_session_data* sd, int chatid, const char* pass)
+int chat_joinchat(s_map_session_data* sd, int chatid, const char* pass)
 {
 	struct s_chat_data* cd;
 
@@ -183,7 +183,7 @@ int chat_joinchat(struct s_map_session_data* sd, int chatid, const char* pass)
  * @param kicked : for clif notification, kicked=1 or regular leave
  * @return 0:success, 1:failed
  */
-int chat_leavechat(struct s_map_session_data* sd, bool kicked)
+int chat_leavechat(s_map_session_data* sd, bool kicked)
 {
 	struct s_chat_data* cd;
 	int i;
@@ -258,10 +258,10 @@ int chat_leavechat(struct s_map_session_data* sd, bool kicked)
  * @param nextownername : string of new owner (name should be in chatroom)
  * @return 0:success, 1:failure
  */
-int chat_changechatowner(struct s_map_session_data* sd, const char* nextownername)
+int chat_changechatowner(s_map_session_data* sd, const char* nextownername)
 {
 	struct s_chat_data* cd;
-	struct s_map_session_data* tmpsd;
+	s_map_session_data* tmpsd;
 	int i;
 
 	nullpo_retr(1, sd);
@@ -310,7 +310,7 @@ int chat_changechatowner(struct s_map_session_data* sd, const char* nextownernam
  * @param pub : public or private
  * @return 1:success, 0:failure
  */
-int chat_changechatstatus(struct s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
+int chat_changechatstatus(s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub)
 {
 	struct s_chat_data* cd;
 
@@ -356,7 +356,7 @@ int chat_npckickchat(struct s_chat_data* cd, const char* kickusername)
  * @param kickusername : player name to be kicked
  * @retur 1:success, 0:failure
  */
-int chat_kickchat(struct s_map_session_data* sd, const char* kickusername)
+int chat_kickchat(s_map_session_data* sd, const char* kickusername)
 {
 	struct s_chat_data* cd;
 	int i;

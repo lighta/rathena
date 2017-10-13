@@ -12,7 +12,7 @@
 
 struct s_battleground_member_data {
 	unsigned short x, y;
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	unsigned afk : 1;
 };
 
@@ -31,16 +31,16 @@ void do_init_battleground(void);
 void do_final_battleground(void);
 
 struct s_battleground_data* bg_team_search(int bg_id);
-int bg_send_dot_remove(struct s_map_session_data *sd);
+int bg_send_dot_remove(s_map_session_data *sd);
 int bg_team_get_id(struct s_block_list *bl);
-struct s_map_session_data* bg_getavailablesd(struct s_battleground_data *bg);
+s_map_session_data* bg_getavailablesd(struct s_battleground_data *bg);
 
 int bg_create(unsigned short mapindex, short rx, short ry, const char *ev, const char *dev);
-int bg_team_join(int bg_id, struct s_map_session_data *sd);
+int bg_team_join(int bg_id, s_map_session_data *sd);
 int bg_team_delete(int bg_id);
-int bg_team_leave(struct s_map_session_data *sd, int flag);
+int bg_team_leave(s_map_session_data *sd, int flag);
 int bg_team_warp(int bg_id, unsigned short mapindex, short x, short y);
-int bg_member_respawn(struct s_map_session_data *sd);
-int bg_send_message(struct s_map_session_data *sd, const char *mes, int len);
+int bg_member_respawn(s_map_session_data *sd);
+int bg_send_message(s_map_session_data *sd, const char *mes, int len);
 
 #endif /* _BATTLEGROUND_H_ */

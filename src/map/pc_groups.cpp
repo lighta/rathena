@@ -348,7 +348,7 @@ bool pc_group_can_use_command(int group_id, const char *command, e_atCommandType
  * Load permission for player based on group id
  * @param sd Player
  */
-void pc_group_pc_load(struct s_map_session_data * sd) {
+void pc_group_pc_load(s_map_session_data * sd) {
 	GroupSettings *group = NULL;
 	if ((group = id2group(sd->group_id)) == NULL) {
 		ShowWarning("pc_group_pc_load: %s (AID:%d) logged in with unknown group id (%d)! kicking...\n",
@@ -451,7 +451,7 @@ void do_final_pc_groups(void)
  * @public
  */
 void pc_groups_reload(void) {
-	struct s_map_session_data* sd = NULL;
+	s_map_session_data* sd = NULL;
 	struct s_mapiterator* iter;
 
 	do_final_pc_groups();

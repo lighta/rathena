@@ -2363,12 +2363,12 @@ void status_change_clear_onChangeMap(struct s_block_list *bl, struct s_status_ch
 #define status_calc_elemental(ed, opt) status_calc_bl_(&(ed)->bl,(scb_flag) SCB_ALL,(e_status_calc_opt) opt)
 #define status_calc_npc(nd, opt) status_calc_bl_(&(nd)->bl,(scb_flag) SCB_ALL,(e_status_calc_opt) opt)
 
-bool status_calc_weight(struct map_session_data *sd, enum e_status_calc_weight_opt flag);
-bool status_calc_cart_weight(struct map_session_data *sd, enum e_status_calc_weight_opt flag);
+bool status_calc_weight(s_map_session_data *sd, enum e_status_calc_weight_opt flag);
+bool status_calc_cart_weight(s_map_session_data *sd, enum e_status_calc_weight_opt flag);
 void status_calc_bl_(struct s_block_list *bl, enum scb_flag flag, enum e_status_calc_opt opt);
 int status_calc_mob_(struct s_mob_data* md, enum e_status_calc_opt opt);
 void status_calc_pet_(struct s_pet_data* pd, enum e_status_calc_opt opt);
-int status_calc_pc_(struct s_map_session_data* sd, enum e_status_calc_opt opt);
+int status_calc_pc_(s_map_session_data* sd, enum e_status_calc_opt opt);
 int status_calc_homunculus_(struct s_homun_data *hd, enum e_status_calc_opt opt);
 int status_calc_mercenary_(struct s_mercenary_data *md, enum e_status_calc_opt opt);
 int status_calc_elemental_(struct s_elemental_data *ed, enum e_status_calc_opt opt);
@@ -2389,7 +2389,7 @@ int status_change_spread(struct s_block_list *src, struct s_block_list *bl, bool
 	unsigned short status_base_matk_min(const struct s_status_data* status);
 	unsigned short status_base_matk_max(const struct s_status_data* status);
 #else
-	unsigned int status_weapon_atk(struct weapon_atk wa, struct s_map_session_data *sd);
+	unsigned int status_weapon_atk(struct weapon_atk wa, s_map_session_data *sd);
 	unsigned short status_base_matk(struct s_block_list *bl, const struct s_status_data* status, int level);
 #endif
 

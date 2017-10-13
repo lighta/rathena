@@ -23,12 +23,12 @@ void do_final_vending(void);
 void do_init_vending(void);
 void do_init_vending_autotrade( void );
  
-void vending_reopen( struct s_map_session_data* sd );
-void vending_closevending(struct s_map_session_data* sd);
-int8 vending_openvending(struct s_map_session_data* sd, const char* message, const uint8* data, int count, struct s_autotrader *at);
-void vending_vendinglistreq(struct s_map_session_data* sd, int id);
-void vending_purchasereq(struct s_map_session_data* sd, int aid, int uid, const uint8* data, int count);
-bool vending_search(struct s_map_session_data* sd, unsigned short nameid);
-bool vending_searchall(struct s_map_session_data* sd, const struct s_search_store_search* s);
+void vending_reopen( s_map_session_data* sd );
+void vending_closevending(s_map_session_data* sd);
+int8 vending_openvending(s_map_session_data* sd, const char* message, const uint8* data, int count, struct s_autotrader *at);
+void vending_vendinglistreq(s_map_session_data* sd, int id);
+void vending_purchasereq(s_map_session_data* sd, int aid, int uid, const uint8* data, int count);
+bool vending_search(s_map_session_data* sd, unsigned short nameid);
+bool vending_searchall(s_map_session_data* sd, const struct s_search_store_search* s);
 
 #endif /* _VENDING_H_ */

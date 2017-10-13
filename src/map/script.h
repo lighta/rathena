@@ -724,7 +724,7 @@ struct s_script_code* parse_script(const char* src,const char* file,int line,int
 void run_script(struct s_script_code *rootscript,int pos,int rid,int oid);
 
 int set_reg(struct s_script_state* st, s_map_session_data* sd, int64 num, const char* name, const void* value, struct s_reg_db *ref);
-int set_var(struct s_map_session_data *sd, char *name, void *val);
+int set_var(s_map_session_data *sd, char *name, void *val);
 int conv_num(struct s_script_state *st,struct s_script_data *data);
 const char* conv_str(struct s_script_state *st,struct s_script_data *data);
 void pop_stack(struct s_script_state* st, int start, int end);
@@ -741,15 +741,15 @@ void script_free_state(struct s_script_state* st);
 
 struct s_DBMap* script_get_label_db(void);
 struct s_DBMap* script_get_userfunc_db(void);
-void script_run_autobonus(const char *autobonus, struct s_map_session_data *sd, unsigned int pos);
+void script_run_autobonus(const char *autobonus, s_map_session_data *sd, unsigned int pos);
 
 bool script_get_parameter(const char* name, int* value);
 bool script_get_constant(const char* name, int* value);
 void script_set_constant(const char* name, int value, bool isparameter, bool deprecated);
 void script_hardcoded_constants(void);
 
-void script_cleararray_pc(struct s_map_session_data* sd, const char* varname, void* value);
-void script_setarray_pc(struct s_map_session_data* sd, const char* varname, uint32 idx, void* value, int* refcache);
+void script_cleararray_pc(s_map_session_data* sd, const char* varname, void* value);
+void script_setarray_pc(s_map_session_data* sd, const char* varname, uint32 idx, void* value, int* refcache);
 
 int script_config_read(const char *cfgName);
 void do_init_script(void);
@@ -764,17 +764,17 @@ void setd_sub(struct s_script_state *st, s_map_session_data *sd, const char *var
 /**
  * Array Handling
  **/
-struct s_reg_db *script_array_src(struct s_script_state *st, struct s_map_session_data *sd, const char *name, struct s_reg_db *ref);
+struct s_reg_db *script_array_src(struct s_script_state *st, s_map_session_data *sd, const char *name, struct s_reg_db *ref);
 void script_array_update(struct s_reg_db *src, int64 num, bool empty);
 void script_array_delete(struct s_reg_db *src, struct s_script_array *sa);
 void script_array_remove_member(struct s_reg_db *src, struct s_script_array *sa, unsigned int idx);
 void script_array_add_member(struct s_script_array *sa, unsigned int idx);
-unsigned int script_array_size(struct s_script_state *st, struct s_map_session_data *sd, const char *name, struct s_reg_db *ref);
-unsigned int script_array_highest_key(struct s_script_state *st, struct s_map_session_data *sd, const char *name, struct s_reg_db *ref);
-void script_array_ensure_zero(struct s_script_state *st, struct s_map_session_data *sd, int64 uid, struct s_reg_db *ref);
+unsigned int script_array_size(struct s_script_state *st, s_map_session_data *sd, const char *name, struct s_reg_db *ref);
+unsigned int script_array_highest_key(struct s_script_state *st, s_map_session_data *sd, const char *name, struct s_reg_db *ref);
+void script_array_ensure_zero(struct s_script_state *st, s_map_session_data *sd, int64 uid, struct s_reg_db *ref);
 int script_free_array_db(u_DBKey key, s_DBData *data, va_list ap);
 /* */
-void script_reg_destroy_single(struct s_map_session_data *sd, int64 reg, struct s_script_reg_state *data);
+void script_reg_destroy_single(s_map_session_data *sd, int64 reg, struct s_script_reg_state *data);
 int script_reg_destroy(u_DBKey key, s_DBData *data, va_list ap);
 /* */
 void script_generic_ui_array_expand(unsigned int plus);

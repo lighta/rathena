@@ -12,7 +12,7 @@
 #include "../common_old/strlib.h"
 
 #include "mob.h" // struct s_mob_data
-#include "pc.h" // struct s_map_session_data
+#include "pc.h" // s_map_session_data
 #include "npc.h"
 
 /**
@@ -344,7 +344,7 @@ int npc_chat_sub(struct s_block_list* bl, va_list ap)
 	struct npc_parse* npcParse = (struct npc_parse *) nd->chatdb;
 	char* msg;
 	int len, i;
-	struct s_map_session_data* sd;
+	s_map_session_data* sd;
 	struct s_npc_label_list* lst;
 	struct pcrematch_set* pcreset;
 	struct pcrematch_entry* e;
@@ -355,7 +355,7 @@ int npc_chat_sub(struct s_block_list* bl, va_list ap)
 	
 	msg = va_arg(ap,char*);
 	len = va_arg(ap,int);
-	sd = va_arg(ap,struct s_map_session_data *);
+	sd = va_arg(ap,s_map_session_data *);
 	
 	// iterate across all active sets
 	for (pcreset = npcParse->active; pcreset != NULL; pcreset = pcreset->next)

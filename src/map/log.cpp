@@ -162,7 +162,7 @@ static bool should_log_item(unsigned short nameid, int amount, int refine)
 
 
 /// logs items, that summon monsters
-void log_branch(struct s_map_session_data* sd)
+void log_branch(s_map_session_data* sd)
 {
 	nullpo_retv(sd);
 
@@ -249,7 +249,7 @@ void log_pick(int id, int16 m, e_log_pick_type type, int amount, struct s_item* 
 }
 
 /// logs item transactions (players)
-void log_pick_pc(struct s_map_session_data* sd, e_log_pick_type type, int amount, struct s_item* itm)
+void log_pick_pc(s_map_session_data* sd, e_log_pick_type type, int amount, struct s_item* itm)
 {
 	nullpo_retv(sd);
 	log_pick(sd->status.char_id, sd->bl.m, type, amount, itm);
@@ -264,7 +264,7 @@ void log_pick_mob(struct s_mob_data* md, e_log_pick_type type, int amount, struc
 }
 
 /// logs zeny transactions
-void log_zeny(struct s_map_session_data* sd, e_log_pick_type type, struct s_map_session_data* src_sd, int amount)
+void log_zeny(s_map_session_data* sd, e_log_pick_type type, s_map_session_data* src_sd, int amount)
 {
 	nullpo_retv(sd);
 
@@ -305,7 +305,7 @@ void log_zeny(struct s_map_session_data* sd, e_log_pick_type type, struct s_map_
 
 
 /// logs MVP monster rewards
-void log_mvpdrop(struct s_map_session_data* sd, int monster_id, unsigned int* log_mvp)
+void log_mvpdrop(s_map_session_data* sd, int monster_id, unsigned int* log_mvp)
 {
 	nullpo_retv(sd);
 
@@ -346,7 +346,7 @@ void log_mvpdrop(struct s_map_session_data* sd, int monster_id, unsigned int* lo
 
 
 /// logs used atcommands
-void log_atcommand(struct s_map_session_data* sd, const char* message)
+void log_atcommand(s_map_session_data* sd, const char* message)
 {
 	nullpo_retv(sd);
 
@@ -394,7 +394,7 @@ void log_atcommand(struct s_map_session_data* sd, const char* message)
 
 
 /// logs messages passed to script command 'logmes'
-void log_npc(struct s_map_session_data* sd, const char* message)
+void log_npc(s_map_session_data* sd, const char* message)
 {
 	nullpo_retv(sd);
 
@@ -490,7 +490,7 @@ void log_chat(e_log_chat_type type, int type_id, int src_charid, int src_accid, 
 }
 
 /// logs cash transactions
-void log_cash( struct s_map_session_data* sd, e_log_pick_type type, e_log_cash_type cash_type, int amount ){
+void log_cash( s_map_session_data* sd, e_log_pick_type type, e_log_cash_type cash_type, int amount ){
 	nullpo_retv( sd );
 
 	if( !log_config.cash )
@@ -531,7 +531,7 @@ void log_cash( struct s_map_session_data* sd, e_log_pick_type type, e_log_cash_t
  * @param type Log type, @see e_log_feeding_type
  * @param nameid Item used as food
  **/
-void log_feeding(struct s_map_session_data *sd, e_log_feeding_type type, unsigned short nameid) {
+void log_feeding(s_map_session_data *sd, e_log_feeding_type type, unsigned short nameid) {
 	unsigned int target_id = 0, intimacy = 0;
 	unsigned short target_class = 0;
 

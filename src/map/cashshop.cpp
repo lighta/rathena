@@ -8,7 +8,7 @@
 #include "../common_old/malloc.h" // CREATE, RECREATE, aFree
 #include "../common_old/showmsg.h" // ShowWarning, ShowStatus
 
-#include "pc.h" // struct s_map_session_data
+#include "pc.h" // s_map_session_data
 #include "pet.h" // pet_create_egg
 #include "clif.h"
 #include "log.h"
@@ -404,7 +404,7 @@ struct sale_item_data* sale_find_item( uint16 nameid, bool onsale ){
 	return sale_items.item[i];
 }
 
-void sale_notify_login( struct map_session_data* sd ){
+void sale_notify_login( s_map_session_data* sd ){
 	int i;
 
 	for( i = 0; i < sale_items.count; i++ ){
@@ -462,7 +462,7 @@ static void cashshop_read_db( void ){
  * @param item_list Array of item ID
  * @return true: success, false: fail
  */
-bool cashshop_buylist( struct s_map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list ){
+bool cashshop_buylist( s_map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list ){
 	uint32 totalcash = 0;
 	uint32 totalweight = 0;
 	int i,new_;

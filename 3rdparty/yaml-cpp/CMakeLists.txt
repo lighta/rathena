@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 2.8)
 SET (this_target yaml-cpp)
 PROJECT(${this_target})
 
-find_path( YAML_INCLUDE_DIRS "yaml.h"
-	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/include/yaml-cpp"
+find_path( YAML_INCLUDE_DIRS "yaml-cpp/yaml.h"
+	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/include"
 	NO_DEFAULT_PATH )
 find_path( YAML_SOURCE_DIR "regex_yaml.cpp"
 	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/src"
@@ -14,34 +14,34 @@ mark_as_advanced( YAML_INCLUDE_DIRS )
 mark_as_advanced( YAML_SOURCE_DIR )
 
 set( YAML_HEADERS
-    "${YAML_INCLUDE_DIRS}/yaml.h"
-    "${YAML_INCLUDE_DIRS}/traits.h"
-    "${YAML_INCLUDE_DIRS}/stlemitter.h"
-    "${YAML_INCLUDE_DIRS}/parser.h"
-    "${YAML_INCLUDE_DIRS}/ostream_wrapper.h"
-    "${YAML_INCLUDE_DIRS}/null.h"
-    "${YAML_INCLUDE_DIRS}/noncopyable.h"
-    "${YAML_INCLUDE_DIRS}/mark.h"
-    "${YAML_INCLUDE_DIRS}/exceptions.h"
-    "${YAML_INCLUDE_DIRS}/eventhandler.h"
-    "${YAML_INCLUDE_DIRS}/emitterstyle.h"
-    "${YAML_INCLUDE_DIRS}/emittermanip.h"
-    "${YAML_INCLUDE_DIRS}/emitter.h"
-    "${YAML_INCLUDE_DIRS}/emitterdef.h"
-    "${YAML_INCLUDE_DIRS}/emitfromevents.h"
-    "${YAML_INCLUDE_DIRS}/dll.h"
-    "${YAML_INCLUDE_DIRS}/binary.h"
-    "${YAML_INCLUDE_DIRS}/anchor.h"
-    "${YAML_INCLUDE_DIRS}/node/type.h"
-    "${YAML_INCLUDE_DIRS}/node/ptr.h"
-    "${YAML_INCLUDE_DIRS}/node/parse.h"
-    "${YAML_INCLUDE_DIRS}/node/node.h"
-    "${YAML_INCLUDE_DIRS}/node/iterator.h"
-    "${YAML_INCLUDE_DIRS}/node/impl.h"
-    "${YAML_INCLUDE_DIRS}/node/emit.h"
-    "${YAML_INCLUDE_DIRS}/node/convert.h"
-    "${YAML_INCLUDE_DIRS}/contrib/graphbuilder.h"
-    "${YAML_INCLUDE_DIRS}/contrib/anchordict.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/yaml.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/traits.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/stlemitter.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/parser.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/ostream_wrapper.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/null.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/noncopyable.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/mark.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/exceptions.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/eventhandler.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/emitterstyle.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/emittermanip.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/emitter.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/emitterdef.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/emitfromevents.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/dll.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/binary.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/anchor.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/type.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/ptr.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/parse.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/node.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/iterator.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/impl.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/emit.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/node/convert.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/contrib/graphbuilder.h"
+    "${YAML_INCLUDE_DIRS}/yaml-cpp/contrib/anchordict.h"
     CACHE INTERNAL "yaml headers" )
 set( YAML_SOURCES
 	"${YAML_SOURCE_DIR}/binary.cpp"
@@ -78,4 +78,6 @@ set( YAML_SOURCES
 set( YAML_DEFINITIONS
 	"-std=c++11"
 	CACHE INTERNAL "yaml definitions" )
+include_directories(${YAML_INCLUDE_DIRS} ${YAML_SOURCE_DIR})
+message(STATUS "YAML_INCLUDE_DIRS : ${YAML_INCLUDE_DIRS}, YAML_SOURCE_DIR=${YAML_SOURCE_DIR}")
 ADD_LIBRARY(${this_target} STATIC ${YAML_SOURCES} )

@@ -22,18 +22,18 @@ struct s_chat_data {
 	uint32 zeny;						 // required zeny to join
 	uint32 minLvl;					 // minimum base level to join
 	uint32 maxLvl;					 // maximum base level allowed to join
-	struct s_map_session_data* usersd[MAX_CHAT_USERS];
+	s_map_session_data* usersd[MAX_CHAT_USERS];
 	struct s_block_list* owner;
 	char npc_event[EVENT_NAME_LENGTH];
 	s_DBMap* kick_list;				//DBMap of users who were kicked from this chat
 };
 
-int chat_createpcchat(struct s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub);
-int chat_joinchat(struct s_map_session_data* sd, int chatid, const char* pass);
-int chat_leavechat(struct s_map_session_data* sd, bool kicked);
-int chat_changechatowner(struct s_map_session_data* sd, const char* nextownername);
-int chat_changechatstatus(struct s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub);
-int chat_kickchat(struct s_map_session_data* sd, const char* kickusername);
+int chat_createpcchat(s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub);
+int chat_joinchat(s_map_session_data* sd, int chatid, const char* pass);
+int chat_leavechat(s_map_session_data* sd, bool kicked);
+int chat_changechatowner(s_map_session_data* sd, const char* nextownername);
+int chat_changechatstatus(s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub);
+int chat_kickchat(s_map_session_data* sd, const char* kickusername);
 
 int chat_createnpcchat(struct s_npc_data* nd, const char* title, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl);
 int chat_deletenpcchat(struct s_npc_data* nd);

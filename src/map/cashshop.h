@@ -6,12 +6,12 @@
 
 #include "../common_old/cbasetypes.h" // uint16, uint32
 
-struct s_map_session_data;
+s_map_session_data;
 
 void do_init_cashshop( void );
 void do_final_cashshop( void );
 void cashshop_reloaddb( void );
-bool cashshop_buylist( struct s_map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list );
+bool cashshop_buylist( s_map_session_data* sd, uint32 kafrapoints, int n, uint16* item_list );
 
 // Taken from AEGIS
 enum e_CASH_SHOP_TAB_CODE
@@ -90,7 +90,7 @@ extern struct s_sale_item_db sale_items;
 struct s_sale_item_data* sale_find_item(uint16 nameid, bool onsale);
 enum e_sale_add_result sale_add_item(uint16 nameid, int32 count, time_t from, time_t to);
 bool sale_remove_item(uint16 nameid);
-void sale_notify_login( struct map_session_data* sd );
+void sale_notify_login( s_map_session_data* sd );
 #endif
 
 #endif /* _CASHSHOP_H_ */

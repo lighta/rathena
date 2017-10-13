@@ -889,7 +889,7 @@ struct s_item_data* itemdb_exists(unsigned short nameid);
 #define itemdb_traderight(n) (itemdb_search(n)->flag.trade_restriction)
 #define itemdb_viewid(n) (itemdb_search(n)->view_id)
 #define itemdb_autoequip(n) (itemdb_search(n)->flag.autoequip)
-const char* itemdb_typename(enum item_types type);
+const char* itemdb_typename(enum e_item_types type);
 const char *itemdb_typename_ammo (enum e_item_ammo ammo);
 bool itemdb_is_spellbook2(unsigned short nameid);
 
@@ -931,7 +931,7 @@ struct s_item_combo *itemdb_combo_exists(unsigned short combo_id);
 
 struct s_item_group_db *itemdb_group_exists(unsigned short group_id);
 bool itemdb_group_item_exists(unsigned short group_id, unsigned short nameid);
-char itemdb_pc_get_itemgroup(uint16 group_id, struct map_session_data *sd);
+char itemdb_pc_get_itemgroup(uint16 group_id, s_map_session_data *sd);
 
 bool itemdb_parse_roulette_db(void);
 

@@ -111,31 +111,31 @@ struct s_pet_data {
 	struct s_pet_loot* loot;
 
 	int masterteleport_timer;
-	struct s_map_session_data *master;
+	s_map_session_data *master;
 };
 
 
 
-int pet_create_egg(struct s_map_session_data *sd, unsigned short item_id);
+int pet_create_egg(s_map_session_data *sd, unsigned short item_id);
 int pet_hungry_val(struct s_pet_data *pd);
 void pet_set_intimate(struct s_pet_data *pd, int value);
 int pet_target_check(struct s_pet_data *pd,struct s_block_list *bl,int type);
 int pet_unlocktarget(struct s_pet_data *pd);
-int pet_sc_check(struct s_map_session_data *sd, int type); //Skotlex
+int pet_sc_check(s_map_session_data *sd, int type); //Skotlex
 int search_petDB_index(int key,int type);
 int pet_hungry_timer_delete(struct s_pet_data *pd);
-int pet_data_init(struct s_map_session_data *sd, struct s_pet *pet);
-int pet_birth_process(struct s_map_session_data *sd, struct s_pet *pet);
+int pet_data_init(s_map_session_data *sd, struct s_pet *pet);
+int pet_birth_process(s_map_session_data *sd, struct s_pet *pet);
 int pet_recv_petdata(uint32 account_id,struct s_pet *p,int flag);
-int pet_select_egg(struct s_map_session_data *sd,short egg_index);
-int pet_catch_process1(struct s_map_session_data *sd,int target_class);
-int pet_catch_process2(struct s_map_session_data *sd,int target_id);
+int pet_select_egg(s_map_session_data *sd,short egg_index);
+int pet_catch_process1(s_map_session_data *sd,int target_class);
+int pet_catch_process2(s_map_session_data *sd,int target_id);
 bool pet_get_egg(uint32 account_id, short pet_class, int pet_id);
-int pet_menu(struct s_map_session_data *sd,int menunum);
-int pet_change_name(struct s_map_session_data *sd,char *name);
-int pet_change_name_ack(struct s_map_session_data *sd, char* name, int flag);
-int pet_equipitem(struct s_map_session_data *sd,int index);
-int pet_lootitem_drop(struct s_pet_data *pd,struct s_map_session_data *sd);
+int pet_menu(s_map_session_data *sd,int menunum);
+int pet_change_name(s_map_session_data *sd,char *name);
+int pet_change_name_ack(s_map_session_data *sd, char* name, int flag);
+int pet_equipitem(s_map_session_data *sd,int index);
+int pet_lootitem_drop(struct s_pet_data *pd,s_map_session_data *sd);
 int pet_attackskill(struct s_pet_data *pd, int target_id);
 int pet_skill_support_timer(int tid, unsigned int tick, int id, intptr_t data); // [Skotlex]
 int pet_skill_bonus_timer(int tid, unsigned int tick, int id, intptr_t data); // [Valaris]

@@ -33,13 +33,13 @@ s_DBMap* channel_get_db(void){ return channel_db; }
  * @param chantype: Channel type
  * @return NULL on failure or Channel on success
  */
-struct s_Channel* channel_create(struct Channel *tmp_chan) {
+struct s_Channel* channel_create(s_Channel *tmp_chan) {
 	struct s_Channel* channel;
 
 	if (!tmp_chan->name)
 		return NULL;
 
-	CREATE(channel, struct Channel, 1); //will exit on fail allocation
+	CREATE(channel, s_Channel, 1); //will exit on fail allocation
 	//channel->id = tmp_chan->id;
 	channel->users = idb_alloc(DB_OPT_BASE);
 	channel->banned = idb_alloc(DB_OPT_BASE|DB_OPT_RELEASE_DATA);
@@ -82,9 +82,9 @@ struct s_Channel* channel_create(struct Channel *tmp_chan) {
  * @param owner: Owner ID
  * @return NULL on failure or Channel on success
  */
-struct Channel* channel_create_simple(char *name, char *pass, enum Channel_Type chantype, unsigned int owner) {
-	struct Channel tmp_chan;
-	memset(&tmp_chan, 0, sizeof(struct Channel));
+s_Channel* channel_create_simple(char *name, char *pass, enum e_Channel_Type chantype, unsigned int owner) {
+	s_Channel tmp_chan;
+	memset(&tmp_chan, 0, sizeof(s_Channel));
 
 	switch (chantype) {
 		case CHAN_TYPE_ALLY:
@@ -137,15 +137,15 @@ struct Channel* channel_create_simple(char *name, char *pass, enum Channel_Type 
  *  -1: Invalid channel
  *  -2: Can't delete now
  */
-int channel_delete(struct Channel *channel, bool force) {
+int channel_delete(s_Channel *channel, bool force) {
 	if(!channel)
 		return -1;
 	if(!force && channel->type == CHAN_TYPE_PUBLIC && runflag == MAPSERVER_ST_RUNNING) //only delete those serv stop
 		return -2;
 	if( db_size(channel->users)) {
-		struct map_session_data *sd;
+		s_map_session_data *sd;
 		DBIterator *iter = db_iterator(channel->users);
-		for( sd = (struct map_session_data *)dbi_first(iter); dbi_exists(iter); sd = (struct map_session_data *)dbi_next(iter) ) { //for all users
+		for( sd = (s_map_session_data *)dbi_first(iter); dbi_exists(iter); sd = (s_map_session_data *)dbi_next(iter) ) { //for all users
 			channel_clean(channel,sd,1); //make all quit
 		}
 		dbi_destroy(iter);
@@ -189,7 +189,7 @@ int channel_delete(struct Channel *channel, bool force) {
  *  -3: Player banned
  *  -4: Reached max limit
  */
-int channel_join(struct s_Channel *channel, struct s_map_session_data *sd) {
+int channel_join(struct s_Channel *channel, s_map_session_data *sd) {
 	if(!channel || !sd)
 		return -1;
 	if(sd->state.autotrade)
@@ -213,7 +213,7 @@ int channel_join(struct s_Channel *channel, struct s_map_session_data *sd) {
 		return -4;
 	}
 
-	RECREATE(sd->channels, struct Channel *, ++sd->channel_count);
+	RECREATE(sd->channels, s_Channel *, ++sd->channel_count);
 	sd->channels[ sd->channel_count - 1 ] = channel;
 	idb_put(channel->users, sd->status.char_id, sd);
 	RECREATE(sd->channel_tick, unsigned int, sd->channel_count);
@@ -244,7 +244,7 @@ int channel_join(struct s_Channel *channel, struct s_map_session_data *sd) {
  *  -2: Player already in channel (channel_join)
  *  -3: Player banned (channel_join)
  */
-int channel_mjoin(struct s_map_session_data *sd) {
+int channel_mjoin(s_map_session_data *sd) {
 	char mout[60];
 	if(!sd) return -1;
 
@@ -270,7 +270,7 @@ int channel_mjoin(struct s_map_session_data *sd) {
  */
 int channel_ajoin(struct s_guild *g){
 	int i, j;
-	struct map_session_data *pl_sd;
+	s_map_session_data *pl_sd;
 
 	if(!g || !g->channel) return -1;
 	for (i = 0; i < MAX_GUILDALLIANCE; i++){
@@ -297,7 +297,7 @@ int channel_ajoin(struct s_guild *g){
  *  -1: Invalid player
  *  -2: Player has no guild attached
  */
-int channel_gjoin(struct s_map_session_data *sd, int flag){
+int channel_gjoin(s_map_session_data *sd, int flag){
 	struct s_Channel *channel;
 	struct s_guild *g;
 
@@ -336,7 +336,7 @@ int channel_gjoin(struct s_map_session_data *sd, int flag){
  *  0: Success
  * -1: Invalid player or channel
  */
-int channel_clean(struct s_Channel *channel, struct s_map_session_data *sd, int flag) {
+int channel_clean(struct s_Channel *channel, s_map_session_data *sd, int flag) {
 	unsigned char i;
 
 	if(!channel || !sd)
@@ -383,7 +383,7 @@ int channel_clean(struct s_Channel *channel, struct s_map_session_data *sd, int 
  *  0: Success
  * -1: Invalid player
  */
-int channel_pcquit(struct s_map_session_data *sd, int type){
+int channel_pcquit(s_map_session_data *sd, int type){
 	int i;
 
 	//On closing state we could have clean all chan by sd but pcquit is more used to free unit when
@@ -430,7 +430,7 @@ int channel_pcquit(struct s_map_session_data *sd, int type){
  * -1: Invalid player, channel, or message
  * -2: Delay message from last message
  */
-int channel_send(struct s_Channel *channel, struct s_map_session_data *sd, const char *msg) {
+int channel_send(struct s_Channel *channel, s_map_session_data *sd, const char *msg) {
 	int idx = 0;
 
 	if(!channel || !sd || !msg || (idx = channel_pc_haschan(sd, channel)) < 0)
@@ -492,7 +492,7 @@ int channel_chk(char *chname, char *chpass, int type){
  * @param flag: Lookup types (1 - Create channel if it does not exist (map or ally only), 2 - Join the channel if not joined yet (map or ally only))
  * @return NULL on channel not found or channel data on success
  */
-struct s_Channel* channel_name2channel(char *chname, struct s_map_session_data *sd, int flag){
+struct s_Channel* channel_name2channel(char *chname, s_map_session_data *sd, int flag){
 	if(channel_chk(chname, NULL, 1))
 		return NULL;
 	if(sd && strcmpi(chname + 1,channel_config.map_tmpl.name) == 0){
@@ -510,7 +510,7 @@ struct s_Channel* channel_name2channel(char *chname, struct s_map_session_data *
 		return sd->guild->channel;
 	}
 	else
-		return (struct Channel*) strdb_get(channel_db, chname + 1);
+		return (s_Channel*) strdb_get(channel_db, chname + 1);
 }
 
 /**
@@ -522,7 +522,7 @@ struct s_Channel* channel_name2channel(char *chname, struct s_map_session_data *
  *  0: Player not found or not banned
  *  1: Player is in channel
  */
-int channel_haspc(struct s_Channel *channel,struct s_map_session_data *sd){
+int channel_haspc(struct s_Channel *channel,s_map_session_data *sd){
 	if(!channel || !sd) return -1;
 	return (idb_exists(channel->users, sd->status.char_id))?1:0;
 }
@@ -534,7 +534,7 @@ int channel_haspc(struct s_Channel *channel,struct s_map_session_data *sd){
  *  0: Player not found or not banned
  *  1: Player is banned
  */
-int channel_haspcbanned(struct s_Channel *channel,struct s_map_session_data *sd){
+int channel_haspcbanned(struct s_Channel *channel,s_map_session_data *sd){
 	if(!channel || !sd) return -1;
 	return (idb_exists(channel->banned, sd->status.char_id))?1:0;
 }
@@ -549,7 +549,7 @@ int channel_haspcbanned(struct s_Channel *channel,struct s_map_session_data *sd)
  * -2: Player not found or not in channel
  * x > 0: has_channel at index x
  */
-int channel_pc_haschan(struct s_map_session_data *sd, struct s_Channel *channel){
+int channel_pc_haschan(s_map_session_data *sd, struct s_Channel *channel){
 	int k;
 	if(!channel || !sd) return -1; //channel or player doesn't exist
 	ARR_FIND(0, sd->channel_count, k, strcmpi(channel->name,sd->channels[k]->name) == 0);
@@ -566,7 +566,7 @@ int channel_pc_haschan(struct s_map_session_data *sd, struct s_Channel *channel)
  *   void: List of public channel and map and guild and number of users
  * @return 0 on success or -1 on failure
  */
-int channel_display_list(struct s_map_session_data *sd, char *options){
+int channel_display_list(s_map_session_data *sd, char *options){
 
 	if(!sd || !options)
 		return -1;
@@ -605,7 +605,7 @@ int channel_display_list(struct s_map_session_data *sd, char *options){
 	else { //display public chanels
 		s_DBIterator *iter;
 		bool has_perm = pc_has_permission(sd, PC_PERM_CHANNEL_ADMIN) ? true : false;
-		struct Channel *channel;
+		s_Channel *channel;
 		char output[CHAT_SIZE_MAX];
 
 		clif_displaymessage(sd->fd, msg_txt(sd,1410)); // ---- Public Channels ----
@@ -616,12 +616,12 @@ int channel_display_list(struct s_map_session_data *sd, char *options){
 		if( channel_config.ally_tmpl.name != NULL && sd->status.guild_id ) {
 			struct guild *g = sd->guild;
 			if (g && g->channel) {
-				sprintf(output, msg_txt(sd,1409), g->channel->name, db_size(((struct Channel *)g->channel)->users));// - #%s (%d users)
+				sprintf(output, msg_txt(sd,1409), g->channel->name, db_size(((s_Channel *)g->channel)->users));// - #%s (%d users)
 				clif_displaymessage(sd->fd, output);
 			}
 		}
 		iter = db_iterator(channel_db);
-		for(channel = (struct Channel *)dbi_first(iter); dbi_exists(iter); channel = (struct Channel *)dbi_next(iter)) {
+		for(channel = (s_Channel *)dbi_first(iter); dbi_exists(iter); channel = (s_Channel *)dbi_next(iter)) {
 			if (!has_perm && !channel_pccheckgroup(channel, sd->group_id))
 				continue;
 			if( has_perm || channel->type == CHAN_TYPE_PUBLIC ) {
@@ -642,7 +642,7 @@ int channel_display_list(struct s_map_session_data *sd, char *options){
  * @param chpass: Channel password
  * @return 0 on success or -1 on failure
  */
-int channel_pccreate(struct s_map_session_data *sd, char *chname, char *chpass){
+int channel_pccreate(s_map_session_data *sd, char *chname, char *chpass){
 	char output[CHAT_SIZE_MAX];
 	int8 res;
 
@@ -651,7 +651,7 @@ int channel_pccreate(struct s_map_session_data *sd, char *chname, char *chpass){
 
 	res = channel_chk(chname,chpass,7);
 	if(res==0){ //success
-		struct Channel *channel = channel_create_simple(chname,chpass,CHAN_TYPE_PRIVATE,sd->status.char_id);
+		s_Channel *channel = channel_create_simple(chname,chpass,CHAN_TYPE_PRIVATE,sd->status.char_id);
 		channel_join(channel,sd);
 		if( ( channel->opt & CHAN_OPT_ANNOUNCE_SELF ) ) {
 			sprintf(output, msg_txt(sd,1403),chname); // You're now in the '%s' channel.
@@ -676,7 +676,7 @@ int channel_pccreate(struct s_map_session_data *sd, char *chname, char *chpass){
  * @param chname: Channel name
  * @return 0 on success or -1 on failure
  */
-int channel_pcdelete(struct s_map_session_data *sd, char *chname){
+int channel_pcdelete(s_map_session_data *sd, char *chname){
 	struct s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
 
@@ -707,7 +707,7 @@ int channel_pcdelete(struct s_map_session_data *sd, char *chname){
  * @param chname: Channel name
  * @return 0 on success or -1 on failure
  */
-int channel_pcleave(struct s_map_session_data *sd, char *chname){
+int channel_pcleave(s_map_session_data *sd, char *chname){
 	struct s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
 
@@ -755,7 +755,7 @@ int channel_pcleave(struct s_map_session_data *sd, char *chname){
  * @param pass: Channel password
  * @return 0 on success or -1 on failure
  */
-int channel_pcjoin(struct s_map_session_data *sd, char *chname, char *pass){
+int channel_pcjoin(s_map_session_data *sd, char *chname, char *pass){
 	struct s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
 
@@ -820,7 +820,7 @@ int channel_pcjoin(struct s_map_session_data *sd, char *chname, char *pass){
  * @param color: New color
  * @return 0 on success or -1 on failure
  */
-int channel_pccolor(struct s_map_session_data *sd, char *chname, char *color){
+int channel_pccolor(s_map_session_data *sd, char *chname, char *color){
 	struct s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
 	int k;
@@ -873,7 +873,7 @@ int channel_pccolor(struct s_map_session_data *sd, char *chname, char *color){
  * @param chname: Channel name
  * @return 0 on success, -1 on incorrect channel name, or -2 channel doesn't exist or player didn't join
  */
-int channel_pcbind(struct s_map_session_data *sd, char *chname){
+int channel_pcbind(s_map_session_data *sd, char *chname){
 	struct s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
 
@@ -902,7 +902,7 @@ int channel_pcbind(struct s_map_session_data *sd, char *chname){
  * @param sd: Player data
  * @return 0 on success or -1 on failure
  */
-int channel_pcunbind(struct s_map_session_data *sd){
+int channel_pcunbind(s_map_session_data *sd){
 	char output[CHAT_SIZE_MAX];
 
 	if(!sd)
@@ -926,10 +926,10 @@ int channel_pcunbind(struct s_map_session_data *sd){
  * @param flag: Ban options (0 - Ban, 1 - Unban, 2 - Unban all, 3 - Ban list)
  * @return 0 on success or -1 on failure
  */
-int channel_pcban(struct s_map_session_data *sd, char *chname, char *pname, int flag){
+int channel_pcban(s_map_session_data *sd, char *chname, char *pname, int flag){
 	struct s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
-	struct map_session_data *tsd = map_nick2sd(pname,false);
+	s_map_session_data *tsd = map_nick2sd(pname,false);
 
 	if( channel_chk(chname,NULL,1) ) {
 		clif_displaymessage(sd->fd, msg_txt(sd,1405));// Channel name must start with '#'.
@@ -1035,10 +1035,10 @@ int channel_pcban(struct s_map_session_data *sd, char *chname, char *pname, int 
  * @param pname: Player name to kick
  * @return 0 on success or -1 on failure
  */
-int channel_pckick(struct map_session_data *sd, char *chname, char *pname) {
-	struct Channel *channel;
+int channel_pckick(s_map_session_data *sd, char *chname, char *pname) {
+	s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
-	struct map_session_data *tsd = map_nick2sd(pname,false);
+	s_map_session_data *tsd = map_nick2sd(pname,false);
 
 	if( channel_chk(chname,NULL,1) ) {
 		clif_displaymessage(sd->fd, msg_txt(sd,1405));// Channel name must start with '#'.
@@ -1102,8 +1102,8 @@ int channel_pckick(struct map_session_data *sd, char *chname, char *pname) {
  * @param val: Option value
  * @return 0 on success or -1 on failure
  */
-int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *option, const char *val){
-	struct Channel *channel;
+int channel_pcsetopt(s_map_session_data *sd, char *chname, const char *option, const char *val){
+	s_Channel *channel;
 	char output[CHAT_SIZE_MAX];
 	int k, s = 0, opt;
 	const char* opt_str[] = {
@@ -1233,7 +1233,7 @@ int channel_pcsetopt(struct map_session_data *sd, char *chname, const char *opti
  * @param group_id: Group ID to check
  * @return True on success or false on failure
  */
-bool channel_pccheckgroup(struct Channel *channel, int group_id) {
+bool channel_pccheckgroup(s_Channel *channel, int group_id) {
 	unsigned short i;
 
 	nullpo_ret(channel);
@@ -1253,12 +1253,12 @@ bool channel_pccheckgroup(struct Channel *channel, int group_id) {
  * Attempt to autojoin a player to a channel
  */
 int channel_pcautojoin_sub(DBKey key, DBData *data, va_list ap) {
-	struct Channel *channel = (struct Channel *)db_data2ptr(data);
-	struct map_session_data *sd = NULL;
+	s_Channel *channel = (s_Channel *)db_data2ptr(data);
+	s_map_session_data *sd = NULL;
 	char channame[CHAN_NAME_LENGTH+1];
 
 	nullpo_ret(channel);
-	nullpo_ret((sd = va_arg(ap, struct map_session_data *)));
+	nullpo_ret((sd = va_arg(ap, s_map_session_data *)));
 
 	if (channel->pass && channel->pass[0] != '\0')
 		return 0;
@@ -1276,7 +1276,7 @@ int channel_pcautojoin_sub(DBKey key, DBData *data, va_list ap) {
  * Attempt to autojoin a player to a channel
  * @param sd: Player data
  */
-void channel_autojoin(struct map_session_data *sd) {
+void channel_autojoin(s_map_session_data *sd) {
 	nullpo_retv(sd);
 	if (sd->state.autotrade || !sd->fd)
 		return;
@@ -1304,7 +1304,7 @@ unsigned long channel_getColor(const char *color_str) {
  * @param i: Index
  * @return True on success or false on failure
  */
-bool channel_read_sub(config_setting_t *chan, struct Channel *tmp_chan, uint8 i) {
+bool channel_read_sub(config_setting_t *chan, s_Channel *tmp_chan, uint8 i) {
 	config_setting_t  *group_list = NULL;
 	int delay = 1000, autojoin = 0, leave = 1, chat = 1, color_override = 0,
 		self_notif = 1, join_notif = 0, leave_notif = 0;
@@ -1341,7 +1341,7 @@ bool channel_read_sub(config_setting_t *chan, struct Channel *tmp_chan, uint8 i)
 		tmp_chan->pass[0] = '\0';
 	safestrncpy(tmp_chan->alias,alias?alias:name,sizeof(tmp_chan->alias));
 	tmp_chan->msg_delay = delay;
-	tmp_chan->type = (enum Channel_Type)type;
+	tmp_chan->type = (enum e_Channel_Type)type;
 	tmp_chan->color = channel_getColor(color_str);
 
 	tmp_chan->opt = (autojoin ? CHAN_OPT_AUTOJOIN : 0) |
@@ -1436,12 +1436,12 @@ void channel_read_config(void) {
 
 		channels = config_setting_get_member(chan_setting, "ally");
 		if (channels != NULL) {
-			memset(&channel_config.ally_tmpl, 0, sizeof(struct Channel));
+			memset(&channel_config.ally_tmpl, 0, sizeof(s_Channel));
 			channel_read_sub(channels, &channel_config.ally_tmpl, 0);
 		}
 		channels = config_setting_get_member(chan_setting, "map");
 		if (channels != NULL) {
-			memset(&channel_config.map_tmpl, 0, sizeof(struct Channel));
+			memset(&channel_config.map_tmpl, 0, sizeof(s_Channel));
 			channel_read_sub(channels, &channel_config.map_tmpl, 0);
 		}
 
@@ -1450,9 +1450,9 @@ void channel_read_config(void) {
 			int i;
 			for (i = 0; i < count; i++) {
 				config_setting_t *chan = config_setting_get_elem(channels, i);
-				struct Channel *channel = NULL, tmp_chan;
+				s_Channel *channel = NULL, tmp_chan;
 
-				memset(&tmp_chan, 0, sizeof(struct Channel));
+				memset(&tmp_chan, 0, sizeof(s_Channel));
 				if (!channel_read_sub(chan, &tmp_chan, i))
 					continue;
 
@@ -1474,9 +1474,9 @@ void channel_read_config(void) {
  */
 void do_init_channel(void) {
 	channel_db = stridb_alloc(DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA, CHAN_NAME_LENGTH);
-	memset(&channel_config.private_channel, 0, sizeof(struct Channel));
-	memset(&channel_config.ally_tmpl, 0, sizeof(struct Channel));
-	memset(&channel_config.map_tmpl, 0, sizeof(struct Channel));
+	memset(&channel_config.private_channel, 0, sizeof(s_Channel));
+	memset(&channel_config.ally_tmpl, 0, sizeof(s_Channel));
+	memset(&channel_config.map_tmpl, 0, sizeof(s_Channel));
 	channel_read_config();
 }
 

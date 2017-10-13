@@ -200,7 +200,7 @@ unsigned short itemdb_searchrandomid(uint16 group_id, uint8 sub_group) {
 * @param group_id: The group ID of item that obtained by player
 * @param *group: struct s_item_group from itemgroup_db[group_id].random[idx] or itemgroup_db[group_id].must[sub_group][idx]
 */
-static void itemdb_pc_get_itemgroup_sub(struct s_map_session_data *sd, struct s_item_group_entry *data) {
+static void itemdb_pc_get_itemgroup_sub(s_map_session_data *sd, struct s_item_group_entry *data) {
 	uint16 i, get_amt = 0;
 	struct s_item tmp;
 
@@ -244,7 +244,7 @@ static void itemdb_pc_get_itemgroup_sub(struct s_map_session_data *sd, struct s_
 * @param nameid: The item that trigger this item group
 * @return val: 0:success, 1:no sd, 2:invalid item group
 */
-char itemdb_pc_get_itemgroup(uint16 group_id, struct s_map_session_data *sd) {
+char itemdb_pc_get_itemgroup(uint16 group_id, s_map_session_data *sd) {
 	uint16 i = 0;
 	struct s_item_group_db *group;
 
@@ -1947,7 +1947,7 @@ void itemdb_reload_itemmob_data(void) {
 */
 void itemdb_reload(void) {
 	struct s_mapiterator* iter;
-	struct map_session_data* sd;
+	s_map_session_data* sd;
 
 	itemdb_group->clear(itemdb_group, itemdb_group_free);
 	itemdb_randomopt->clear(itemdb_randomopt, itemdb_randomopt_free);
@@ -1968,7 +1968,7 @@ void itemdb_reload(void) {
 
 	// readjust itemdb pointer cache for each player
 	iter = mapit_geteachpc();
-	for( sd = (struct s_map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (struct s_map_session_data*)mapit_next(iter) ) {
+	for( sd = (s_map_session_data*)mapit_first(iter); mapit_exists(iter); sd = (s_map_session_data*)mapit_next(iter) ) {
 		memset(sd->item_delay, 0, sizeof(sd->item_delay));  // reset item delays
 		pc_setinventorydata(sd);
 		pc_check_available_item(sd, ITMCHK_ALL); // Check for invalid(ated) items.

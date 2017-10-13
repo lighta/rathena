@@ -31,7 +31,7 @@ struct s_battleground_data* bg_team_search(int bg_id)
 	return (struct s_battleground_data *)idb_get(bg_team_db, bg_id);
 }
 
-struct s_map_session_data* bg_getavailablesd(struct s_battleground_data *bg)
+s_map_session_data* bg_getavailablesd(struct s_battleground_data *bg)
 {
 	int i;
 
@@ -51,7 +51,7 @@ int bg_team_delete(int bg_id)
 		return 0;
 
 	for( i = 0; i < MAX_BG_MEMBERS; i++ ) {
-		struct s_map_session_data *sd;
+		s_map_session_data *sd;
 
 		if( (sd = bg->members[i].sd) == NULL )
 			continue;
@@ -78,14 +78,14 @@ int bg_team_warp(int bg_id, unsigned short mapindex, short x, short y)
 	return 1;
 }
 
-int bg_send_dot_remove(struct s_map_session_data *sd)
+int bg_send_dot_remove(s_map_session_data *sd)
 {
 	if( sd && sd->bg_id )
 		clif_bg_xy_remove(sd);
 	return 0;
 }
 
-int bg_team_join(int bg_id, struct s_map_session_data *sd)
+int bg_team_join(int bg_id, s_map_session_data *sd)
 { // Player joins team
 	int i;
 	struct s_battleground_data *bg = bg_team_search(bg_id);
@@ -106,7 +106,7 @@ int bg_team_join(int bg_id, struct s_map_session_data *sd)
 	guild_send_dot_remove(sd);
 
 	for( i = 0; i < MAX_BG_MEMBERS; i++ ) {
-		struct s_map_session_data *pl_sd;
+		s_map_session_data *pl_sd;
 
 		if( (pl_sd = bg->members[i].sd) != NULL && pl_sd != sd )
 			clif_hpmeter_single(sd->fd, pl_sd->bl.id, pl_sd->battle_status.hp, pl_sd->battle_status.max_hp);
@@ -117,7 +117,7 @@ int bg_team_join(int bg_id, struct s_map_session_data *sd)
 	return 1;
 }
 
-int bg_team_leave(struct s_map_session_data *sd, int flag)
+int bg_team_leave(s_map_session_data *sd, int flag)
 { // Single Player leaves team
 	int i, bg_id;
 	struct s_battleground_data *bg;
@@ -152,7 +152,7 @@ int bg_team_leave(struct s_map_session_data *sd, int flag)
 	return bg->count;
 }
 
-int bg_member_respawn(struct s_map_session_data *sd)
+int bg_member_respawn(s_map_session_data *sd)
 { // Respawn after killed
 	struct s_battleground_data *bg;
 
@@ -199,7 +199,7 @@ int bg_team_get_id(struct s_block_list *bl)
 				return ((TBL_PET*)bl)->master->bg_id;
 			break;
 		case BL_MOB: {
-			struct s_map_session_data *msd;
+			s_map_session_data *msd;
 			struct s_mob_data *md = (TBL_MOB*)bl;
 
 			if( md->special_state.ai && (msd = map_id2sd(md->master_id)) != NULL )
@@ -222,7 +222,7 @@ int bg_team_get_id(struct s_block_list *bl)
 	return 0;
 }
 
-int bg_send_message(struct s_map_session_data *sd, const char *mes, int len)
+int bg_send_message(s_map_session_data *sd, const char *mes, int len)
 {
 	struct s_battleground_data *bg;
 
@@ -242,7 +242,7 @@ int bg_send_message(struct s_map_session_data *sd, const char *mes, int len)
 int bg_send_xy_timer_sub(u_DBKey key, s_DBData *data, va_list ap)
 {
 	struct s_battleground_data *bg = (struct s_battleground_data *)db_data2ptr(data);
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	int i;
 
 	nullpo_ret(bg);

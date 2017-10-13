@@ -44,7 +44,7 @@ struct s_mercenary_data {
 	char blockskill[MAX_SKILL];
 
 	int masterteleport_timer;
-	struct s_map_session_data *master;
+	s_map_session_data *master;
 	int contract_timer;
 
 	unsigned devotion_flag : 1;
@@ -53,7 +53,7 @@ struct s_mercenary_data {
 bool mercenary_class(int class_);
 struct s_view_data * mercenary_get_viewdata(int class_);
 
-bool mercenary_create(struct s_map_session_data *sd, int class_, unsigned int lifetime);
+bool mercenary_create(s_map_session_data *sd, int class_, unsigned int lifetime);
 bool mercenary_recv_data(struct s_mercenary *merc, bool flag);
 void mercenary_save(struct s_mercenary_data *md);
 

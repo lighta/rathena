@@ -29,10 +29,10 @@ static char*       av_error_msg;
 static const char* av_error_pos;
 static int         av_error_report;
 
-static DBMap *achievement_db = NULL; // int achievement_id -> struct achievement_db *
-static DBMap *achievementmobs_db = NULL; // Avoids checking achievements on every mob killed
-static void achievement_db_free_sub(struct achievement_db *achievement, bool free);
-struct achievement_db achievement_dummy;
+static s_DBMap* achievement_db = NULL; // int achievement_id -> struct achievement_db *
+static s_DBMap* achievementmobs_db = NULL; // Avoids checking achievements on every mob killed
+static void achievement_db_free_sub(struct s_achievement_db *achievement, bool free);
+struct s_achievement_db achievement_dummy;
 
 /**
  * Searches an achievement by ID
@@ -66,7 +66,7 @@ bool achievement_mobexists(int mob_id)
  * @param achievement_id: Achievement to add
  * @return NULL on failure, achievement data on success
  */
-struct achievement *achievement_add(struct map_session_data *sd, int achievement_id)
+struct achievement *achievement_add(s_map_session_data *sd, int achievement_id)
 {
 	struct achievement_db *adb = &achievement_dummy;
 	int i, index;
@@ -111,7 +111,7 @@ struct achievement *achievement_add(struct map_session_data *sd, int achievement
  * @param achievement_id: Achievement to remove
  * @return True on success, false on failure
  */
-bool achievement_remove(struct map_session_data *sd, int achievement_id)
+bool achievement_remove(s_map_session_data *sd, int achievement_id)
 {
 	struct achievement dummy;
 	int i;
@@ -158,7 +158,7 @@ bool achievement_remove(struct map_session_data *sd, int achievement_id)
  * @param achievement_id: Achievement to check if it has a dependent
  * @return False on failure or not complete, true on complete or no dependents
  */
-bool achievement_check_dependent(struct map_session_data *sd, int achievement_id)
+bool achievement_check_dependent(s_map_session_data *sd, int achievement_id)
 {
 	struct achievement_db *adb = &achievement_dummy;
 
@@ -197,11 +197,11 @@ bool achievement_check_dependent(struct map_session_data *sd, int achievement_id
 static int achievement_check_groups(DBKey key, DBData *data, va_list ap)
 {
 	struct achievement_db *ad;
-	struct map_session_data *sd;
+	s_map_session_data *sd;
 	int i;
 
 	ad = (struct achievement_db *)db_data2ptr(data);
-	sd = va_arg(ap, struct map_session_data *);
+	sd = va_arg(ap, s_map_session_data *);
 
 	if (ad == &achievement_dummy || sd == NULL)
 		return 0;
@@ -230,7 +230,7 @@ static int achievement_check_groups(DBKey key, DBData *data, va_list ap)
  * @param complete: Complete state of an achievement
  * @return True if successful, false if not
  */
-bool achievement_update_achievement(struct map_session_data *sd, int achievement_id, bool complete)
+bool achievement_update_achievement(s_map_session_data *sd, int achievement_id, bool complete)
 {
 	struct achievement_db *adb = &achievement_dummy;
 	int i;
@@ -294,7 +294,7 @@ bool achievement_update_achievement(struct map_session_data *sd, int achievement
  * @param sd: Player getting the reward
  * @param achievement_id: Achievement to get reward data
  */
-void achievement_get_reward(struct map_session_data *sd, int achievement_id, time_t rewarded)
+void achievement_get_reward(s_map_session_data *sd, int achievement_id, time_t rewarded)
 {
 	struct achievement_db *adb = achievement_search(achievement_id);
 	int i;
@@ -337,7 +337,7 @@ void achievement_get_reward(struct map_session_data *sd, int achievement_id, tim
  * @param sd: Player to get reward
  * @param achievement_id: Achievement to get reward data
  */
-void achievement_check_reward(struct map_session_data *sd, int achievement_id)
+void achievement_check_reward(s_map_session_data *sd, int achievement_id)
 {
 	int i;
 	struct achievement_db *adb = achievement_search(achievement_id);
@@ -372,7 +372,7 @@ void achievement_check_reward(struct map_session_data *sd, int achievement_id)
  */
 void achievement_get_titles(uint32 char_id)
 {
-	struct map_session_data *sd = map_charid2sd(char_id);
+	s_map_session_data *sd = map_charid2sd(char_id);
 
 	if (sd) {
 		sd->titles = NULL;
@@ -398,7 +398,7 @@ void achievement_get_titles(uint32 char_id)
  * Frees the player's data for achievements and titles
  * @param sd: Player's session
  */
-void achievement_free(struct map_session_data *sd)
+void achievement_free(s_map_session_data *sd)
 {
 	nullpo_retv(sd);
 
@@ -422,7 +422,7 @@ void achievement_free(struct map_session_data *sd)
  * @param type: Type to return
  * @return The type's data, -1 if player doesn't have achievement, -2 on failure/incorrect type
  */
-int achievement_check_progress(struct map_session_data *sd, int achievement_id, int type)
+int achievement_check_progress(s_map_session_data *sd, int achievement_id, int type)
 {
 	int i;
 
@@ -454,7 +454,7 @@ int achievement_check_progress(struct map_session_data *sd, int achievement_id, 
  * @param sd: Player to check achievement level
  * @param flag: If the call should attempt to give the AG_GOAL_ACHIEVE achievement
  */
-int *achievement_level(struct map_session_data *sd, bool flag)
+int *achievement_level(s_map_session_data *sd, bool flag)
 {
 	static int info[2];
 	int i, old_level;
@@ -512,14 +512,14 @@ int *achievement_level(struct map_session_data *sd, bool flag)
 static int achievement_update_objectives(DBKey key, DBData *data, va_list ap)
 {
 	struct achievement_db *ad;
-	struct map_session_data *sd;
+	s_map_session_data *sd;
 	enum e_achievement_group group;
 	struct achievement *entry = NULL;
 	bool isNew = false, changed = false, complete = false;
 	int i, k = 0, objective_count[MAX_ACHIEVEMENT_OBJECTIVES], update_count[MAX_ACHIEVEMENT_OBJECTIVES];
 
 	ad = (struct achievement_db *)db_data2ptr(data);
-	sd = va_arg(ap, struct map_session_data *);
+	sd = va_arg(ap, s_map_session_data *);
 	group = (enum e_achievement_group)va_arg(ap, int);
 	memcpy(update_count, (int *)va_arg(ap, int *), sizeof(update_count));
 
@@ -647,7 +647,7 @@ static int achievement_update_objectives(DBKey key, DBData *data, va_list ap)
  * @param sp_value: SP parameter value
  * @param arg_count: va_arg count
  */
-void achievement_update_objective(struct map_session_data *sd, enum e_achievement_group group, uint8 arg_count, ...)
+void achievement_update_objective(s_map_session_data *sd, enum e_achievement_group group, uint8 arg_count, ...)
 {
 	if (sd) {
 		va_list ap;
@@ -694,7 +694,7 @@ static void disp_error_message2(const char *mes,const char *pos,int report)
  * @param count: Script arguments
  * @return The result of the condition.
  */
-long long achievement_check_condition(struct av_condition *condition, struct map_session_data *sd, int *count)
+long long achievement_check_condition(struct av_condition *condition, s_map_session_data *sd, int *count)
 {
 	long long left = 0;
 	long long right = 0;

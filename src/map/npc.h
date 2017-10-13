@@ -145,18 +145,18 @@ enum e_npce_event : uint8 {
 
 struct s_view_data* npc_get_viewdata(int class_);
 int npc_chat_sub(struct s_block_list* bl, va_list ap);
-int npc_event_dequeue(struct s_map_session_data* sd);
-int npc_event(struct s_map_session_data* sd, const char* eventname, int ontouch);
-int npc_touch_areanpc(struct s_map_session_data* sd, int16 m, int16 x, int16 y);
+int npc_event_dequeue(s_map_session_data* sd);
+int npc_event(s_map_session_data* sd, const char* eventname, int ontouch);
+int npc_touch_areanpc(s_map_session_data* sd, int16 m, int16 x, int16 y);
 int npc_touch_areanpc2(struct s_mob_data *md); // [Skotlex]
 int npc_check_areanpc(int flag, int16 m, int16 x, int16 y, int16 range);
-int npc_touchnext_areanpc(struct s_map_session_data* sd,bool leavemap);
-int npc_click(struct s_map_session_data* sd, struct s_npc_data* nd);
-int npc_scriptcont(struct s_map_session_data* sd, int id, bool closing);
-struct s_npc_data* npc_checknear(struct s_map_session_data* sd, struct s_block_list* bl);
-int npc_buysellsel(struct s_map_session_data* sd, int id, int type);
-uint8 npc_buylist(struct s_map_session_data* sd, uint16 n, struct s_npc_buy_list *item_list);
-uint8 npc_selllist(struct s_map_session_data* sd, int n, unsigned short *item_list);
+int npc_touchnext_areanpc(s_map_session_data* sd,bool leavemap);
+int npc_click(s_map_session_data* sd, struct s_npc_data* nd);
+int npc_scriptcont(s_map_session_data* sd, int id, bool closing);
+struct s_npc_data* npc_checknear(s_map_session_data* sd, struct s_block_list* bl);
+int npc_buysellsel(s_map_session_data* sd, int id, int type);
+uint8 npc_buylist(s_map_session_data* sd, uint16 n, struct s_npc_buy_list *item_list);
+uint8 npc_selllist(s_map_session_data* sd, int n, unsigned short *item_list);
 void npc_parse_mob2(struct s_spawn_data* mob);
 bool npc_viewisid(const char * viewid);
 struct s_npc_data* npc_add_warp(char* name, short from_mapid, short from_x, short from_y, short xs, short ys, unsigned short to_mapindex, short to_x, short to_y);
@@ -191,7 +191,7 @@ int npc_event_doall_id(const char* name, int rid);
 
 int npc_timerevent_start(struct s_npc_data* nd, int rid);
 int npc_timerevent_stop(struct s_npc_data* nd);
-void npc_timerevent_quit(struct s_map_session_data* sd);
+void npc_timerevent_quit(s_map_session_data* sd);
 int npc_gettimerevent_tick(struct s_npc_data* nd);
 int npc_settimerevent_tick(struct s_npc_data* nd, int newtimer);
 int npc_remove_map(struct s_npc_data* nd);
@@ -199,18 +199,18 @@ void npc_unload_duplicates (struct s_npc_data* nd);
 int npc_unload(struct s_npc_data* nd, bool single);
 int npc_reload(void);
 void npc_read_event_script(void);
-int npc_script_event(struct s_map_session_data* sd, enum e_npce_event type);
+int npc_script_event(s_map_session_data* sd, enum e_npce_event type);
 
 int npc_duplicate4instance(struct s_npc_data *snd, int16 m);
 int npc_instanceinit(struct s_npc_data* nd);
 int npc_instancedestroy(struct s_npc_data* nd);
-int npc_cashshop_buy(struct s_map_session_data *sd, unsigned short nameid, int amount, int points);
+int npc_cashshop_buy(s_map_session_data *sd, unsigned short nameid, int amount, int points);
 
-void npc_shop_currency_type(struct s_map_session_data *sd, struct s_npc_data *nd, int cost[2], bool display);
+void npc_shop_currency_type(s_map_session_data *sd, struct s_npc_data *nd, int cost[2], bool display);
 
 extern struct s_npc_data* fake_nd;
 
-int npc_cashshop_buylist(struct s_map_session_data *sd, int points, int count, unsigned short* item_list);
+int npc_cashshop_buylist(s_map_session_data *sd, int points, int count, unsigned short* item_list);
 bool npc_shop_discount(enum e_npc_subtype type, bool discount);
 
 #if PACKETVER >= 20131223
@@ -223,7 +223,7 @@ void npc_market_delfromsql_(const char *exname, unsigned short nameid, bool clea
 #endif
 
 // @commands (script-based)
-int npc_do_atcmd_event(struct s_map_session_data* sd, const char* command, const char* message, const char* eventname);
+int npc_do_atcmd_event(s_map_session_data* sd, const char* command, const char* message, const char* eventname);
 
 bool npc_unloadfile( const char* path );
 

@@ -34,7 +34,7 @@ void mail_clear(s_map_session_data *sd)
 	return;
 }
 
-int mail_removeitem(struct s_map_session_data *sd, short flag, int idx, int amount)
+int mail_removeitem(s_map_session_data *sd, short flag, int idx, int amount)
 {
 	int i;
 
@@ -92,7 +92,7 @@ int mail_removeitem(struct s_map_session_data *sd, short flag, int idx, int amou
 	return 1;
 }
 
-bool mail_removezeny( struct map_session_data *sd, bool flag ){
+bool mail_removezeny( s_map_session_data *sd, bool flag ){
 	nullpo_retr( false, sd );
 
 	if( sd->mail.zeny > 0 ){
@@ -117,9 +117,9 @@ bool mail_removezeny( struct map_session_data *sd, bool flag ){
 * @param sd : player attaching the content
 * @param idx 0 - Zeny; >= 2 - Inventory item
 * @param amount : amout of zeny or number of item
-* @return see enum mail_attach_result in mail.h
+* @return see enum e_mail_attach_result in mail.h
 */
-enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uint32 amount) {
+enum e_mail_attach_result mail_setitem(s_map_session_data *sd, short idx, uint32 amount) {
 	if( pc_istrading(sd) )
 		return MAIL_ATTACH_ERROR;
 
@@ -221,7 +221,7 @@ enum mail_attach_result mail_setitem(struct map_session_data *sd, short idx, uin
 	}
 }
 
-bool mail_setattachment(struct s_map_session_data *sd, struct s_mail_message *msg)
+bool mail_setattachment(s_map_session_data *sd, struct s_mail_message *msg)
 {
 	int i, amount;
 
@@ -270,7 +270,7 @@ bool mail_setattachment(struct s_map_session_data *sd, struct s_mail_message *ms
 	return true;
 }
 
-void mail_getattachment(struct map_session_data* sd, struct mail_message* msg, int zeny, struct item* item){
+void mail_getattachment(s_map_session_data* sd, struct mail_message* msg, int zeny, struct item* item){
 	int i;
 	bool item_received = false;
 
@@ -292,7 +292,7 @@ void mail_getattachment(struct map_session_data* sd, struct mail_message* msg, i
 	}
 }
 
-int mail_openmail(struct s_map_session_data *sd)
+int mail_openmail(s_map_session_data *sd)
 {
 	nullpo_ret(sd);
 
@@ -304,7 +304,7 @@ int mail_openmail(struct s_map_session_data *sd)
 	return 1;
 }
 
-void mail_deliveryfail(struct s_map_session_data *sd, struct s_mail_message *msg){
+void mail_deliveryfail(s_map_session_data *sd, struct s_mail_message *msg){
 	int i, zeny = 0;
 
 	nullpo_retv(sd);
@@ -326,7 +326,7 @@ void mail_deliveryfail(struct s_map_session_data *sd, struct s_mail_message *msg
 }
 
 // This function only check if the mail operations are valid
-bool mail_invalid_operation(struct s_map_session_data *sd)
+bool mail_invalid_operation(s_map_session_data *sd)
 {
 #if PACKETVER < 20150513
 	if( !map[sd->bl.m].flag.town && !pc_can_use_command(sd, "mail", COMMAND_ATCOMMAND) )
@@ -347,7 +347,7 @@ bool mail_invalid_operation(struct s_map_session_data *sd)
 * @param body_msg Mail message
 * @param body_len Message's length
 */
-void mail_send(struct s_map_session_data *sd, const char *dest_name, const char *title, const char *body_msg, int body_len) {
+void mail_send(s_map_session_data *sd, const char *dest_name, const char *title, const char *body_msg, int body_len) {
 	struct s_mail_message msg;
 
 	nullpo_retv(sd);
@@ -411,7 +411,7 @@ void mail_send(struct s_map_session_data *sd, const char *dest_name, const char 
 	sd->cansendmail_tick = gettick() + battle_config.mail_delay; // Flood Protection
 }
 
-void mail_refresh_remaining_amount( struct map_session_data* sd ){
+void mail_refresh_remaining_amount( s_map_session_data* sd ){
 	int doy = date_get_dayofyear();
 
 	nullpo_retv(sd);

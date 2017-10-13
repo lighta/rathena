@@ -70,7 +70,7 @@ struct s_elemental_data {
 	struct s_elemental elemental;
 
 	int masterteleport_timer;
-	struct s_map_session_data *master;
+	s_map_session_data *master;
 	int summon_timer;
 	int skill_timer;
 
@@ -82,7 +82,7 @@ struct s_elemental_data {
 bool elemental_class(int class_);
 struct s_view_data * elemental_get_viewdata(int class_);
 
-int elemental_create(struct s_map_session_data *sd, int class_, unsigned int lifetime);
+int elemental_create(s_map_session_data *sd, int class_, unsigned int lifetime);
 int elemental_data_received(struct s_elemental *ele, bool flag);
 int elemental_save(struct s_elemental_data *ed);
 
@@ -99,7 +99,7 @@ int elemental_get_lifetime(struct s_elemental_data *ed);
 
 int elemental_unlocktarget(struct s_elemental_data *ed);
 bool elemental_skillnotok(uint16 skill_id, struct s_elemental_data *ed);
-int elemental_set_target( struct s_map_session_data *sd, struct s_block_list *bl );
+int elemental_set_target( s_map_session_data *sd, struct s_block_list *bl );
 int elemental_clean_single_effect(struct s_elemental_data *ed, uint16 skill_id);
 int elemental_clean_effect(struct s_elemental_data *ed);
 int elemental_action(struct s_elemental_data *ed, struct s_block_list *bl, unsigned int tick);

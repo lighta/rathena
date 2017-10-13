@@ -159,7 +159,7 @@ bool npc_isnear(struct s_block_list * bl) {
     return false;
 }
 
-int npc_ontouch_event(struct s_map_session_data *sd, struct s_npc_data *nd)
+int npc_ontouch_event(s_map_session_data *sd, struct s_npc_data *nd)
 {
 	char name[EVENT_NAME_LENGTH];
 
@@ -173,7 +173,7 @@ int npc_ontouch_event(struct s_map_session_data *sd, struct s_npc_data *nd)
 	return npc_event(sd,name,1);
 }
 
-int npc_ontouch2_event(struct s_map_session_data *sd, struct s_npc_data *nd)
+int npc_ontouch2_event(s_map_session_data *sd, struct s_npc_data *nd)
 {
 	char name[EVENT_NAME_LENGTH];
 
@@ -267,7 +267,7 @@ struct s_npc_data* npc_name2id(const char* name)
  * Timer to check for idle time and timeout the dialog if necessary
  **/
 int npc_rr_secure_timeout_timer(int tid, unsigned int tick, int id, intptr_t data) {
-	struct s_map_session_data* sd = NULL;
+	s_map_session_data* sd = NULL;
 	unsigned int timeout = NPC_SECURE_TIMEOUT_NEXT;
 	int cur_tick = gettick(); //ensure we are on last tick
 
@@ -301,7 +301,7 @@ int npc_rr_secure_timeout_timer(int tid, unsigned int tick, int id, intptr_t dat
 /*==========================================
  * Dequeue event and add timer for execution (100ms)
  *------------------------------------------*/
-int npc_event_dequeue(struct s_map_session_data* sd)
+int npc_event_dequeue(s_map_session_data* sd)
 {
 	nullpo_ret(sd);
 
@@ -373,7 +373,7 @@ static int npc_event_export(struct s_npc_data *nd, int i)
 	return 0;
 }
 
-int npc_event_sub(struct s_map_session_data* sd, struct event_data* ev, const char* eventname); //[Lance]
+int npc_event_sub(s_map_session_data* sd, struct event_data* ev, const char* eventname); //[Lance]
 
 /**
  * Exec name (NPC events) on player or global
@@ -581,7 +581,7 @@ int npc_timerevent(int tid, unsigned int tick, int id, intptr_t data)
 	struct s_npc_data* nd=(struct s_npc_data *)map_id2bl(id);
 	struct s_npc_timerevent_list *te;
 	struct timer_event_data *ted = (struct timer_event_data*)data;
-	struct s_map_session_data *sd=NULL;
+	s_map_session_data *sd=NULL;
 
 	if( nd == NULL )
 	{
@@ -650,7 +650,7 @@ int npc_timerevent_start(struct s_npc_data* nd, int rid)
 {
 	int j;
 	unsigned int tick = gettick();
-	struct s_map_session_data *sd = NULL; //Player to whom script is attached.
+	s_map_session_data *sd = NULL; //Player to whom script is attached.
 
 	nullpo_ret(nd);
 
@@ -705,7 +705,7 @@ int npc_timerevent_start(struct s_npc_data* nd, int rid)
  *------------------------------------------*/
 int npc_timerevent_stop(struct s_npc_data* nd)
 {
-	struct s_map_session_data *sd = NULL;
+	s_map_session_data *sd = NULL;
 	int *tid;
 
 	nullpo_ret(nd);
@@ -743,7 +743,7 @@ int npc_timerevent_stop(struct s_npc_data* nd)
 /*==========================================
  * Aborts a running NPC timer that is attached to a player.
  *------------------------------------------*/
-void npc_timerevent_quit(struct s_map_session_data* sd)
+void npc_timerevent_quit(s_map_session_data* sd)
 {
 	const struct TimerData *td;
 	struct s_npc_data* nd;
@@ -828,7 +828,7 @@ int npc_settimerevent_tick(struct s_npc_data* nd, int newtimer)
 {
 	bool flag;
 	int old_rid;
-	//struct s_map_session_data *sd = NULL;
+	//s_map_session_data *sd = NULL;
 
 	nullpo_ret(nd);
 
@@ -848,7 +848,7 @@ int npc_settimerevent_tick(struct s_npc_data* nd, int newtimer)
 	return 0;
 }
 
-int npc_event_sub(struct s_map_session_data* sd, struct event_data* ev, const char* eventname)
+int npc_event_sub(s_map_session_data* sd, struct event_data* ev, const char* eventname)
 {
 	if ( sd->npc_id != 0 )
 	{
@@ -877,7 +877,7 @@ int npc_event_sub(struct s_map_session_data* sd, struct event_data* ev, const ch
 /*==========================================
  * NPC processing event type
  *------------------------------------------*/
-int npc_event(struct s_map_session_data* sd, const char* eventname, int ontouch)
+int npc_event(s_map_session_data* sd, const char* eventname, int ontouch)
 {
 	struct event_data* ev = (struct event_data*)strdb_get(ev_db, eventname);
 	struct s_npc_data *nd;
@@ -910,7 +910,7 @@ int npc_event(struct s_map_session_data* sd, const char* eventname, int ontouch)
  *------------------------------------------*/
 int npc_touch_areanpc_sub(struct s_block_list *bl, va_list ap)
 {
-	struct s_map_session_data *sd;
+	s_map_session_data *sd;
 	int pc_id;
 	char *name;
 
@@ -936,7 +936,7 @@ int npc_touch_areanpc_sub(struct s_block_list *bl, va_list ap)
  * Chk if sd is still touching his assigned npc.
  * If not, it unsets it and searches for another player in range.
  *------------------------------------------*/
-int npc_touchnext_areanpc(struct s_map_session_data* sd, bool leavemap)
+int npc_touchnext_areanpc(s_map_session_data* sd, bool leavemap)
 {
 	struct s_npc_data *nd = map_id2nd(sd->touching_id);
 	short xs, ys;
@@ -964,7 +964,7 @@ int npc_touchnext_areanpc(struct s_map_session_data* sd, bool leavemap)
 /*==========================================
  * Exec OnTouch for player if in range of area event
  *------------------------------------------*/
-int npc_touch_areanpc(struct s_map_session_data* sd, int16 m, int16 x, int16 y)
+int npc_touch_areanpc(s_map_session_data* sd, int16 m, int16 x, int16 y)
 {
 	int xs,ys;
 	int f = 1;
@@ -1187,7 +1187,7 @@ int npc_check_areanpc(int flag, int16 m, int16 x, int16 y, int16 range)
  * Chk if player not too far to access the npc.
  * Returns npc_data (success) or NULL (fail).
  *------------------------------------------*/
-struct s_npc_data* npc_checknear(struct s_map_session_data* sd, struct s_block_list* bl)
+struct s_npc_data* npc_checknear(s_map_session_data* sd, struct s_block_list* bl)
 {
 	struct s_npc_data *nd;
 
@@ -1228,7 +1228,7 @@ int npc_globalmessage(const char* name, const char* mes)
 }
 
 // MvP tomb [GreenBox]
-void run_tomb(struct s_map_session_data* sd, struct s_npc_data* nd)
+void run_tomb(s_map_session_data* sd, struct s_npc_data* nd)
 {
 	char buffer[200];
 	char time[10];
@@ -1256,7 +1256,7 @@ void run_tomb(struct s_map_session_data* sd, struct s_npc_data* nd)
  * NPC 1st call when clicking on npc
  * Do specific action for NPC type (openshop, run scripts...)
  *------------------------------------------*/
-int npc_click(struct s_map_session_data* sd, struct s_npc_data* nd)
+int npc_click(s_map_session_data* sd, struct s_npc_data* nd)
 {
 	nullpo_retr(1, sd);
 
@@ -1315,7 +1315,7 @@ int npc_click(struct s_map_session_data* sd, struct s_npc_data* nd)
 /*==========================================
  *
  *------------------------------------------*/
-int npc_scriptcont(struct s_map_session_data* sd, int id, bool closing)
+int npc_scriptcont(s_map_session_data* sd, int id, bool closing)
 {
 	struct s_block_list *target = map_id2bl(id);
 
@@ -1365,7 +1365,7 @@ int npc_scriptcont(struct s_map_session_data* sd, int id, bool closing)
  * @param type: 0 - Buy, 1 - Sell
  * @return 0 on success or 1 on failure
  */
-int npc_buysellsel(struct s_map_session_data* sd, int id, int type)
+int npc_buysellsel(s_map_session_data* sd, int id, int type)
 {
 	struct s_npc_data *nd;
 
@@ -1400,7 +1400,7 @@ int npc_buysellsel(struct s_map_session_data* sd, int id, int type)
  * @param sd Player data
  * @return e_CASHSHOP_ACK
  **/
-static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int price, int points, struct map_session_data *sd) {
+static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int price, int points, s_map_session_data *sd) {
 	int cost[2] = { 0, 0 };
 
 	npc_shop_currency_type(sd, nd, cost, false);
@@ -1462,7 +1462,7 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
  * @param item_list: List of items to purchase
  * @return clif_cashshop_ack value to display
  */
-int npc_cashshop_buylist(struct s_map_session_data *sd, int points, int count, unsigned short* item_list)
+int npc_cashshop_buylist(s_map_session_data *sd, int points, int count, unsigned short* item_list)
 {
 	int i, j, amount, new_, w, vt;
 	unsigned short nameid;
@@ -1552,7 +1552,7 @@ int npc_cashshop_buylist(struct s_map_session_data *sd, int points, int count, u
  * @param cost: Reference to cost variable
  * @param display: Display cost type to player?
  */
-void npc_shop_currency_type(struct s_map_session_data *sd, struct s_npc_data *nd, int cost[2], bool display)
+void npc_shop_currency_type(s_map_session_data *sd, struct s_npc_data *nd, int cost[2], bool display)
 {
 	nullpo_retv(sd);
 
@@ -1616,7 +1616,7 @@ void npc_shop_currency_type(struct s_map_session_data *sd, struct s_npc_data *nd
  * @param points: Cost of total items
  * @return clif_cashshop_ack value to display
  */
-int npc_cashshop_buy(struct s_map_session_data *sd, unsigned short nameid, int amount, int points)
+int npc_cashshop_buy(s_map_session_data *sd, unsigned short nameid, int amount, int points)
 {
 	struct s_npc_data *nd = (struct s_npc_data *)map_id2bl(sd->npc_shopid);
 	struct s_item_data *item;
@@ -1707,7 +1707,7 @@ int npc_cashshop_buy(struct s_map_session_data *sd, unsigned short nameid, int a
  * @param item_list: List of items
  * @param nd: Attached NPC
  */
-static int npc_buylist_sub(struct s_map_session_data* sd, uint16 n, struct s_npc_buy_list *item_list, struct s_npc_data* nd) {
+static int npc_buylist_sub(s_map_session_data* sd, uint16 n, struct s_npc_buy_list *item_list, struct s_npc_data* nd) {
 	char npc_ev[EVENT_NAME_LENGTH];
 	int i, key_nameid = 0, key_amount = 0;
 
@@ -1735,7 +1735,7 @@ static int npc_buylist_sub(struct s_map_session_data* sd, uint16 n, struct s_npc
  * @param item_list: List of items
  * @return result code for clif_parse_NpcBuyListSend/clif_npc_market_purchase_ack
  */
-uint8 npc_buylist(struct s_map_session_data* sd, uint16 n, struct s_npc_buy_list *item_list) {
+uint8 npc_buylist(s_map_session_data* sd, uint16 n, struct s_npc_buy_list *item_list) {
 	struct s_npc_data* nd;
 	struct s_npc_item_list *shop = NULL;
 	double z;
@@ -1882,7 +1882,7 @@ uint8 npc_buylist(struct s_map_session_data* sd, uint16 n, struct s_npc_buy_list
 }
 
 /// npc_selllist for script-controlled shops
-static int npc_selllist_sub(struct s_map_session_data* sd, int n, unsigned short* item_list, struct s_npc_data* nd)
+static int npc_selllist_sub(s_map_session_data* sd, int n, unsigned short* item_list, struct s_npc_data* nd)
 {
 	char npc_ev[EVENT_NAME_LENGTH];
 	char card_slot[NAME_LENGTH];
@@ -1963,7 +1963,7 @@ static int npc_selllist_sub(struct s_map_session_data* sd, int n, unsigned short
 ///
 /// @param item_list 'n' pairs <index,amount>
 /// @return result code for clif_parse_NpcSellListSend
-uint8 npc_selllist(struct s_map_session_data* sd, int n, unsigned short *item_list)
+uint8 npc_selllist(s_map_session_data* sd, int n, unsigned short *item_list)
 {
 	double z;
 	int i,skill;
@@ -2166,7 +2166,7 @@ int npc_unload(struct s_npc_data* nd, bool single) {
 
 		iter = mapit_geteachpc();
 		for( bl = (struct s_block_list*)mapit_first(iter); mapit_exists(iter); bl = (struct s_block_list*)mapit_next(iter) ) {
-			struct s_map_session_data *sd = ((TBL_PC*)bl);
+			s_map_session_data *sd = ((TBL_PC*)bl);
 			if( sd && sd->npc_timer_id != INVALID_TIMER ) {
 				const struct TimerData *td = get_timer(sd->npc_timer_id);
 
@@ -3638,7 +3638,7 @@ void npc_setclass(struct s_npc_data* nd, short class_)
 }
 
 // @commands (script based)
-int npc_do_atcmd_event(struct s_map_session_data* sd, const char* command, const char* message, const char* eventname)
+int npc_do_atcmd_event(s_map_session_data* sd, const char* command, const char* message, const char* eventname)
 {
 	struct event_data* ev = (struct event_data*)strdb_get(ev_db, eventname);
 	struct s_npc_data *nd;
@@ -4466,7 +4466,7 @@ int npc_parsesrcfile(const char* filepath, bool runOnInit)
 	return 1;
 }
 
-int npc_script_event(struct s_map_session_data* sd, enum e_npce_event type)
+int npc_script_event(s_map_session_data* sd, enum e_npce_event type)
 {
 	int i;
 	if (type == NPCE_MAX)

@@ -17,12 +17,12 @@
 struct s_duel duel_list[MAX_DUEL]; //list of current duel
 int duel_count = 0; //number of duel active
 
-static void duel_set(const unsigned int did, struct s_map_session_data* sd);
+static void duel_set(const unsigned int did, s_map_session_data* sd);
 
 /*
  * Save the current time of the duel in PC_LAST_DUEL_TIME
  */
-void duel_savetime(struct s_map_session_data* sd)
+void duel_savetime(s_map_session_data* sd)
 {
 	time_t timer;
 	struct tm *t;
@@ -36,7 +36,7 @@ void duel_savetime(struct s_map_session_data* sd)
 /*
  * Check if the time elapsed between last duel is enough to launch another.
  */
-int duel_checktime(struct s_map_session_data* sd)
+int duel_checktime(s_map_session_data* sd)
 {
 	int diff;
 	time_t timer;
@@ -53,9 +53,9 @@ int duel_checktime(struct s_map_session_data* sd)
 /*
  * Display opponents name of sd
  */
-static int duel_showinfo_sub(struct s_map_session_data* sd, va_list va)
+static int duel_showinfo_sub(s_map_session_data* sd, va_list va)
 {
-	struct s_map_session_data *ssd = va_arg(va, struct s_map_session_data*);
+	s_map_session_data *ssd = va_arg(va, s_map_session_data*);
 	int *p = va_arg(va, int*);
 	char output[256];
 
@@ -70,7 +70,7 @@ static int duel_showinfo_sub(struct s_map_session_data* sd, va_list va)
  * Display duel infos,
  * Number of duely...
  */
-void duel_showinfo(const unsigned int did, struct s_map_session_data* sd)
+void duel_showinfo(const unsigned int did, s_map_session_data* sd)
 {
 	int p=0;
 	char output[256];
@@ -94,7 +94,7 @@ void duel_showinfo(const unsigned int did, struct s_map_session_data* sd)
 /*
 * Moves sd to duel
 */
-static void duel_set(const unsigned int did, struct s_map_session_data* sd) {
+static void duel_set(const unsigned int did, s_map_session_data* sd) {
 	sd->state.changemap = 1;
 	sd->state.warping = 1;
 
@@ -115,7 +115,7 @@ static void duel_set(const unsigned int did, struct s_map_session_data* sd) {
  * Create a new duel for sd
  * return duel_id or 0 when fail
  */
-unsigned int duel_create(struct s_map_session_data* sd, const unsigned int maxpl)
+unsigned int duel_create(s_map_session_data* sd, const unsigned int maxpl)
 {
 	int i=1;
 	char output[256];
@@ -143,7 +143,7 @@ unsigned int duel_create(struct s_map_session_data* sd, const unsigned int maxpl
  * @sd = inviting player
  * @target_sd = invited player
  */
-void duel_invite(const unsigned int did, struct s_map_session_data* sd, struct s_map_session_data* target_sd)
+void duel_invite(const unsigned int did, s_map_session_data* sd, s_map_session_data* target_sd)
 {
 	char output[256];
 
@@ -164,7 +164,7 @@ void duel_invite(const unsigned int did, struct s_map_session_data* sd, struct s
  * @sd = leaving player
  * @va = list(only contain duel_id atm)
  */
-static int duel_leave_sub(struct s_map_session_data* sd, va_list va)
+static int duel_leave_sub(s_map_session_data* sd, va_list va)
 {
 	int did = va_arg(va, int);
 	if (sd->duel_invite == did)
@@ -177,7 +177,7 @@ static int duel_leave_sub(struct s_map_session_data* sd, va_list va)
  * @did = duel id
  * @sd = leaving player
  */
-void duel_leave(const unsigned int did, struct s_map_session_data* sd)
+void duel_leave(const unsigned int did, s_map_session_data* sd)
 {
 	char output[256];
 
@@ -202,7 +202,7 @@ void duel_leave(const unsigned int did, struct s_map_session_data* sd)
  * @did = duel id
  * @sd = player accepting duel
  */
-void duel_accept(const unsigned int did, struct s_map_session_data* sd)
+void duel_accept(const unsigned int did, s_map_session_data* sd)
 {
 	char output[256];
 
@@ -224,7 +224,7 @@ void duel_accept(const unsigned int did, struct s_map_session_data* sd)
  * @did = duel id
  * @sd = player refusing duel
  */
-void duel_reject(const unsigned int did, struct s_map_session_data* sd)
+void duel_reject(const unsigned int did, s_map_session_data* sd)
 {
 	char output[256];
 

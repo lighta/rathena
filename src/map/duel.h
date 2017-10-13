@@ -18,12 +18,12 @@ extern int duel_count; //current number of duel on server
 
 //Duel functions // [LuzZza]
 unsigned int duel_create(s_map_session_data* sd, const unsigned int maxpl);
-void duel_invite(const unsigned int did, struct s_map_session_data* sd, struct s_map_session_data* target_sd);
-void duel_accept(const unsigned int did, struct s_map_session_data* sd);
-void duel_reject(const unsigned int did, struct s_map_session_data* sd);
-void duel_leave(const unsigned int did, struct s_map_session_data* sd);
-void duel_showinfo(const unsigned int did, struct s_map_session_data* sd);
-int duel_checktime(struct s_map_session_data* sd);
+void duel_invite(const unsigned int did, s_map_session_data* sd, s_map_session_data* target_sd);
+void duel_accept(const unsigned int did, s_map_session_data* sd);
+void duel_reject(const unsigned int did, s_map_session_data* sd);
+void duel_leave(const unsigned int did, s_map_session_data* sd);
+void duel_showinfo(const unsigned int did, s_map_session_data* sd);
+int duel_checktime(s_map_session_data* sd);
 
 void do_init_duel(void);
 void do_final_duel(void);

@@ -32,7 +32,7 @@ enum E_MAPSERVER_ST {
 #define msg_txt(sd,msg_number) map_msg_txt(sd,msg_number)
 #define do_final_msg() map_do_final_msg()
 int map_msg_config_read(const char *cfgName,int lang);
-const char* map_msg_txt(struct s_map_session_data *sd,int msg_number);
+const char* map_msg_txt(s_map_session_data *sd,int msg_number);
 void map_do_final_msg(void);
 void map_msg_reload(void);
 
@@ -818,7 +818,7 @@ int map_get_new_object_id(void);
 int map_search_freecell(struct s_block_list *src, int16 m, int16 *x, int16 *y, int16 rx, int16 ry, int flag);
 bool map_closest_freecell(int16 m, int16 *x, int16 *y, int type, int flag);
 //
-int map_quit(struct s_map_session_data *);
+int map_quit(s_map_session_data *);
 // npc
 bool map_addnpc(int16 m,struct s_npc_data *);
 
@@ -835,11 +835,11 @@ int map_delinstancemap(int m);
 // player to map session
 void map_addnickdb(int charid, const char* nick);
 void map_delnickdb(int charid, const char* nick);
-void map_reqnickdb(struct s_map_session_data* sd,int charid);
+void map_reqnickdb(s_map_session_data* sd,int charid);
 const char* map_charid2nick(int charid);
-struct s_map_session_data* map_charid2sd(int charid);
+s_map_session_data* map_charid2sd(int charid);
 
-struct s_map_session_data * map_id2sd(int id);
+s_map_session_data * map_id2sd(int id);
 struct s_mob_data * map_id2md(int id);
 struct s_npc_data * map_id2nd(int id);
 struct s_homun_data* map_id2hd(int id);
@@ -860,12 +860,12 @@ int map_eraseipport(unsigned short map, uint32 ip, uint16 port);
 int map_eraseallipport(void);
 void map_addiddb(struct s_block_list *);
 void map_deliddb(struct s_block_list *bl);
-void map_foreachpc(int (*func)(struct s_map_session_data* sd, va_list args), ...);
+void map_foreachpc(int (*func)(s_map_session_data* sd, va_list args), ...);
 void map_foreachmob(int (*func)(struct s_mob_data* md, va_list args), ...);
 void map_foreachnpc(int (*func)(struct s_npc_data* nd, va_list args), ...);
 void map_foreachregen(int (*func)(struct s_block_list* bl, va_list args), ...);
 void map_foreachiddb(int (*func)(struct s_block_list* bl, va_list args), ...);
-struct s_map_session_data * map_nick2sd(const char* nick, bool allow_partial);
+s_map_session_data * map_nick2sd(const char* nick, bool allow_partial);
 struct s_mob_data * map_getmob_boss(int16 m);
 struct s_mob_data * map_id2boss(int id);
 
@@ -907,7 +907,7 @@ int map_delmap(char* mapname);
 void map_flags_init(void);
 
 bool map_iwall_set(int16 m, int16 x, int16 y, int size, int8 dir, bool shootable, const char* wall_name);
-void map_iwall_get(struct s_map_session_data *sd);
+void map_iwall_get(s_map_session_data *sd);
 void map_iwall_remove(const char *wall_name);
 
 int map_addmobtolist(unsigned short m, struct s_spawn_data *spawn);	// [Wizputer]
@@ -948,7 +948,7 @@ extern const char *MSG_CONF_NAME_POR;
 extern const char *MSG_CONF_NAME_THA;
 
 //Useful typedefs from jA [Skotlex]
-typedef struct s_map_session_data TBL_PC;
+typedef s_map_session_data TBL_PC;
 typedef struct s_npc_data         TBL_NPC;
 typedef struct s_mob_data         TBL_MOB;
 typedef struct s_flooritem_data   TBL_ITEM;

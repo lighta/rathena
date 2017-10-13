@@ -504,7 +504,7 @@ int mob_get_random_id(int type, int flag, int lv)
 bool mob_ksprotected (struct s_block_list *src, struct s_block_list *target)
 {
 	struct s_block_list *s_bl, *t_bl;
-	struct s_map_session_data
+	s_map_session_data
 		*sd,    // Source
 		*t_sd;  // Mob Target
 	struct s_mob_data *md;
@@ -530,7 +530,7 @@ bool mob_ksprotected (struct s_block_list *src, struct s_block_list *target)
 
 	do {
 		struct s_status_change_entry *sce;
-		struct s_map_session_data *pl_sd; // Owner
+		s_map_session_data *pl_sd; // Owner
 		char output[128];
 		
 		if( map[md->bl.m].flag.allowks || map_flag_ks(md->bl.m) )
@@ -627,7 +627,7 @@ struct s_mob_data *mob_once_spawn_sub(struct s_block_list *bl, int16 m, int16 x,
 /*==========================================
  * Spawn a single mob on the specified coordinates.
  *------------------------------------------*/
-int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
+int mob_once_spawn(s_map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
 {
 	struct s_mob_data* md = NULL;
 	int count, lv;
@@ -679,7 +679,7 @@ int mob_once_spawn(struct map_session_data* sd, int16 m, int16 x, int16 y, const
 /*==========================================
  * Spawn mobs in the specified area.
  *------------------------------------------*/
-int mob_once_spawn_area(struct map_session_data* sd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
+int mob_once_spawn_area(s_map_session_data* sd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
 {
 	int i, max, id = 0;
 	int lx = -1, ly = -1;
@@ -1948,7 +1948,7 @@ static int mob_ai_sub_hard_timer(struct s_block_list *bl,va_list ap)
 /*==========================================
  * Serious processing for mob in PC field of view (foreachclient)
  *------------------------------------------*/
-static int mob_ai_sub_foreachclient(struct s_map_session_data *sd,va_list ap)
+static int mob_ai_sub_foreachclient(s_map_session_data *sd,va_list ap)
 {
 	unsigned int tick;
 	tick=va_arg(ap,unsigned int);
@@ -2241,7 +2241,7 @@ void mob_log_damage(struct s_mob_data *md, struct s_block_list *src, int damage)
 	{
 		case BL_PC:
 		{
-			struct s_map_session_data *sd = (TBL_PC*)src;
+			s_map_session_data *sd = (TBL_PC*)src;
 			char_id = sd->status.char_id;
 			if( damage )
 				md->attacked_id = src->id;
@@ -2283,7 +2283,7 @@ void mob_log_damage(struct s_mob_data *md, struct s_block_list *src, int damage)
 			struct s_mob_data* md2 = (TBL_MOB*)src;
 			if( md2->special_state.ai && md2->master_id )
 			{
-				struct s_map_session_data* msd = map_id2sd(md2->master_id);
+				s_map_session_data* msd = map_id2sd(md2->master_id);
 				if( msd )
 					char_id = msd->status.char_id;
 			}
@@ -2376,7 +2376,7 @@ void mob_damage(struct s_mob_data *md, struct s_block_list *src, int damage)
 	if (battle_config.monster_hp_bars_info && !map[md->bl.m].flag.hidemobhpbar) {
 		int i;
 		for(i = 0; i < DAMAGELOG_SIZE; i++){ // must show hp bar to all char who already hit the mob.
-			struct s_map_session_data *sd = map_charid2sd(md->dmglog[i].id);
+			s_map_session_data *sd = map_charid2sd(md->dmglog[i].id);
 			if( sd && check_distance_bl(&md->bl, &sd->bl, AREA_SIZE) ) // check if in range
 				clif_monster_hp_bar(md, sd->fd);
 		}
@@ -2399,8 +2399,8 @@ void mob_damage(struct s_mob_data *md, struct s_block_list *src, int damage)
 int mob_dead(struct s_mob_data *md, struct s_block_list *src, int type)
 {
 	struct s_status_data *status;
-	struct s_map_session_data *sd = NULL, *tmpsd[DAMAGELOG_SIZE];
-	struct s_map_session_data *mvp_sd = NULL, *second_sd = NULL, *third_sd = NULL;
+	s_map_session_data *sd = NULL, *tmpsd[DAMAGELOG_SIZE];
+	s_map_session_data *mvp_sd = NULL, *second_sd = NULL, *third_sd = NULL;
 
 	struct {
 		struct s_party_data *p;
@@ -2415,7 +2415,7 @@ int mob_dead(struct s_mob_data *md, struct s_block_list *src, int type)
 	status = &md->status;
 
 	if( src && src->type == BL_PC ) {
-		sd = (struct s_map_session_data *)src;
+		sd = (s_map_session_data *)src;
 		mvp_sd = sd;
 	}
 
@@ -2439,7 +2439,7 @@ int mob_dead(struct s_mob_data *md, struct s_block_list *src, int type)
 	// filter out entries not eligible for exp distribution
 	memset(tmpsd,0,sizeof(tmpsd));
 	for(i = 0, count = 0, mvp_damage = 0; i < DAMAGELOG_SIZE && md->dmglog[i].id; i++) {
-		struct s_map_session_data* tsd = NULL;
+		s_map_session_data* tsd = NULL;
 		if (md->dmglog[i].flag == MDLF_SELF) {
 			//Self damage counts as exp tap
 			count++;
@@ -3186,7 +3186,7 @@ void mob_heal(struct s_mob_data *md,unsigned int heal)
 		int i;
 		for(i = 0; i < DAMAGELOG_SIZE; i++)// must show hp bar to all char who already hit the mob.
 			if( md->dmglog[i].id ) {
-				struct s_map_session_data *sd = map_charid2sd(md->dmglog[i].id);
+				s_map_session_data *sd = map_charid2sd(md->dmglog[i].id);
 				if( sd && check_distance_bl(&md->bl, &sd->bl, AREA_SIZE) ) // check if in range
 					clif_monster_hp_bar(md, sd->fd);
 			}
@@ -3735,7 +3735,7 @@ static bool mob_clone_disabled_skills(uint16 skill_id) {
 //If mode is not passed, a default aggressive mode is used.
 //If master_id is passed, clone is attached to him.
 //Returns: ID of newly crafted copy.
-int mob_clone_spawn(struct s_map_session_data *sd, int16 m, int16 x, int16 y, const char *event, int master_id, e_MonsterMode mode, int flag, unsigned int duration)
+int mob_clone_spawn(s_map_session_data *sd, int16 m, int16 x, int16 y, const char *event, int master_id, e_MonsterMode mode, int flag, unsigned int duration)
 {
 	int mob_id;
 	int i,j,inf, fd;
