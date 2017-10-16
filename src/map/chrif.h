@@ -8,6 +8,9 @@
 #include "../common_old/socket.h" // enum chrif_req_op
 #include <ctime>
 
+//fwd declaration
+struct s_map_session_data;
+
 enum e_sd_state { ST_LOGIN, ST_LOGOUT, ST_MAPCHANGE };
 
 enum e_chrif_save_opt {

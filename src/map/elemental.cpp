@@ -4,6 +4,7 @@
 
 #include <cstdlib>
 #include <cmath>
+#include <ctgmath> //floor
 #include <cstring>
 
 #include "../common_old/cbasetypes.h"

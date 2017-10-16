@@ -11,12 +11,14 @@
 #include "../common_old/strlib.h" //safestrncpy
 #include "../common_old/socket.h" //set_eof
 #include "../common_old/timer.h"  // DIFF_TICK
+#include "../common_old/nullpo.h"
 
 #include "map.h" //msg_conf
 #include "clif.h" //clif_chsys_msg
 #include "pc.h"
 #include "guild.h"
 #include "pc_groups.h"
+#include "battle.h"
 
 static s_DBMap* channel_db; // channels
 
@@ -42,7 +44,7 @@ struct s_Channel* channel_create(s_Channel *tmp_chan) {
 	CREATE(channel, s_Channel, 1); //will exit on fail allocation
 	//channel->id = tmp_chan->id;
 	channel->users = idb_alloc(DB_OPT_BASE);
-	channel->banned = idb_alloc(DB_OPT_BASE|DB_OPT_RELEASE_DATA);
+	channel->banned = idb_alloc(static_cast<e_DBOptions>(DB_OPT_BASE|DB_OPT_RELEASE_DATA) );
 	channel->opt = tmp_chan->opt;
 	channel->type = tmp_chan->type;
 	channel->color = tmp_chan->color;
@@ -144,7 +146,7 @@ int channel_delete(s_Channel *channel, bool force) {
 		return -2;
 	if( db_size(channel->users)) {
 		s_map_session_data *sd;
-		DBIterator *iter = db_iterator(channel->users);
+		s_DBIterator *iter = db_iterator(channel->users);
 		for( sd = (s_map_session_data *)dbi_first(iter); dbi_exists(iter); sd = (s_map_session_data *)dbi_next(iter) ) { //for all users
 			channel_clean(channel,sd,1); //make all quit
 		}
@@ -164,7 +166,7 @@ int channel_delete(s_Channel *channel, bool force) {
 		aFree(channel);
 		break;
 	case CHAN_TYPE_ALLY: {
-		struct guild *g = guild_search(channel->gid);
+		s_guild *g = guild_search(channel->gid);
 		if(g) g->channel = NULL;
 		aFree(channel);
 		break;
@@ -274,8 +276,8 @@ int channel_ajoin(struct s_guild *g){
 
 	if(!g || !g->channel) return -1;
 	for (i = 0; i < MAX_GUILDALLIANCE; i++){
-		struct guild *ag; //allied guld
-		struct guild_alliance *ga = &g->alliance[i]; //guild alliance
+		s_guild *ag; //allied guld
+		s_guild_alliance *ga = &g->alliance[i]; //guild alliance
 		if(ga->guild_id && (ga->opposition==0) && (ag=guild_search(ga->guild_id))){
 			for (j = 0; j < ag->max_member; j++){ //load all guildmember
 				pl_sd = ag->member[j].sd;
@@ -392,7 +394,7 @@ int channel_pcquit(s_map_session_data *sd, int type){
 
 	// Leave all chat channels.
 	if(type&(1|2) && channel_config.ally_tmpl.name != NULL && sd->guild){ //quit guild and ally chan
-		struct guild *g = sd->guild;
+		s_guild *g = sd->guild;
 		if(type&1 && channel_haspc(g->channel,sd)==1){
 			channel_clean(g->channel,sd,0); //leave guild chan
 		}
@@ -614,7 +616,7 @@ int channel_display_list(s_map_session_data *sd, char *options){
 			clif_displaymessage(sd->fd, output);
 		}
 		if( channel_config.ally_tmpl.name != NULL && sd->status.guild_id ) {
-			struct guild *g = sd->guild;
+			s_guild *g = sd->guild;
 			if (g && g->channel) {
 				sprintf(output, msg_txt(sd,1409), g->channel->name, db_size(((s_Channel *)g->channel)->users));// - #%s (%d users)
 				clif_displaymessage(sd->fd, output);
@@ -986,10 +988,10 @@ int channel_pcban(s_map_session_data *sd, char *chname, char *pname, int flag){
 	//let properly alter the list now
 	switch(flag){
 	case 0: {
-		struct chan_banentry *cbe;
+		s_chan_banentry *cbe;
 		if (!tsd)
 			return -1;
-		CREATE(cbe, struct chan_banentry, 1);
+		CREATE(cbe, s_chan_banentry, 1);
 		cbe->char_id = tsd->status.char_id;
 		strcpy(cbe->char_name,tsd->status.name);
 		idb_put(channel->banned, tsd->status.char_id, cbe);
@@ -1009,10 +1011,10 @@ int channel_pcban(s_map_session_data *sd, char *chname, char *pname, int flag){
 		break;
 	case 3: {
 		s_DBIterator *iter = db_iterator(channel->banned);
-		struct chan_banentry *cbe;
+		s_chan_banentry *cbe;
 		sprintf(output, msg_txt(sd,1443), channel->name);// ---- '#%s' Ban List:
 		clif_displaymessage(sd->fd, output);
-		for( cbe = (struct chan_banentry *)dbi_first(iter); dbi_exists(iter); cbe = (struct chan_banentry *)dbi_next(iter) ) { //for all users
+		for( cbe = (s_chan_banentry *)dbi_first(iter); dbi_exists(iter); cbe = (s_chan_banentry *)dbi_next(iter) ) { //for all users
 			if (cbe->char_name && cbe->char_name[0] != '\0')
 				sprintf(output, "%d: %s",cbe->char_id,cbe->char_name);
 			else
@@ -1252,7 +1254,7 @@ bool channel_pccheckgroup(s_Channel *channel, int group_id) {
 /**
  * Attempt to autojoin a player to a channel
  */
-int channel_pcautojoin_sub(DBKey key, DBData *data, va_list ap) {
+int channel_pcautojoin_sub(u_DBKey key, s_DBData *data, va_list ap) {
 	s_Channel *channel = (s_Channel *)db_data2ptr(data);
 	s_map_session_data *sd = NULL;
 	char channame[CHAN_NAME_LENGTH+1];
@@ -1464,7 +1466,7 @@ void channel_read_config(void) {
 			}
 		}
 
-		ShowStatus("Done reading '"CL_WHITE"%d"CL_RESET"' channels in '"CL_WHITE"%s"CL_RESET"'.\n", db_size(channel_db), channel_conf);
+		ShowStatus("Done reading '" CL_WHITE "%d" CL_RESET "' channels in '" CL_WHITE "%s" CL_RESET "'.\n", db_size(channel_db), channel_conf);
 		config_destroy(&channels_conf);
 	}
 }
@@ -1473,7 +1475,7 @@ void channel_read_config(void) {
  * Initialise db and read configuration
  */
 void do_init_channel(void) {
-	channel_db = stridb_alloc(DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA, CHAN_NAME_LENGTH);
+	channel_db = stridb_alloc(static_cast<e_DBOptions>(DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA), CHAN_NAME_LENGTH);
 	memset(&channel_config.private_channel, 0, sizeof(s_Channel));
 	memset(&channel_config.ally_tmpl, 0, sizeof(s_Channel));
 	memset(&channel_config.map_tmpl, 0, sizeof(s_Channel));

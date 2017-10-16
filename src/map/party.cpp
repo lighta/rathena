@@ -26,6 +26,7 @@
 #include "log.h"
 #include "party.h"
 #include "pc_groups.h"
+#include "achievement.h"
 
 static s_DBMap* party_db; // int party_id -> struct s_party_data* (releases data)
 static s_DBMap* party_booking_db; // uint32 char_id -> struct s_party_booking_ad_info* (releases data) // Party Booking [Spiria]

@@ -1,6 +1,6 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
-
+#include "instance.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -13,9 +13,9 @@
 #include "../common_old/malloc.h"
 #include "../common_old/ers.h"  // ers_destroy
 
+#include "clan.h"
 #include "clif.h"
 #include "guild.h"
-#include "instance.h"
 #include "map.h"
 #include "npc.h"
 #include "party.h"
@@ -53,7 +53,7 @@ static uint16 instance_name2id(const char *instance_name) {
 /*==========================================
  * Searches for an instance name in the database
  *------------------------------------------*/
-static struct s_instance_db *instance_searchname_db(const char *instance_name) {
+struct s_instance_db *instance_searchname_db(const char *instance_name) {
 	uint16 id = instance_name2id(instance_name);
 	if (id == 0)
 		return NULL;
@@ -109,8 +109,8 @@ static int instance_subscription_timer(int tid, unsigned int tick, int id, intpt
 	int i, ret;
 	unsigned short instance_id = instance_wait.id[0];
 	s_map_session_data *sd = NULL;
-	struct s_party_data *p = NULL;
-	struct s_guild *g = NULL;
+	struct s_party_data *pd = NULL;
+	struct s_guild *gd = NULL;
 	struct s_clan *cd = NULL;
 	enum e_instance_mode mode;
 
@@ -316,13 +316,13 @@ static int instance_npcinit(struct s_block_list *bl, va_list ap)
 /*==========================================
  * Run the OnInstanceDestroy events for duplicated NPCs
  *------------------------------------------*/
-static int instance_npcdestroy(struct block_list *bl, va_list ap)
+static int instance_npcdestroy(s_block_list *bl, va_list ap)
 {
-	struct npc_data* nd;
+	s_npc_data* nd;
 
 	nullpo_retr(0, bl);
 	nullpo_retr(0, ap);
-	nullpo_retr(0, nd = (struct npc_data *)bl);
+	nullpo_retr(0, nd = (s_npc_data *)bl);
 
 	return npc_instancedestroy(nd);
 }
@@ -596,7 +596,7 @@ int instance_destroy(unsigned short instance_id)
 	s_map_session_data *sd = NULL;
 	struct s_party_data *pd = NULL;
 	struct s_guild *gd = NULL;
-	struct clan *cd = NULL;
+	s_clan *cd = NULL;
 	int i, type = 0;
 	unsigned int now = (unsigned int)time(NULL);
 	enum e_instance_mode mode;
@@ -714,12 +714,12 @@ int instance_destroy(unsigned short instance_id)
  *------------------------------------------*/
 enum e_instance_enter instance_enter(s_map_session_data *sd, unsigned short instance_id, const char *name, short x, short y)
 {
-	struct instance_data *im = NULL;
-	struct instance_db *db = NULL;
-	struct party_data *pd = NULL;
-	struct guild *gd = NULL;
-	struct clan *cd = NULL;
-	enum instance_mode mode;
+	struct s_instance_data *im = NULL;
+	struct s_instance_db *db = NULL;
+	s_party_data *pd = NULL;
+	s_guild *gd = NULL;
+	s_clan *cd = NULL;
+	enum e_instance_mode mode;
 	int16 m;
 
 	nullpo_retr(IE_OTHER, sd);
@@ -899,7 +899,7 @@ static bool instance_readdb_sub(char* str[], int columns, int current)
 	uint8 i,j;
 	char *ptr;
 	int id = strtol(str[0], &ptr, 10);
-	struct instance_db *db;
+	struct s_instance_db *db;
 	bool isNew = false;
 
 	if (!id || id >  USHRT_MAX || *ptr) {
@@ -1083,9 +1083,9 @@ void do_reload_instance(void)
 	iter = mapit_getallusers();
 	for( sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); sd = (TBL_PC*)mapit_next(iter) )
 		if(sd && map[sd->bl.m].instance_id) {
-			struct party_data *pd = NULL;
-			struct guild *gd = NULL;
-			struct clan *cd = NULL;
+			s_party_data *pd = NULL;
+			s_guild *gd = NULL;
+			s_clan *cd = NULL;
 			unsigned short instance_id;
 
 			im = &instance_data[map[sd->bl.m].instance_id];

@@ -66,7 +66,7 @@ int subnet_count = 0;
 
 int char_chardb_waiting_disconnect(int tid, unsigned int tick, int id, intptr_t data);
 
-s_DBMap* auth_db; // uint32 account_id -> struct auth_node*
+s_DBMap* auth_db; // uint32 account_id -> s_auth_node*
 s_DBMap* online_char_db; // uint32 account_id -> struct online_char_data*
 s_DBMap* char_db_; // uint32 char_id -> struct mmo_charstatus*
 s_DBMap* char_get_authdb() { return auth_db; }

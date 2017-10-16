@@ -10,6 +10,7 @@ set( MAP_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}  CACHE INTERNAL "" )
 if( BUILD_SERVERS )
 message( STATUS "Creating target map-server" )
 set( MAP_HEADERS
+  "${MAP_SOURCE_DIR}/achievement.h"
 	"${MAP_SOURCE_DIR}/atcommand.h"
 	"${MAP_SOURCE_DIR}/battle.h"
 	"${MAP_SOURCE_DIR}/battleground.h"
@@ -52,13 +53,14 @@ set( MAP_HEADERS
 	"${MAP_SOURCE_DIR}/channel.h"
 	)
 set( MAP_SOURCES
+  "${MAP_SOURCE_DIR}/achievement.cpp"
 	"${MAP_SOURCE_DIR}/atcommand.cpp"
 	"${MAP_SOURCE_DIR}/battle.cpp"
 	"${MAP_SOURCE_DIR}/battleground.cpp"
 	"${MAP_SOURCE_DIR}/buyingstore.cpp"
 	"${MAP_SOURCE_DIR}/chat.cpp"
 	"${MAP_SOURCE_DIR}/chrif.cpp"
-	"${MAP_SOURCE_DIR}/clan.c"
+	"${MAP_SOURCE_DIR}/clan.cpp"
 	"${MAP_SOURCE_DIR}/clif.cpp"
 	"${MAP_SOURCE_DIR}/date.cpp"
 	"${MAP_SOURCE_DIR}/duel.cpp"
@@ -92,9 +94,10 @@ set( MAP_SOURCES
 	"${MAP_SOURCE_DIR}/vending.cpp"
 	"${MAP_SOURCE_DIR}/cashshop.cpp"
 	"${MAP_SOURCE_DIR}/channel.cpp"
+  "${MAP_SOURCE_DIR}/channel.cpp"
 	)
-set( DEPENDENCIES common )
-set( LIBRARIES ${GLOBAL_LIBRARIES} )
+set( DEPENDENCIES common common_new yaml-cpp )
+set( LIBRARIES ${GLOBAL_LIBRARIES} yaml-cpp )
 set( INCLUDE_DIRS ${GLOBAL_INCLUDE_DIRS} ${COMMON_BASE_INCLUDE_DIRS} )
 set( DEFINITIONS "${GLOBAL_DEFINITIONS} ${COMMON_BASE_DEFINITIONS}" )
 if( WITH_PCRE )

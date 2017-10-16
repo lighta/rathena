@@ -1,11 +1,13 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
+#include "path.h"
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
 #include <cmath>
+#include <ctgmath> //sqrt
 
 #include "../common_old/db.h"
 #include "../common_old/malloc.h"
@@ -14,7 +16,7 @@
 #include "../common_old/showmsg.h"
 #include "battle.h"
 #include "map.h"
-#include "path.h"
+
 
 #define SET_OPEN 0
 #define SET_CLOSED 1
@@ -197,11 +199,14 @@ bool path_search_long(struct s_shootpath_data *spd,int16 m,int16 x0,int16 y0,int
 
 /// Pushes path_node to the binary node_heap.
 /// Ensures there is enough space in array to store new element.
+
+#define swap_ptrcast_pathnode(a,b) swap_ptrcast(struct path_node*,a,b)
+
 static void heap_push_node(struct node_heap *heap, struct path_node *node)
 {
 #ifndef __clang_analyzer__ // TODO: Figure out why clang's static analyzer doesn't like this
-	BHEAP_ENSURE(*heap, 1, 256);
-	BHEAP_PUSH2(*heap, node, NODE_MINTOPCMP, swap_ptr);
+	BHEAP_ENSURE2(*heap, 1, 256,struct path_node**);
+	BHEAP_PUSH2(*heap, node, NODE_MINTOPCMP, swap_ptrcast_pathnode);
 #endif // __clang_analyzer__
 }
 
@@ -214,7 +219,7 @@ static int heap_update_node(struct node_heap *heap, struct path_node *node)
 		ShowError("heap_update_node: node not found\n");
 		return 1;
 	}
-	BHEAP_UPDATE(*heap, i, NODE_MINTOPCMP, swap_ptr);
+	BHEAP_UPDATE(*heap, i, NODE_MINTOPCMP, swap_ptrcast_pathnode);
 	return 0;
 }
 
@@ -371,7 +376,7 @@ bool path_search(struct s_walkpath_data *wpd, int16 m, int16 x0, int16 y0, int16
 			}
 
 			current = BHEAP_PEEK(g_open_set); // Look for the lowest f_cost node in the 'open' set
-			BHEAP_POP2(g_open_set, NODE_MINTOPCMP, swap_ptr); // Remove it from 'open' set
+			BHEAP_POP2(g_open_set, NODE_MINTOPCMP, swap_ptrcast_pathnode); // Remove it from 'open' set
 
 			x      = current->x;
 			y      = current->y;

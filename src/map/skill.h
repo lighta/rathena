@@ -20,7 +20,7 @@ struct s_skill_unit;
 struct s_skill_unit_group;
 struct s_status_change_entry;
 
-#define MAX_SKILL_PRODUCE_DB	270 /// Max Produce DB
+#define MAX_SKILL_PRODUCE_DB	280 /// Max Produce DB
 #define MAX_PRODUCE_RESOURCE	12 /// Max Produce requirements
 #define MAX_SKILL_ARROW_DB		150 /// Max Arrow Creation DB
 #define MAX_ARROW_RESULT		5 /// Max Arrow results/created
@@ -450,7 +450,7 @@ int skill_addtimerskill(struct s_block_list *src,unsigned int tick,int target,in
 // Results? Added
 int skill_additional_effect( struct s_block_list* src, struct s_block_list *bl,uint16 skill_id,uint16 skill_lv,int attack_type,enum e_damage_lv dmg_lv,unsigned int tick);
 int skill_counter_additional_effect( struct s_block_list* src, struct s_block_list *bl,uint16 skill_id,uint16 skill_lv,int attack_type,unsigned int tick);
-short skill_blown(struct s_block_list* src, struct s_block_list* target, char count, int8 dir, unsigned char flag);
+short skill_blown(s_block_list* src, s_block_list* target, char count, int8 dir, enum e_skill_blown flag);
 int skill_break_equip(struct s_block_list *src,struct s_block_list *bl, unsigned short where, int rate, int flag);
 int skill_strip_equip(struct s_block_list *src,struct s_block_list *bl, unsigned short where, int rate, int lv, int time);
 // Skills unit
@@ -504,7 +504,7 @@ bool skill_check_cloaking(struct s_block_list *bl, struct s_status_change_entry 
 // Abnormal status
 void skill_enchant_elemental_end(struct s_block_list *bl, int type);
 bool skill_isNotOk(uint16 skill_id, s_map_session_data *sd);
-bool skill_isNotOk_hom(struct homun_data *hd, uint16 skill_id, uint16 skill_lv);
+bool skill_isNotOk_hom(s_homun_data *hd, uint16 skill_id, uint16 skill_lv);
 bool skill_isNotOk_mercenary(uint16 skill_id, struct s_mercenary_data *md);
 
 bool skill_isNotOk_npcRange(struct s_block_list *src, uint16 skill_id, uint16 skill_lv, int pos_x, int pos_y);
@@ -2155,7 +2155,7 @@ int skill_changematerial(s_map_session_data *sd, int n, unsigned short *item_lis
 int skill_get_elemental_type(uint16 skill_id, uint16 skill_lv);
 
 int skill_is_combo(uint16 skill_id);
-void skill_combo_toogle_inf(struct s_block_list* bl, uint16 skill_id, int inf);
+void skill_combo_toggle_inf(s_block_list* bl, uint16 skill_id, int inf);
 void skill_combo(struct s_block_list* src,struct s_block_list *dsrc, struct s_block_list *bl, uint16 skill_id, uint16 skill_lv, int tick);
 
 void skill_reveal_trap_inarea(struct s_block_list *src, int range, int x, int y);

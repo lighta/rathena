@@ -7,11 +7,10 @@
 #include "../common_old/cbasetypes.h"
 
 //#include "../common_old/mmo.h"
-struct s_storage_data;
-struct s_guild_storage;
 struct s_item;
 //#include "map.h"
-struct s_map_session_data;
+struct s_map_session_data; //pc.h
+struct s_storage; //mmo.h
 
 extern struct s_storage_table *storage_db;
 extern int storage_count;

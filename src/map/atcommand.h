@@ -5,6 +5,7 @@
 #define _ATCOMMAND_H_
 
 #include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h" //EVENT_NAME_LENGTH
 
 struct s_map_session_data;
 

@@ -10,11 +10,13 @@
 #include "../common_old/malloc.h"
 #include "../common_old/strlib.h"
 #include "../common_old/mmo.h"
+#include "../common_old/timer.h"
 
 #include "map.h"
 #include "battle.h"
 #include "chrif.h"
 #include "clan.h"
+#include "guild.h"
 #include "clif.h"
 #include "pc.h"
 
@@ -28,6 +30,7 @@
 #include "quest.h"
 #include "status.h"
 #include "achievement.h"
+#include "log.h"
 
 
 /// Received packet Lengths from inter-server
@@ -69,7 +72,7 @@ int CheckForCharServer(void)
 s_map_session_data *inter_search_sd(uint32 account_id, uint32 char_id)
 {
 	s_map_session_data *sd = NULL;
-	struct auth_node *node = chrif_auth_check(account_id, char_id, ST_LOGIN);
+	s_auth_node *node = chrif_auth_check(account_id, char_id, ST_LOGIN);
 	if (node)
 		sd = node->sd;
 	else
@@ -1436,7 +1439,7 @@ void intif_parse_Registers(int fd)
  */
 int intif_parse_LoadGuildStorage(int fd)
 {
-	struct s_guild_storage *gstor;
+	struct s_storage *gstor;
 	s_map_session_data *sd;
 	int guild_id, flag;
 
@@ -2105,7 +2108,7 @@ void intif_request_achievements(uint32 char_id)
  */
 void intif_parse_achievements(int fd)
 {
-	uint32 char_id = RFIFOL(fd, 4), num_received = (RFIFOW(fd, 2) - 8) / sizeof(struct achievement);
+	uint32 char_id = RFIFOL(fd, 4), num_received = (RFIFOW(fd, 2) - 8) / sizeof(s_achievement);
 	s_map_session_data *sd = map_charid2sd(char_id);
 
 	if (!sd) // User not online anymore
@@ -2119,16 +2122,16 @@ void intif_parse_achievements(int fd)
 			sd->achievement_data.count = 0;
 		}
 	} else {
-		struct achievement *received = (struct achievement *)RFIFOP(fd, 8);
+		s_achievement *received = (s_achievement *)RFIFOP(fd, 8);
 		int i, k = num_received;
 
 		if (sd->achievement_data.achievements)
-			RECREATE(sd->achievement_data.achievements, struct achievement, num_received);
+			RECREATE(sd->achievement_data.achievements, s_achievement, num_received);
 		else
-			CREATE(sd->achievement_data.achievements, struct achievement, num_received);
+			CREATE(sd->achievement_data.achievements, s_achievement, num_received);
 
 		for (i = 0; i < num_received; i++) {
-			struct achievement_db *adb = achievement_search(received[i].achievement_id);
+			s_achievement_db *adb = achievement_search(received[i].achievement_id);
 
 			if (!adb) {
 				ShowError("intif_parse_achievementlog: Achievement %d not found in DB.\n", received[i].achievement_id);
@@ -2138,16 +2141,16 @@ void intif_parse_achievements(int fd)
 			received[i].score = adb->score;
 
 			if (received[i].completed == 0) // Insert at the beginning
-				memcpy(&sd->achievement_data.achievements[sd->achievement_data.incompleteCount++], &received[i], sizeof(struct achievement));
+				memcpy(&sd->achievement_data.achievements[sd->achievement_data.incompleteCount++], &received[i], sizeof(s_achievement));
 			else // Insert at the end
-				memcpy(&sd->achievement_data.achievements[--k], &received[i], sizeof(struct achievement));
+				memcpy(&sd->achievement_data.achievements[--k], &received[i], sizeof(s_achievement));
 			sd->achievement_data.count++;
 		}
 		if (sd->achievement_data.incompleteCount < k) {
 			// sd->achievement_data.incompleteCount and k didn't meet in the middle: some entries were skipped
 			if (k < num_received) // Move the entries at the end to fill the gap
-				memmove(&sd->achievement_data.achievements[k], &sd->achievement_data.achievements[sd->achievement_data.incompleteCount], sizeof(struct achievement) * (num_received - k));
-			sd->achievement_data.achievements = (struct achievement *)aRealloc(sd->achievement_data.achievements, sizeof(struct achievement) * sd->achievement_data.count);
+				memmove(&sd->achievement_data.achievements[k], &sd->achievement_data.achievements[sd->achievement_data.incompleteCount], sizeof(s_achievement) * (num_received - k));
+			sd->achievement_data.achievements = (s_achievement *)aRealloc(sd->achievement_data.achievements, sizeof(s_achievement) * sd->achievement_data.count);
 		}
 		achievement_level(sd, false); // Calculate level info but don't give any AG_GOAL_ACHIEVE achievements
 		achievement_get_titles(sd->status.char_id); // Populate the title list for completed achievements
@@ -2181,7 +2184,7 @@ void intif_parse_achievementsave(int fd)
  */
 int intif_achievement_save(s_map_session_data *sd)
 {
-	int len = sizeof(struct achievement) * sd->achievement_data.count + 8;
+	int len = sizeof(s_achievement) * sd->achievement_data.count + 8;
 
 	if (CheckForCharServer())
 		return 0;
@@ -2191,7 +2194,7 @@ int intif_achievement_save(s_map_session_data *sd)
 	WFIFOW(inter_fd, 2) = len;
 	WFIFOL(inter_fd, 4) = sd->status.char_id;
 	if (sd->achievement_data.count)
-		memcpy(WFIFOP(inter_fd, 8), sd->achievement_data.achievements, sizeof(struct achievement) * sd->achievement_data.count);
+		memcpy(WFIFOP(inter_fd, 8), sd->achievement_data.achievements, sizeof(s_achievement) * sd->achievement_data.count);
 	WFIFOSET(inter_fd, len);
 
 	sd->achievement_data.save = false;
@@ -2218,7 +2221,7 @@ void intif_parse_achievementreward(int fd){
 /**
  * Request the achievement rewards from the inter server.
  */
-int intif_achievement_reward(s_map_session_data *sd, struct achievement_db *adb){
+int intif_achievement_reward(s_map_session_data *sd, s_achievement_db *adb){
 	if( CheckForCharServer() ){
 		return 0;
 	}
@@ -2247,7 +2250,7 @@ int intif_achievement_reward(s_map_session_data *sd, struct achievement_db *adb)
  * @param flag 0 Update Inbox | 1 OpenMail
  * @return 0=errur, 1=msg_sent
  */
-int intif_Mail_requestinbox(uint32 char_id, unsigned char flag, enum mail_inbox_type type)
+int intif_Mail_requestinbox(uint32 char_id, unsigned char flag, e_mail_inbox_type type)
 {
 	if (CheckForCharServer())
 		return 0;
@@ -2283,12 +2286,12 @@ int intif_parse_Mail_inboxreceived(int fd)
 
 	if (RFIFOW(fd,2) - 10 != sizeof(struct s_mail_data))
 	{
-		ShowError("intif_parse_Mail_inboxreceived: data size error %d %d\n", RFIFOW(fd,2) - 10, sizeof(struct mail_data));
+		ShowError("intif_parse_Mail_inboxreceived: data size error %d %d\n", RFIFOW(fd,2) - 10, sizeof(s_mail_data));
 		return 0;
 	}
 
 	//FIXME: this operation is not safe [ultramage]
-	memcpy(&sd->mail.inbox, RFIFOP(fd,10), sizeof(struct mail_data));
+	memcpy(&sd->mail.inbox, RFIFOP(fd,10), sizeof(s_mail_data));
 	sd->mail.changed = false; // cache is now in sync
 
 	if (flag){
@@ -2296,7 +2299,7 @@ int intif_parse_Mail_inboxreceived(int fd)
 		// Refresh top right icon
 		clif_Mail_new(sd, 0, NULL, NULL);
 #endif
-		clif_Mail_refreshinbox(sd,RFIFOB(fd,9),0);
+		clif_Mail_refreshinbox(sd,static_cast<e_mail_inbox_type>(RFIFOB(fd,9)),0);
 	}else if( battle_config.mail_show_status && ( battle_config.mail_show_status == 1 || sd->mail.inbox.unread ) )
 	{
 		char output[128];
@@ -2331,7 +2334,7 @@ int intif_Mail_read(int mail_id)
  * @param mail_id : Mail identification
  * @return 0=error, 1=msg sent
  */
-bool intif_mail_getattach( s_map_session_data* sd, struct mail_message *msg, enum mail_attachment_type type){
+bool intif_mail_getattach( s_map_session_data* sd, s_mail_message *msg, e_mail_attachment_type type){
 	if (CheckForCharServer())
 		return false;
 
@@ -2353,12 +2356,12 @@ bool intif_mail_getattach( s_map_session_data* sd, struct mail_message *msg, enu
 int intif_parse_Mail_getattach(int fd)
 {
 	s_map_session_data *sd;
-	struct item item[MAIL_MAX_ITEM];
+	s_item item[MAIL_MAX_ITEM];
 	int i, mail_id, zeny;
 
-	if (RFIFOW(fd, 2) - 16 != sizeof(struct item)*MAIL_MAX_ITEM)
+	if (RFIFOW(fd, 2) - 16 != sizeof(s_item)*MAIL_MAX_ITEM)
 	{
-		ShowError("intif_parse_Mail_getattach: data size error %d %d\n", RFIFOW(fd, 2) - 16, sizeof(struct item));
+		ShowError("intif_parse_Mail_getattach: data size error %d %d\n", RFIFOW(fd, 2) - 16, sizeof(s_item));
 		return 0;
 	}
 
@@ -2378,7 +2381,7 @@ int intif_parse_Mail_getattach(int fd)
 
 	zeny = RFIFOL(fd, 12);
 
-	memcpy(item, RFIFOP(fd,16), sizeof(struct item)*MAIL_MAX_ITEM);
+	memcpy(item, RFIFOP(fd,16), sizeof(s_item)*MAIL_MAX_ITEM);
 
 	mail_getattachment(sd, &sd->mail.inbox.msg[i], zeny, item);
 	return 1;
@@ -2428,9 +2431,9 @@ int intif_parse_Mail_delete(int fd)
 		ARR_FIND(0, MAIL_MAX_INBOX, i, sd->mail.inbox.msg[i].id == mail_id);
 		if( i < MAIL_MAX_INBOX )
 		{
-			enum mail_inbox_type type = sd->mail.inbox.msg[i].type;
+			e_mail_inbox_type type = sd->mail.inbox.msg[i].type;
 			clif_mail_delete(sd, &sd->mail.inbox.msg[i], !failed);
-			memset(&sd->mail.inbox.msg[i], 0, sizeof(struct mail_message));
+			memset(&sd->mail.inbox.msg[i], 0, sizeof(s_mail_message));
 			sd->mail.inbox.amount--;
 
 			if( sd->mail.inbox.full || sd->mail.inbox.unchecked > 0 )
@@ -2488,8 +2491,8 @@ int intif_parse_Mail_return(int fd)
 		ARR_FIND(0, MAIL_MAX_INBOX, i, sd->mail.inbox.msg[i].id == mail_id);
 		if( i < MAIL_MAX_INBOX )
 		{
-			enum mail_inbox_type type = sd->mail.inbox.msg[i].type;
-			memset(&sd->mail.inbox.msg[i], 0, sizeof(struct mail_message));
+			e_mail_inbox_type type = sd->mail.inbox.msg[i].type;
+			memset(&sd->mail.inbox.msg[i], 0, sizeof(s_mail_message));
 			sd->mail.inbox.amount--;
 
 			if( sd->mail.inbox.full )
@@ -2580,7 +2583,7 @@ static void intif_parse_Mail_new(int fd)
 	clif_Mail_new(sd, mail_id, sender_name, title);
 #if PACKETVER >= 20150513
 	// Make sure the window gets refreshed when its open
-	intif_Mail_requestinbox(sd->status.char_id, 1, RFIFOB(fd,74));
+	intif_Mail_requestinbox(sd->status.char_id, 1, static_cast<e_mail_inbox_type>(RFIFOB(fd,74)) );
 #endif
 }
 
@@ -3432,8 +3435,8 @@ static bool intif_parse_StorageReceived(int fd)
 			//Set here because we need the inventory data for weapon sprite parsing.
 			status_set_viewdata(&sd->bl, sd->status.class_);
 			pc_load_combo(sd);
-			status_calc_pc(sd, (enum e_status_calc_opt)(SCO_FIRST|SCO_FORCE));
-			status_calc_weight(sd, CALCWT_ITEM|CALCWT_MAXBONUS); // Refresh weight data
+			status_calc_pc(sd, static_cast<e_status_calc_opt>(SCO_FIRST|SCO_FORCE));
+			status_calc_weight(sd, static_cast<e_status_calc_weight_opt>(CALCWT_ITEM|CALCWT_MAXBONUS)); // Refresh weight data
 			chrif_scdata_request(sd->status.account_id, sd->status.char_id);
 			break;
 		}
@@ -3518,7 +3521,7 @@ void intif_parse_StorageInfo_recv(int fd) {
 	}
 
 	if (battle_config.etc_log)
-		ShowInfo("Received '"CL_WHITE"%d"CL_RESET"' storage info from inter-server.\n", storage_count);
+		ShowInfo("Received '" CL_WHITE "%d" CL_RESET "' storage info from inter-server.\n", storage_count);
 }
 
 /**
@@ -3584,7 +3587,7 @@ int intif_clan_requestclans(){
 }
 
 void intif_parse_clans( int fd ){
-	clan_load_clandata( ( RFIFOW(fd, 2) - 4 ) / sizeof( struct clan ), (struct clan*)RFIFOP(fd,4) );
+	clan_load_clandata( ( RFIFOW(fd, 2) - 4 ) / sizeof( s_clan ), (s_clan*)RFIFOP(fd,4) );
 }
 
 int intif_clan_message(int clan_id,uint32 account_id,const char *mes,int len){
@@ -3642,7 +3645,7 @@ int intif_clan_member_joined( int clan_id ){
 }
 
 int intif_parse_clan_onlinecount( int fd ){
-	struct clan* clan = clan_search(RFIFOL(fd,2));
+	s_clan* clan = clan_search(RFIFOL(fd,2));
 
 	if( clan == NULL ){
 		return 0;

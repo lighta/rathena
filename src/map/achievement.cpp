@@ -1,15 +1,16 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
-
-#include "../common/cbasetypes.h"
-#include "../common/malloc.h"
-#include "../common/nullpo.h"
-#include "../common/showmsg.h"
-#include "../common/strlib.h"
-#include "../common/utils.h"
-#include "../common/yamlwrapper.h"
-
 #include "achievement.h"
+
+#include "../common_old/cbasetypes.h"
+#include "../common_old/malloc.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/showmsg.h"
+#include "../common_old/strlib.h"
+#include "../common_old/utils.h"
+#include "../common_old/yamlwrapper.h"
+
+#include "battle.h"
 #include "chrif.h"
 #include "clif.h"
 #include "intif.h"
@@ -18,6 +19,7 @@
 #include "pc.h"
 #include "script.h"
 #include "status.h"
+#include "npc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,7 +31,7 @@ static char*       av_error_msg;
 static const char* av_error_pos;
 static int         av_error_report;
 
-static s_DBMap* achievement_db = NULL; // int achievement_id -> struct achievement_db *
+static s_DBMap* achievement_db = NULL; // int achievement_id -> struct s_achievement_db *
 static s_DBMap* achievementmobs_db = NULL; // Avoids checking achievements on every mob killed
 static void achievement_db_free_sub(struct s_achievement_db *achievement, bool free);
 struct s_achievement_db achievement_dummy;
@@ -39,9 +41,9 @@ struct s_achievement_db achievement_dummy;
  * @param achievement_id: ID to lookup
  * @return Achievement entry (equals to &achievement_dummy if the ID is invalid)
  */
-struct achievement_db *achievement_search(int achievement_id)
+struct s_achievement_db *achievement_search(int achievement_id)
 {
-	struct achievement_db *achievement = (struct achievement_db *)idb_get(achievement_db, achievement_id);
+	struct s_achievement_db *achievement = (struct s_achievement_db *)idb_get(achievement_db, achievement_id);
 
 	if (!achievement)
 		return &achievement_dummy;
@@ -66,9 +68,9 @@ bool achievement_mobexists(int mob_id)
  * @param achievement_id: Achievement to add
  * @return NULL on failure, achievement data on success
  */
-struct achievement *achievement_add(s_map_session_data *sd, int achievement_id)
+s_achievement *achievement_add(s_map_session_data *sd, int achievement_id)
 {
-	struct achievement_db *adb = &achievement_dummy;
+	struct s_achievement_db *adb = &achievement_dummy;
 	int i, index;
 
 	nullpo_retr(NULL, sd);
@@ -88,13 +90,13 @@ struct achievement *achievement_add(s_map_session_data *sd, int achievement_id)
 
 	sd->achievement_data.count++;
 	sd->achievement_data.incompleteCount++;
-	RECREATE(sd->achievement_data.achievements, struct achievement, sd->achievement_data.count);
+	RECREATE(sd->achievement_data.achievements, s_achievement, sd->achievement_data.count);
 
 	// The character has some completed achievements, make room before them so that they will stay at the end of the array
 	if (sd->achievement_data.incompleteCount != sd->achievement_data.count)
-		memmove(&sd->achievement_data.achievements[index + 1], &sd->achievement_data.achievements[index], sizeof(struct achievement) * (sd->achievement_data.count - sd->achievement_data.incompleteCount));
+		memmove(&sd->achievement_data.achievements[index + 1], &sd->achievement_data.achievements[index], sizeof(s_achievement) * (sd->achievement_data.count - sd->achievement_data.incompleteCount));
 
-	memset(&sd->achievement_data.achievements[index], 0, sizeof(struct achievement));
+	memset(&sd->achievement_data.achievements[index], 0, sizeof(s_achievement));
 
 	sd->achievement_data.achievements[index].achievement_id = achievement_id;
 	sd->achievement_data.achievements[index].score = adb->score;
@@ -113,7 +115,7 @@ struct achievement *achievement_add(s_map_session_data *sd, int achievement_id)
  */
 bool achievement_remove(s_map_session_data *sd, int achievement_id)
 {
-	struct achievement dummy;
+	s_achievement dummy;
 	int i;
 
 	nullpo_retr(false, sd);
@@ -133,19 +135,19 @@ bool achievement_remove(s_map_session_data *sd, int achievement_id)
 		sd->achievement_data.incompleteCount--;
 
 	if (i != sd->achievement_data.count - 1)
-		memmove(&sd->achievement_data.achievements[i], &sd->achievement_data.achievements[i + 1], sizeof(struct achievement) * (sd->achievement_data.count - 1 - i));
+		memmove(&sd->achievement_data.achievements[i], &sd->achievement_data.achievements[i + 1], sizeof(s_achievement) * (sd->achievement_data.count - 1 - i));
 
 	sd->achievement_data.count--;
 	if( sd->achievement_data.count == 0 ){
 		aFree(sd->achievement_data.achievements);
 		sd->achievement_data.achievements = NULL;
 	}else{
-		RECREATE(sd->achievement_data.achievements, struct achievement, sd->achievement_data.count);
+		RECREATE(sd->achievement_data.achievements, s_achievement, sd->achievement_data.count);
 	}
 	sd->achievement_data.save = true;
 
 	// Send a removed fake achievement
-	memset(&dummy, 0, sizeof(struct achievement));
+	memset(&dummy, 0, sizeof(s_achievement));
 	dummy.achievement_id = achievement_id;
 	clif_achievement_update(sd, &dummy, sd->achievement_data.count - sd->achievement_data.incompleteCount);
 
@@ -160,7 +162,7 @@ bool achievement_remove(s_map_session_data *sd, int achievement_id)
  */
 bool achievement_check_dependent(s_map_session_data *sd, int achievement_id)
 {
-	struct achievement_db *adb = &achievement_dummy;
+	struct s_achievement_db *adb = &achievement_dummy;
 
 	nullpo_retr(false, sd);
 
@@ -175,7 +177,7 @@ bool achievement_check_dependent(s_map_session_data *sd, int achievement_id)
 		int i;
 
 		for (i = 0; i < adb->dependent_count; i++) {
-			struct achievement_db *adb_dep = achievement_search(adb->dependents[i].achievement_id);
+			struct s_achievement_db *adb_dep = achievement_search(adb->dependents[i].achievement_id);
 			int j;
 
 			if (adb_dep == &achievement_dummy)
@@ -194,13 +196,13 @@ bool achievement_check_dependent(s_map_session_data *sd, int achievement_id)
  * Check achievements that only have dependents and no other requirements
  * @return True if successful, false if not
  */
-static int achievement_check_groups(DBKey key, DBData *data, va_list ap)
+static int achievement_check_groups(u_DBKey key, s_DBData *data, va_list ap)
 {
-	struct achievement_db *ad;
+	struct s_achievement_db *ad;
 	s_map_session_data *sd;
 	int i;
 
-	ad = (struct achievement_db *)db_data2ptr(data);
+	ad = (struct s_achievement_db *)db_data2ptr(data);
 	sd = va_arg(ap, s_map_session_data *);
 
 	if (ad == &achievement_dummy || sd == NULL)
@@ -232,7 +234,7 @@ static int achievement_check_groups(DBKey key, DBData *data, va_list ap)
  */
 bool achievement_update_achievement(s_map_session_data *sd, int achievement_id, bool complete)
 {
-	struct achievement_db *adb = &achievement_dummy;
+	struct s_achievement_db *adb = &achievement_dummy;
 	int i;
 
 	nullpo_retr(false, sd);
@@ -265,11 +267,11 @@ bool achievement_update_achievement(s_map_session_data *sd, int achievement_id, 
 		sd->achievement_data.achievements[i].completed = time(NULL);
 
 		if (i < (--sd->achievement_data.incompleteCount)) { // The achievement needs to be moved to the completed achievements block at the end of the array
-			struct achievement tmp_ach;
+			s_achievement tmp_ach;
 
-			memcpy(&tmp_ach, &sd->achievement_data.achievements[i], sizeof(struct achievement));
-			memcpy(&sd->achievement_data.achievements[i], &sd->achievement_data.achievements[sd->achievement_data.incompleteCount], sizeof(struct achievement));
-			memcpy(&sd->achievement_data.achievements[sd->achievement_data.incompleteCount], &tmp_ach, sizeof(struct achievement));
+			memcpy(&tmp_ach, &sd->achievement_data.achievements[i], sizeof(s_achievement));
+			memcpy(&sd->achievement_data.achievements[i], &sd->achievement_data.achievements[sd->achievement_data.incompleteCount], sizeof(s_achievement));
+			memcpy(&sd->achievement_data.achievements[sd->achievement_data.incompleteCount], &tmp_ach, sizeof(s_achievement));
 		}
 
 		achievement_level(sd, true); // Re-calculate achievement level
@@ -296,7 +298,7 @@ bool achievement_update_achievement(s_map_session_data *sd, int achievement_id, 
  */
 void achievement_get_reward(s_map_session_data *sd, int achievement_id, time_t rewarded)
 {
-	struct achievement_db *adb = achievement_search(achievement_id);
+	struct s_achievement_db *adb = achievement_search(achievement_id);
 	int i;
 
 	nullpo_retv(sd);
@@ -340,7 +342,7 @@ void achievement_get_reward(s_map_session_data *sd, int achievement_id, time_t r
 void achievement_check_reward(s_map_session_data *sd, int achievement_id)
 {
 	int i;
-	struct achievement_db *adb = achievement_search(achievement_id);
+	struct s_achievement_db *adb = achievement_search(achievement_id);
 
 	nullpo_retv(sd);
 
@@ -382,7 +384,7 @@ void achievement_get_titles(uint32 char_id)
 			int i;
 
 			for (i = 0; i < sd->achievement_data.count; i++) {
-				struct achievement_db *adb = achievement_search(sd->achievement_data.achievements[i].achievement_id);
+				struct s_achievement_db *adb = achievement_search(sd->achievement_data.achievements[i].achievement_id);
 
 				if (adb && adb->rewards.title_id && sd->achievement_data.achievements[i].completed > 0) { // If the achievement has a title and is complete, give it to the player
 					RECREATE(sd->titles, int, sd->titleCount + 1);
@@ -509,16 +511,16 @@ int *achievement_level(s_map_session_data *sd, bool flag)
  * Update achievement objectives.
  * @see DBApply
  */
-static int achievement_update_objectives(DBKey key, DBData *data, va_list ap)
+static int achievement_update_objectives(u_DBKey key, s_DBData *data, va_list ap)
 {
-	struct achievement_db *ad;
+	struct s_achievement_db *ad;
 	s_map_session_data *sd;
 	enum e_achievement_group group;
-	struct achievement *entry = NULL;
+	s_achievement *entry = NULL;
 	bool isNew = false, changed = false, complete = false;
 	int i, k = 0, objective_count[MAX_ACHIEVEMENT_OBJECTIVES], update_count[MAX_ACHIEVEMENT_OBJECTIVES];
 
-	ad = (struct achievement_db *)db_data2ptr(data);
+	ad = (struct s_achievement_db *)db_data2ptr(data);
 	sd = va_arg(ap, s_map_session_data *);
 	group = (enum e_achievement_group)va_arg(ap, int);
 	memcpy(update_count, (int *)va_arg(ap, int *), sizeof(update_count));
@@ -975,9 +977,9 @@ struct av_condition *parse_condition(const char *p, const char *file, int line)
  * @param source: The source YAML file.
  * @return The parsed achievement entry or NULL in case of error.
  */
-struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, const char *source)
+struct s_achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, const char *source)
 {
-	struct achievement_db *entry = NULL;
+	struct s_achievement_db *entry = NULL;
 	yamlwrapper *t = NULL;
 	yamliterator *it;
 	enum e_achievement_group group = AG_NONE;
@@ -1011,7 +1013,7 @@ struct achievement_db *achievement_read_db_sub(yamlwrapper *wrapper, int n, cons
 	} else
 		name = yaml_get_c_string(wrapper, "Name");
 
-	CREATE(entry, struct achievement_db, 1);
+	CREATE(entry, struct s_achievement_db, 1);
 	entry->achievement_id = achievement_id;
 	entry->group = group;
 	safestrncpy(entry->name, name, sizeof(entry->name));
@@ -1120,7 +1122,7 @@ void achievement_read_db(void)
 	int i = 0;
 	const char *dbsubpath[] = {
 		"",
-		"/"DBIMPORT"/",
+		"/" DBIMPORT "/",
 		//add other path here
 	};
 
@@ -1146,7 +1148,7 @@ void achievement_read_db(void)
 			yamlwrapper *id = NULL;
 
 			for (id = yaml_iterator_first(it); yaml_iterator_has_next(it); id = yaml_iterator_next(it)) {
-				struct achievement_db *duplicate = &achievement_dummy, *entry = achievement_read_db_sub(id, count, filepath);
+				struct s_achievement_db *duplicate = &achievement_dummy, *entry = achievement_read_db_sub(id, count, filepath);
 
 				if (!entry) {
 					ShowWarning("achievement_read_db: Failed to parse achievement entry %d.\n", count);
@@ -1169,7 +1171,7 @@ void achievement_read_db(void)
 		yaml_destroy_wrapper(adb_sub);
 		yaml_iterator_destroy(it);
 
-		ShowStatus("Done reading '"CL_WHITE"%d"CL_RESET"' entries in '"CL_WHITE"%s"CL_RESET"'.\n", count, filepath);
+		ShowStatus("Done reading '" CL_WHITE "%d" CL_RESET "' entries in '" CL_WHITE"%s" CL_RESET "'.\n", count, filepath);
 	}
 
 	return;
@@ -1199,7 +1201,7 @@ void achievement_script_free(struct av_condition *condition)
  * @param achievement: Achievement to clear
  * @param free: Will free achievement from memory
  */
-void achievement_db_free_sub(struct achievement_db *achievement, bool free)
+void achievement_db_free_sub(struct s_achievement_db *achievement, bool free)
 {
 	if (achievement->targets) {
 		aFree(achievement->targets);
@@ -1226,9 +1228,9 @@ void achievement_db_free_sub(struct achievement_db *achievement, bool free)
 /**
  * Clears the achievement database for shutdown or reload.
  */
-static int achievement_db_free(DBKey key, DBData *data, va_list ap)
+static int achievement_db_free(u_DBKey key, s_DBData *data, va_list ap)
 {
-	struct achievement_db *achievement = (struct achievement_db *)db_data2ptr(data);
+	struct s_achievement_db *achievement = (struct s_achievement_db *)db_data2ptr(data);
 
 	if (!achievement)
 		return 0;
@@ -1237,7 +1239,7 @@ static int achievement_db_free(DBKey key, DBData *data, va_list ap)
 	return 1;
 }
 
-static int achievementmobs_db_free(DBKey key, DBData *data, va_list ap)
+static int achievementmobs_db_free(u_DBKey key, s_DBData *data, va_list ap)
 {
 	struct achievementmobs_db *achievement = (struct achievementmobs_db *)db_data2ptr(data);
 

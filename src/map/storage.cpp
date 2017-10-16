@@ -22,7 +22,7 @@
 #include "battle.h"
 
 
-static DBMap* guild_storage_db; ///Databases of guild_storage : int guild_id -> struct guild_storage*
+static s_DBMap* guild_storage_db; ///Databases of guild_storage : int guild_id -> s_guild_storage*
 struct s_storage_table *storage_db;
 int storage_count;
 
@@ -206,7 +206,7 @@ int compare_item(struct s_item *a, struct s_item *b)
  * @param max_num Max inventory/cart
  * @return @see enum e_storage_add
  **/
-static enum e_storage_add storage_canAddItem(struct s_storage *stor, int idx, struct item items[], int amount, int max_num) {
+static enum e_storage_add storage_canAddItem(struct s_storage *stor, int idx, s_item items[], int amount, int max_num) {
 	if (idx < 0 || idx >= max_num)
 		return STORAGE_ADD_INVALID;
 
@@ -255,9 +255,9 @@ static enum e_storage_add storage_canGetItem(struct s_storage *stor, int idx, in
  * @param amount : quantity of items
  * @return 0:success, 1:failed, 2:failed because of room or stack checks
  */
-static int storage_additem(s_map_session_data* sd, struct s_storage *stor, struct item *it, int amount)
+static int storage_additem(s_map_session_data* sd, struct s_storage *stor, s_item *it, int amount)
 {
-	struct item_data *data;
+	s_item_data *data;
 	int i;
 
 	if( it->nameid == 0 || amount <= 0 )
@@ -636,7 +636,7 @@ char storage_guild_storageopen(s_map_session_data* sd)
  * @param amount : number of item to add
  * @return True : success, False : fail
  */
-bool storage_guild_additem(s_map_session_data* sd, struct s_storage* stor, struct item* item_data, int amount)
+bool storage_guild_additem(s_map_session_data* sd, struct s_storage* stor, s_item* item_data, int amount)
 {
 	struct s_item_data *id;
 	int i;
@@ -698,8 +698,8 @@ bool storage_guild_additem(s_map_session_data* sd, struct s_storage* stor, struc
  * @param amount : number of item to add
  * @return True : success, False : fail
  */
-bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amount) {
-	struct item_data *id;
+bool storage_guild_additem2(struct s_storage* stor, s_item* item, int amount) {
+	s_item_data *id;
 	int i;
 
 	nullpo_ret(stor);
@@ -717,7 +717,7 @@ bool storage_guild_additem2(struct s_storage* stor, struct item* item, int amoun
 				// Set the amount, make it fit with max amount
 				amount = min(amount, ((id->stack.guildstorage) ? id->stack.amount : MAX_AMOUNT) - stor->u.items_guild[i].amount);
 				if (amount != item->amount)
-					ShowWarning("storage_guild_additem2: Stack limit reached! Altered amount of item \""CL_WHITE"%s"CL_RESET"\" (%d). '"CL_WHITE"%d"CL_RESET"' -> '"CL_WHITE"%d"CL_RESET"'.\n", id->name, id->nameid, item->amount, amount);
+					ShowWarning("storage_guild_additem2: Stack limit reached! Altered amount of item \"" CL_WHITE "%s" CL_RESET "\" (%d). '" CL_WHITE "%d" CL_RESET "' -> '" CL_WHITE "%d" CL_RESET "'.\n", id->name, id->nameid, item->amount, amount);
 				stor->u.items_guild[i].amount += amount;
 				stor->dirty = true;
 				return true;

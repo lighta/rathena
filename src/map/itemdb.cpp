@@ -1263,11 +1263,15 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 	nameid = atoi(str[0]);
 
 	//ID,Name,Jname,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Job Upper,Gender,Loc,wLV,eLV,refineable,View
-	if (!(id = itemdb_exists(nameid)))
-		id = itemdb_create_item(nameid);
+	if (!(id = itemdb_exists(nameid))) {
+		// Checks if the Itemname is already taken by another id
+		if( itemdb_searchname1(str[1], true) != NULL )
+			ShowWarning("itemdb_parse_dbrow: Duplicate item name for \"%s\"\n", str[1]);
 
-	if( itemdb_searchname1(str[1], true) != NULL )
-		ShowWarning("itemdb_parse_dbrow: Duplicate item name for \"%s\"\n", str[1]);
+		// Adds a new Item ID
+		id = itemdb_create_item(nameid);
+	}
+
 	safestrncpy(id->name, str[1], sizeof(id->name));
 	safestrncpy(id->jname, str[2], sizeof(id->jname));
 
@@ -1693,7 +1697,7 @@ static bool itemdb_read_randomopt(const char* basedir, bool silent) {
  * Clear Item Random Option Group from memory
  * @author [Cydh]
  **/
-static int itemdb_randomopt_group_free(DBKey key, DBData *data, va_list ap) {
+static int itemdb_randomopt_group_free(u_DBKey key, s_DBData *data, va_list ap) {
 	struct s_random_opt_group *g = (struct s_random_opt_group *)db_data2ptr(data);
 	if (!g)
 		return 0;

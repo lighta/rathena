@@ -1,6 +1,7 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
+#include "unit.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -14,7 +15,6 @@
 #include "../common_old/ers.h"  // ers_destroy
 
 #include "map.h"
-#include "unit.h"
 #include "path.h"
 #include "pc.h"
 #include "pet.h"
@@ -34,6 +34,7 @@
 #include "clif.h"
 #include "mob.h"
 #include "battle.h"
+#include "achievement.h"
 
 // Directions values
 // 1 0 7
@@ -1038,7 +1039,7 @@ uint8 unit_getdir(struct s_block_list *bl)
  * @param dx: Destination cell X
  * @param dy: Destination cell Y
  * @param count: How many cells to push bl
- * @param flag: &1 Whether or not to send position packet updates
+ * @param flag: See skill.h::e_skill_blown
  * @return count (can be modified due to map cell restrictions)
  */
 int unit_blown(struct s_block_list* bl, int dx, int dy, int count, e_skill_blown flag)
@@ -2197,9 +2198,9 @@ int unit_unattackable(struct s_block_list *bl)
 /**
  * Checks if the unit can attack, returns yes if so.
 */
-bool unit_can_attack(struct block_list *src, int target_id)
+bool unit_can_attack(s_block_list *src, int target_id)
 {
-	struct status_change *sc = status_get_sc(src);
+	s_status_change *sc = status_get_sc(src);
 
 	if( sc != NULL ) {
 		if( sc->data[SC__MANHOLE] )
@@ -2516,9 +2517,6 @@ static int unit_attack_timer_sub(struct s_block_list* src, int tid, unsigned int
 	   || (sd && !pc_can_attack(sd, target->id)) )
 		return 0; // Can't attack under these conditions
 
-	if (sd && &sd->sc && sd->sc.count && sd->sc.data[SC_HEAT_BARREL_AFTER])
-		return 0;
-
 	if( src->m != target->m ) {
 		if( src->type == BL_MOB && mob_warpchase((TBL_MOB*)src, target) )
 			return 1; // Follow up.
@@ -2763,31 +2761,6 @@ int unit_counttargeted(struct s_block_list* bl)
 
 	if( bl && (ud = unit_bl2ud(bl)) )
 		return ud->target_count;
-
-	return 0;
-}
-
-/**
- * Changes the size of a unit
- * @param bl: Object to change size [PC|MOB]
- * @param size: New size of bl
- * @return 0
- */
-int unit_changeviewsize(struct s_block_list *bl,short size)
-{
-	nullpo_ret(bl);
-
-	size = (size < 0) ? -1 : (size > 0) ? 1 : 0;
-
-	if(bl->type == BL_PC)
-		((TBL_PC*)bl)->state.size = size;
-	else if(bl->type == BL_MOB)
-		((TBL_MOB*)bl)->special_state.size = size;
-	else
-		return 0;
-
-	if(size != 0)
-		clif_specialeffect(bl,421+size, AREA);
 
 	return 0;
 }

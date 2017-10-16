@@ -23,6 +23,7 @@
 #include "mob.h"
 #include "battle.h"
 #include "log.h"
+#include "achievement.h"
 
 #define MIN_PETTHINKTIME 100
 
@@ -90,12 +91,7 @@ int pet_create_egg(s_map_session_data *sd, unsigned short item_id)
 		return 0; // Inventory full
 
 	sd->catch_target_class = pet_db[pet_id].class_;
-	intif_create_pet(sd->status.account_id, sd->status.char_id, 
-  pet_db[pet_id].class_, 
-  mob_db(pet_db[pet_id].class_)->lv, 
-  pet_db[pet_id].EggID,  0, 
-  pet_db[pet_id].intimate, 
-  100, 0, 1, pet_db[pet_id].jname);
+	intif_create_pet(sd->status.account_id, sd->status.char_id, pet_db[pet_id].class_, mob_db(pet_db[pet_id].class_)->lv, pet_db[pet_id].EggID, 0, pet_db[pet_id].intimate, 100, 0, 1, pet_db[pet_id].jname);
 
 	return 1;
 }
@@ -1147,7 +1143,7 @@ static int pet_ai_sub_hard(struct s_pet_data *pd, s_map_session_data *sd, unsign
 
 	if(!target && pd->loot && pd->loot->count < pd->loot->max && DIFF_TICK(tick,pd->ud.canact_tick) > 0) {
 		// Use half the pet's range of sight.
-		map_foreachinrange(pet_ai_sub_hard_lootsearch, &pd->bl, pd->db->range2 / 2, BL_ITEM, pd, &target);
+		map_foreachinallrange(pet_ai_sub_hard_lootsearch, &pd->bl, pd->db->range2 / 2, BL_ITEM, pd, &target);
 	}
 
 	if (!target) { // Just walk around.

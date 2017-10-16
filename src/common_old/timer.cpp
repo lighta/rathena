@@ -195,7 +195,7 @@ unsigned int gettick(void)
 /// Adds a timer to the timer_heap
 static void push_timer_heap(int tid)
 {
-	BHEAP_ENSURE(timer_heap, 1, 256, int*);
+	BHEAP_ENSURE(timer_heap, 1, 256);
 	BHEAP_PUSH(timer_heap, tid, DIFFTICK_MINTOPCMP, SWAP);
 }
 

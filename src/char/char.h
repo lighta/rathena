@@ -208,7 +208,7 @@ struct s_auth_node {
 	unsigned changing_mapservers : 1;
 	uint8 version;
 };
-s_DBMap* char_get_authdb(); // uint32 account_id -> struct auth_node*
+s_DBMap* char_get_authdb(); // uint32 account_id -> s_auth_node*
 
 struct s_online_char_data {
 	uint32 account_id;

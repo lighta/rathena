@@ -8,7 +8,7 @@
 
 //#include "map.h"
 struct s_block_list;
-s_map_session_data;
+struct s_map_session_data;
 struct s_mob_data;
 struct s_item;
 

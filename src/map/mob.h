@@ -93,7 +93,7 @@ enum e_MobDamageLogFlag
 	MDLF_SELF
 };
 
-enum e_MobSize {
+enum e_Size {
 	SZ_SMALL = 0,
 	SZ_MEDIUM,
 	SZ_BIG,
@@ -294,16 +294,16 @@ int mobdb_searchname(const char *str);
 int mobdb_searchname_array(struct s_mob_db** data, int size, const char *str);
 int mobdb_checkid(const int id);
 struct s_view_data* mob_get_viewdata(int mob_id);
-void mob_set_dynamic_viewdata( struct mob_data* md );
-void mob_free_dynamic_viewdata( struct mob_data* md );
+void mob_set_dynamic_viewdata( s_mob_data* md );
+void mob_free_dynamic_viewdata( s_mob_data* md );
 
-struct s_mob_data *mob_once_spawn_sub(struct s_block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, enum mob_ai ai);
+struct s_mob_data *mob_once_spawn_sub(struct s_block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, e_mob_ai ai);
 
 int mob_once_spawn(s_map_session_data* sd, int16 m, int16 x, int16 y,
-	const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);
+	const char* mobname, int mob_id, int amount, const char* event, unsigned int size, e_mob_ai ai);
 
 int mob_once_spawn_area(s_map_session_data* sd, int16 m,
-	int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai);
+	int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, e_mob_ai ai);
 
 bool mob_ksprotected (struct s_block_list *src, struct s_block_list *target);
 

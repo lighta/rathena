@@ -159,7 +159,7 @@ namespace ra {
             char sex;
             uint8 clienttype;
         };
-        extern s_DBMap* auth_db; // uint32 account_id -> struct auth_node*
+        extern s_DBMap* auth_db; // uint32 account_id -> s_auth_node*
 
         ///Accessors
         s_AccountDB* login_get_accounts_db(void);

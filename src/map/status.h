@@ -696,7 +696,7 @@ enum e_sc_type : int16 {
 	 * Rebellion [Cydh]
 	 **/
 	SC_HEAT_BARREL,
-	SC_HEAT_BARREL_AFTER,
+	SC_MAGICALBULLET,
 	SC_P_ALTER,
 	SC_E_CHAIN,
 	SC_C_MARKER,
@@ -837,6 +837,8 @@ enum e_sc_type : int16 {
 	SC_DORAM_MATK,
 	SC_DORAM_FLEE2,
 	SC_DORAM_SVSP,
+
+	SC_FALLEN_ANGEL,
 
 #ifdef RENEWAL
 	SC_EXTREMITYFIST2, //! NOTE: This SC should be right before SC_MAX, so it doesn't disturb if RENEWAL is disabled
@@ -1830,6 +1832,7 @@ extern short current_equip_opt_index;
 ENUM_FLAGS(e_MonsterMode);
 ENUM_COMPARISON_OPERATORS(e_MonsterMode, intptr_t);
 enum class e_MonsterMode : intptr_t {
+	NONE					= 0x0000000,
 	CANMOVE				= 0x0000001,
 	LOOTER				= 0x0000002,
 	AGGRESSIVE			= 0x0000004,
@@ -2316,7 +2319,7 @@ unsigned char status_calc_attack_element(struct s_block_list *bl, struct s_statu
 #define status_get_class_(bl) status_get_status_data(bl)->class_
 #define status_get_size(bl) status_get_status_data(bl)->size
 #define status_get_mode(bl) status_get_status_data(bl)->mode
-#define status_has_mode(status,md) (((status)->mode&(md)) == (md))
+#define status_has_mode(status,md) ((static_cast<int>((status)->mode)&static_cast<int>(md)) == static_cast<int>((md)))
 #define status_bl_has_mode(bl,md) status_has_mode(status_get_status_data((bl)),(md))
 
 #define status_get_homstr(bl) (status->str + ((TBL_HOM*)bl)->homunculus.str_value)
@@ -2347,7 +2350,7 @@ int status_get_sc_def(struct s_block_list *src,struct s_block_list *bl, enum e_s
 
 int status_change_start(struct s_block_list* src, struct s_block_list* bl,enum e_sc_type type,int rate,int val1,int val2,int val3,int val4,int tick,unsigned char flag);
 int status_change_end_(struct s_block_list* bl, enum e_sc_type type, int tid, const char* file, int line);
-#define status_change_end(bl,type,tid) status_change_end_(bl,(e_sc_type)type,tid,__FILE__,__LINE__)
+#define status_change_end(bl,type,tid) status_change_end_(bl,static_cast<e_sc_type>(type),tid,__FILE__,__LINE__)
 int status_change_timer(int tid, unsigned int tick, int id, intptr_t data);
 int status_change_timer_sub(struct s_block_list* bl, va_list ap);
 int status_change_clear(struct s_block_list* bl, int type);

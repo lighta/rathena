@@ -9,6 +9,7 @@
 //#include "map.h" //MESSAGE_SIZE
 
 struct s_search_store_search;
+struct s_map_session_data;
 
 #define MAX_BUYINGSTORE_SLOTS 5
 

@@ -4,7 +4,7 @@
 #ifndef	_MMO_H_
 #define	_MMO_H_
 
-#include <ctime>
+#include <time.h>
 #include <map>
 
 #include "cbasetypes.h"
@@ -324,7 +324,7 @@ struct s_skill_cooldown_data {
 	long tick;
 };
 
-enum e_storage_type {
+enum e_storage_type : uint8 {
 	TABLE_INVENTORY = 1,
 	TABLE_CART,
 	TABLE_STORAGE,
@@ -351,7 +351,7 @@ struct s_storage {
 		unsigned get : 1;
 		unsigned put : 1;
 	} state;
-	union { // Max for inventory, storage, cart, and guild storage are 1637 each without changing this struct and struct item [2014/10/27]
+	union { // Max for inventory, storage, cart, and guild storage are 1637 each without changing this struct and s_item [2014/10/27]
 		s_item items_inventory[MAX_INVENTORY];
 		s_item items_storage[MAX_STORAGE];
 		s_item items_cart[MAX_CART];
@@ -511,19 +511,19 @@ struct s_mmo_charstatus {
 	unsigned long title_id;
 };
 
-enum e_mail_status {
+enum e_mail_status  : uint8 {
 	MAIL_NEW,
 	MAIL_UNREAD,
 	MAIL_READ,
 };
 
-enum e_mail_inbox_type {
+enum e_mail_inbox_type : uint8 {
 	MAIL_INBOX_NORMAL = 0,
 	MAIL_INBOX_ACCOUNT,
 	MAIL_INBOX_RETURNED
 };
 
-enum e_mail_attachment_type {
+enum e_mail_attachment_type  : uint8 {
 	MAIL_ATT_NONE = 0,
 	MAIL_ATT_ZENY = 1,
 	MAIL_ATT_ITEM = 2,

@@ -1,6 +1,6 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
-
+#include "npc.h"
 #include <cstring>
 #include <cstdlib>
 #include <cerrno>
@@ -14,8 +14,10 @@
 #include "../common_old/utils.h"
 #include "../common_old/ers.h"
 #include "../common_old/db.h"
+
+#include "date.h" //why not utils ?
 #include "map.h"
-#include "npc.h"
+
 #include "log.h"
 #include "clif.h"
 #include "intif.h"
@@ -45,7 +47,7 @@ static int npc_mob=0;
 static int npc_delay_mob=0;
 static int npc_cache_mob=0;
 
-struct eri *npc_sc_display_ers;
+s_eri *npc_sc_display_ers;
 
 // Market Shop
 #if PACKETVER >= 20131223
@@ -114,9 +116,9 @@ static struct script_event_s
 
 struct s_view_data* npc_get_viewdata(int class_)
 {	//Returns the viewdata for normal npc classes.
-	if( class_ == INVISIBLE_CLASS )
+	if( class_ == JT_INVISIBLE )
 		return &npc_viewdb[0];
-	if (npcdb_checkid(class_) || class_ == WARP_CLASS){
+	if (npcdb_checkid(class_)){
 		if( class_ > MAX_NPC_CLASS2_START ){
 			return &npc_viewdb2[class_-MAX_NPC_CLASS2_START];
 		}else{
@@ -237,7 +239,7 @@ int npc_enable(const char* name, int flag)
 		clif_clearunit_area(&nd->bl,CLR_OUTSIGHT);  // Hack to trick maya purple card [Xazax]
 	}
 
-	if (nd->class_ == WARP_CLASS || nd->class_ == FLAG_CLASS)
+	if (nd->class_ == JT_WARPNPC || nd->class_ == JT_GUILD_FLAG)
 	{	//Client won't display option changes for these classes [Toms]
 		if (nd->sc.option&(OPTION_HIDE|OPTION_INVISIBLE))
 			clif_clearunit_area(&nd->bl, CLR_OUTSIGHT);
@@ -454,7 +456,7 @@ int npc_event_doall(const char* name)
 
 // runs the specified event(global only) and reports call count
 void npc_event_runall( const char* eventname ){
-	ShowStatus( "Event '"CL_WHITE"%s"CL_RESET"' executed with '"CL_WHITE"%d"CL_RESET"' NPCs.\n", eventname, npc_event_doall( eventname ) );
+	ShowStatus( "Event '" CL_WHITE "%s" CL_RESET "' executed with '" CL_WHITE "%d" CL_RESET "' NPCs.\n", eventname, npc_event_doall( eventname ) );
 }
 
 // runs the specified event, with a RID attached (global only)
@@ -545,15 +547,15 @@ int npc_timerevent_export(struct s_npc_data *nd, int i)
 	// Check if the label name starts with OnTimer(default) and then parse the seconds right after it
 	if ( !strncmp(lname,script_config.timer_event_name,len) && sscanf( (lname += len), "%11d%n", &t, &k) == 1 && lname[k] == '\0') {
 		// Timer event
-		struct npc_timerevent_list *te = nd->u.scr.timer_event;
+		s_npc_timerevent_list *te = nd->u.scr.timer_event;
 		int j, k2 = nd->u.scr.timeramount;
 		if (te == NULL)
-			te = (struct npc_timerevent_list *)aMalloc(sizeof(struct npc_timerevent_list));
+			te = (s_npc_timerevent_list *)aMalloc(sizeof(s_npc_timerevent_list));
 		else
-			te = (struct npc_timerevent_list *)aRealloc( te, sizeof(struct npc_timerevent_list) * (k2+1) );
+			te = (s_npc_timerevent_list *)aRealloc( te, sizeof(s_npc_timerevent_list) * (k2+1) );
 		for (j = 0; j < k2; j++) {
 			if (te[j].timer > t) {
-				memmove(te+j+1, te+j, sizeof(struct npc_timerevent_list)*(k2-j));
+				memmove(te+j+1, te+j, sizeof(s_npc_timerevent_list)*(k2-j));
 				break;
 			}
 		}
@@ -1400,7 +1402,7 @@ int npc_buysellsel(s_map_session_data* sd, int id, int type)
  * @param sd Player data
  * @return e_CASHSHOP_ACK
  **/
-static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int price, int points, s_map_session_data *sd) {
+static enum e_CASHSHOP_ACK npc_cashshop_process_payment(s_npc_data *nd, int price, int points, s_map_session_data *sd) {
 	int cost[2] = { 0, 0 };
 
 	npc_shop_currency_type(sd, nd, cost, false);
@@ -1413,7 +1415,7 @@ static enum e_CASHSHOP_ACK npc_cashshop_process_payment(struct npc_data *nd, int
 			break;
 		case NPCTYPE_ITEMSHOP:
 			{
-				struct item_data *id = itemdb_exists(nd->u.shop.itemshop_nameid);
+				s_item_data *id = itemdb_exists(nd->u.shop.itemshop_nameid);
 
 				if (!id) { // Item Data is checked at script parsing but in case of item_db reload, check again.
 					ShowWarning("Failed to find sellitem %hu for itemshop NPC '%s' (%s, %d, %d)!\n", nd->u.shop.itemshop_nameid, nd->exname, map[nd->bl.m].name, nd->bl.x, nd->bl.y);
@@ -2399,7 +2401,7 @@ static void npc_parsename(struct s_npc_data* nd, const char* name, const char* s
  * Support for using Constants in place of NPC View IDs.
  */
 int npc_parseview(const char* w4, const char* start, const char* buffer, const char* filepath) {
-	int val = -1, i = 0;
+	int val = JT_FAKENPC, i = 0;
 	char viewid[1024];	// Max size of name from const.txt, see read_constdb.
 
 	// Extract view ID / constant
@@ -2416,8 +2418,8 @@ int npc_parseview(const char* w4, const char* start, const char* buffer, const c
 	if(!npc_viewisid(viewid)) {
 		// Check if constant exists and get its value.
 		if(!script_get_constant(viewid, &val)) {
-			ShowWarning("npc_parseview: Invalid NPC constant '%s' specified in file '%s', line'%d'. Defaulting to INVISIBLE_CLASS. \n", viewid, filepath, strline(buffer,start-buffer));
-			val = INVISIBLE_CLASS;
+			ShowWarning("npc_parseview: Invalid NPC constant '%s' specified in file '%s', line'%d'. Defaulting to INVISIBLE. \n", viewid, filepath, strline(buffer,start-buffer));
+			val = JT_INVISIBLE;
 		}
 	} else {
 		// NPC has an ID specified for view id.
@@ -2432,7 +2434,7 @@ int npc_parseview(const char* w4, const char* start, const char* buffer, const c
  */
 bool npc_viewisid(const char * viewid)
 {
-	if(atoi(viewid) != -1) {
+	if(atoi(viewid) != JT_FAKENPC) {
 		// Loop through view, looking for non-numeric character.
 		while (*viewid) {
 			if (ISDIGIT(*viewid++) == 0) return false;
@@ -2449,10 +2451,10 @@ bool npc_viewisid(const char * viewid)
  * @param y: Y location
  * @return npc_data
  */
-struct npc_data *npc_create_npc(int16 m, int16 x, int16 y){
-	struct npc_data *nd;
+s_npc_data *npc_create_npc(int16 m, int16 x, int16 y){
+	s_npc_data *nd;
 
-	CREATE(nd, struct npc_data, 1);
+	CREATE(nd, s_npc_data, 1);
 	nd->bl.id = npc_get_new_npc_id();
 	nd->bl.prev = nd->bl.next = NULL;
 	nd->bl.m = m;
@@ -2498,9 +2500,9 @@ struct s_npc_data* npc_add_warp(char* name, short from_mapid, short from_x, shor
 	safestrncpy(nd->name, nd->exname, ARRAYLENGTH(nd->name));
 
 	if( battle_config.warp_point_debug )
-		nd->class_ = WARP_DEBUG_CLASS;
+		nd->class_ = JT_GUILD_FLAG;
 	else
-		nd->class_ = WARP_CLASS;
+		nd->class_ = JT_WARPNPC;
 	nd->speed = 200;
 
 	nd->u.warp.mapindex = to_mapindex;
@@ -2570,9 +2572,9 @@ static const char* npc_parse_warp(char* w1, char* w2, char* w3, char* w4, const 
 	npc_parsename(nd, w3, start, buffer, filepath);
 
 	if (!battle_config.warp_point_debug)
-		nd->class_ = WARP_CLASS;
+		nd->class_ = JT_WARPNPC;
 	else
-		nd->class_ = WARP_DEBUG_CLASS;
+		nd->class_ = JT_GUILD_FLAG;
 	nd->speed = 200;
 
 	nd->u.warp.mapindex = i;
@@ -2804,7 +2806,7 @@ static const char* npc_parse_shop(char* w1, char* w2, char* w3, char* w4, const 
 	}
 
 	npc_parsename(nd, w3, start, buffer, filepath);
-	nd->class_ = m == -1 ? -1 : npc_parseview(w4, start, buffer, filepath);
+	nd->class_ = m == -1 ? JT_FAKENPC : npc_parseview(w4, start, buffer, filepath);
 	nd->speed = 200;
 
 	++npc_shop;
@@ -3039,7 +3041,7 @@ static const char* npc_parse_script(char* w1, char* w2, char* w3, char* w4, cons
 	}
 
 	npc_parsename(nd, w3, start, buffer, filepath);
-	nd->class_ = m == -1 ? -1 : npc_parseview(w4, start, buffer, filepath);
+	nd->class_ = m == -1 ? JT_FAKENPC : npc_parseview(w4, start, buffer, filepath);
 	nd->speed = 200;
 	nd->u.scr.script = script;
 	nd->u.scr.label_list = label_list;
@@ -3167,7 +3169,7 @@ const char* npc_parse_duplicate(char* w1, char* w2, char* w3, char* w4, const ch
 
 	nd = npc_create_npc(m, x, y);
 	npc_parsename(nd, w3, start, buffer, filepath);
-	nd->class_ = m == -1 ? -1 : npc_parseview(w4, start, buffer, filepath);
+	nd->class_ = m == -1 ? JT_FAKENPC : npc_parseview(w4, start, buffer, filepath);
 	nd->speed = 200;
 	nd->src_id = src_id;
 	nd->bl.type = BL_NPC;
@@ -3195,9 +3197,9 @@ const char* npc_parse_duplicate(char* w1, char* w2, char* w3, char* w4, const ch
 		case NPCTYPE_WARP:
 			++npc_warp;
 			if( !battle_config.warp_point_debug )
-				nd->class_ = WARP_CLASS;
+				nd->class_ = JT_WARPNPC;
 			else
-				nd->class_ = WARP_DEBUG_CLASS;
+				nd->class_ = JT_GUILD_FLAG;
 			nd->u.warp.xs = xs;
 			nd->u.warp.ys = ys;
 			nd->u.warp.mapindex = dnd->u.warp.mapindex;
@@ -3284,7 +3286,7 @@ int npc_duplicate4instance(struct s_npc_data *snd, int16 m) {
 		map_addnpc(m, wnd);
 		safestrncpy(wnd->name, "", ARRAYLENGTH(wnd->name));
 		safestrncpy(wnd->exname, newname, ARRAYLENGTH(wnd->exname));
-		wnd->class_ = WARP_CLASS;
+		wnd->class_ = JT_WARPNPC;
 		wnd->speed = 200;
 		wnd->u.warp.mapindex = map_id2index(imap);
 		wnd->u.warp.x = snd->u.warp.x;
@@ -3336,7 +3338,7 @@ int npc_instanceinit(struct s_npc_data* nd)
 	return 0;
 }
 
-int npc_instancedestroy(struct npc_data* nd)
+int npc_instancedestroy(s_npc_data* nd)
 {
 	struct event_data *ev;
 	char evname[EVENT_NAME_LENGTH];
@@ -3731,6 +3733,7 @@ static const char* npc_parse_function(char* w1, char* w2, char* w3, char* w4, co
 		struct s_script_code *oldscript = (struct s_script_code*)db_data2ptr(&old_data);
 
 		ShowInfo("npc_parse_function: Overwriting user function [%s] (%s:%d)\n", w3, filepath, strline(buffer,start-buffer));
+		script_stop_scriptinstances(oldscript);
 		script_free_vars(oldscript->local.vars);
 		aFree(oldscript->script_buf);
 		aFree(oldscript);
@@ -3770,7 +3773,7 @@ static const char* npc_parse_mob(char* w1, char* w2, char* w3, char* w4, const c
 
 	mob.state.boss = !strcmpi(w2,"boss_monster");
 
-	// w1=<map name>,<x>,<y>,<xs>,<ys>
+	// w1=<map name>,<x>,<y>{,<xs>{,<ys>}}
 	// w3=<mob name>{,<mob level>}
 	// w4=<mob id>,<amount>{,<delay1>{,<delay2>{,<event>{,<mob size>{,<mob ai>}}}}}
 	if( ( w1count = sscanf(w1, "%15[^,],%6hd,%6hd,%6hd,%6hd", mapname, &x, &y, &xs, &ys) ) < 3
@@ -4758,7 +4761,7 @@ void do_init_npc(void){
 
 	//Stock view data for normal npcs.
 	memset(&npc_viewdb, 0, sizeof(npc_viewdb));
-	npc_viewdb[0].class_ = INVISIBLE_CLASS; //Invisible class is stored here.
+	npc_viewdb[0].class_ = JT_INVISIBLE; //Invisible class is stored here.
 	for( i = 1; i < MAX_NPC_CLASS; i++ )
 		npc_viewdb[i].class_ = i;
 	for( i = MAX_NPC_CLASS2_START; i < MAX_NPC_CLASS2_END; i++ )
@@ -4809,7 +4812,7 @@ void do_init_npc(void){
 	fake_nd = (struct s_npc_data *)aCalloc(1,sizeof(struct s_npc_data));
 	fake_nd->bl.m = -1;
 	fake_nd->bl.id = npc_get_new_npc_id();
-	fake_nd->class_ = -1;
+	fake_nd->class_ = JT_FAKENPC;
 	fake_nd->speed = 200;
 	strcpy(fake_nd->name,"FAKE_NPC");
 	memcpy(fake_nd->exname, fake_nd->name, 9);

@@ -150,7 +150,7 @@ static bool sale_parse_dbrow( char* fields[], int columns, int current ){
 	unsigned short nameid = atoi(fields[0]);
 	int start = atoi(fields[1]), end = atoi(fields[2]), amount = atoi(fields[3]), i;
 	time_t now = time(NULL);
-	struct sale_item_data* sale_item = NULL;
+	s_sale_item_data* sale_item = NULL;
 
 	if( !itemdb_exists(nameid) ){
 		ShowWarning( "sale_parse_dbrow: Invalid ID %hu in line '%d', skipping...\n", nameid, current );
@@ -180,8 +180,8 @@ static bool sale_parse_dbrow( char* fields[], int columns, int current ){
 	sale_item = sale_find_item(nameid,false);
 
 	if( sale_item == NULL ){
-		RECREATE(sale_items.item, struct sale_item_data *, ++sale_items.count);
-		CREATE(sale_items.item[sale_items.count - 1], struct sale_item_data, 1);
+		RECREATE(sale_items.item, s_sale_item_data *, ++sale_items.count);
+		CREATE(sale_items.item[sale_items.count - 1], s_sale_item_data, 1);
 		sale_item = sale_items.item[sale_items.count - 1];
 	}
 
@@ -227,11 +227,11 @@ static void sale_read_db_sql( void ){
 
 	Sql_FreeResult(mmysql_handle);
 
-	ShowStatus( "Done reading '"CL_WHITE"%lu"CL_RESET"' entries in '"CL_WHITE"%s"CL_RESET"'.\n", count, sales_table );
+	ShowStatus( "Done reading '" CL_WHITE "%lu" CL_RESET "' entries in '" CL_WHITE "%s" CL_RESET "'.\n", count, sales_table );
 }
 
 static int sale_end_timer( int tid, unsigned int tick, int id, intptr_t data ){
-	struct sale_item_data* sale_item = (struct sale_item_data*)data;
+	s_sale_item_data* sale_item = (s_sale_item_data*)data;
 
 	// Remove the timer so the sale end is not sent out again
 	delete_timer( sale_item->timer_end, sale_end_timer );
@@ -245,7 +245,7 @@ static int sale_end_timer( int tid, unsigned int tick, int id, intptr_t data ){
 }
 
 static int sale_start_timer( int tid, unsigned int tick, int id, intptr_t data ){
-	struct sale_item_data* sale_item = (struct sale_item_data*)data;
+	s_sale_item_data* sale_item = (s_sale_item_data*)data;
 
 	clif_sale_start( sale_item, NULL, ALL_CLIENT );
 	clif_sale_amount( sale_item, NULL, ALL_CLIENT );
@@ -264,7 +264,7 @@ static int sale_start_timer( int tid, unsigned int tick, int id, intptr_t data )
 
 enum e_sale_add_result sale_add_item( uint16 nameid, int32 count, time_t from, time_t to ){
 	int i;
-	struct sale_item_data* sale_item;
+	s_sale_item_data* sale_item;
 
 	// Check if the item exists in the sales tab
 	ARR_FIND( 0, cash_shop_items[CASHSHOP_TAB_SALE].count, i, cash_shop_items[CASHSHOP_TAB_SALE].item[i]->nameid == nameid );
@@ -299,8 +299,8 @@ enum e_sale_add_result sale_add_item( uint16 nameid, int32 count, time_t from, t
 		return SALE_ADD_FAILED;
 	}
 
-	RECREATE(sale_items.item, struct sale_item_data *, ++sale_items.count);
-	CREATE(sale_items.item[sale_items.count - 1], struct sale_item_data, 1);
+	RECREATE(sale_items.item, s_sale_item_data *, ++sale_items.count);
+	CREATE(sale_items.item[sale_items.count - 1], s_sale_item_data, 1);
 	sale_item = sale_items.item[sale_items.count - 1];
 
 	sale_item->nameid = nameid;
@@ -314,7 +314,7 @@ enum e_sale_add_result sale_add_item( uint16 nameid, int32 count, time_t from, t
 }
 
 bool sale_remove_item( uint16 nameid ){
-	struct sale_item_data* sale_item;
+	s_sale_item_data* sale_item;
 	int i;
 
 	// Check if there is an entry for this item id
@@ -351,12 +351,12 @@ bool sale_remove_item( uint16 nameid ){
 	if( --sale_items.count > 0 ){
 		// fill the hole by moving the rest
 		for( ; i < sale_items.count; i++ ){
-			memcpy( sale_items.item[i], sale_items.item[i + 1], sizeof(struct sale_item_data) );
+			memcpy( sale_items.item[i], sale_items.item[i + 1], sizeof(s_sale_item_data) );
 		}
 
 		aFree(sale_items.item[i]);
 
-		RECREATE(sale_items.item, struct sale_item_data *, sale_items.count);
+		RECREATE(sale_items.item, s_sale_item_data *, sale_items.count);
 	}else{
 		aFree(sale_items.item[0]);
 		aFree(sale_items.item);
@@ -366,9 +366,9 @@ bool sale_remove_item( uint16 nameid ){
 	return true;
 }
 
-struct sale_item_data* sale_find_item( uint16 nameid, bool onsale ){
+s_sale_item_data* sale_find_item( uint16 nameid, bool onsale ){
 	int i;
-	struct sale_item_data* sale_item;
+	s_sale_item_data* sale_item;
 	time_t now = time(NULL);
 
 	ARR_FIND( 0, sale_items.count, i, sale_items.item[i]->nameid == nameid );
@@ -442,7 +442,7 @@ static void cashshop_read_db( void ){
 
 	// Init next sale start, if there is any
 	for( i = 0; i < sale_items.count; i++ ){
-		struct sale_item_data* it = sale_items.item[i];
+		s_sale_item_data* it = sale_items.item[i];
 
 		if( it->start > now ){
 			it->timer_start = add_timer( gettick() + (unsigned int)( it->start - time(NULL) ) * 1000, sale_start_timer, 0, (intptr_t)it );
@@ -467,7 +467,7 @@ bool cashshop_buylist( s_map_session_data* sd, uint32 kafrapoints, int n, uint16
 	uint32 totalweight = 0;
 	int i,new_;
 #if PACKETVER_SUPPORTS_SALES
-	struct sale_item_data* sale = NULL;
+	s_sale_item_data* sale = NULL;
 #endif
 
 	if( sd == NULL || item_list == NULL || !cash_shop_defined){
@@ -656,7 +656,7 @@ void do_final_cashshop( void ){
 #if PACKETVER_SUPPORTS_SALES
 	if( sale_items.count > 0 ){
 		for( i = 0; i < sale_items.count; i++ ){
-			struct sale_item_data* it = sale_items.item[i];
+			s_sale_item_data* it = sale_items.item[i];
 
 			if( it->timer_start != INVALID_TIMER ){
 				delete_timer( it->timer_start, sale_start_timer );

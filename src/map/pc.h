@@ -16,7 +16,8 @@
 #include "unit.h" // unit_data
 #include "status.h" // unit_data
 #include "script.h" // struct script_reg, struct script_regstr
-
+#include "mob.h" //e_size
+#include "clif.h" //e_wip_block
 //#include "atcommand.h" // AtCommandType
 
 /*
@@ -54,6 +55,7 @@ enum e_si_type : short;
 //Equip indexes constants. (eg: sd->equip_index[EQI_AMMO] returns the index
 //where the arrows are equipped)
 enum e_equip_index {
+	EQI_COMPOUND_ON = -1,
 	EQI_ACC_L = 0,
 	EQI_ACC_R,
 	EQI_SHOES,
@@ -76,6 +78,14 @@ enum e_equip_index {
 	EQI_SHADOW_ACC_R,
 	EQI_SHADOW_ACC_L,
 	EQI_MAX
+};
+
+enum e_prevent_logout_trigger {
+	PLT_NONE = 0,
+	PLT_LOGIN = 1,
+	PLT_ATTACK = 2,
+	PLT_SKILL = 4,
+	PLT_DAMAGE = 8
 };
 
 extern unsigned int equip_bitmask[EQI_MAX];
@@ -216,7 +226,7 @@ struct s_map_session_data {
 		unsigned int arrow_atk : 1;
 		unsigned int gangsterparadise : 1;
 		unsigned int rest : 1;
-		unsigned int storage_flag : 2; //0: closed, 1: Normal Storage open, 2: guild storage open [Skotlex]
+		unsigned int storage_flag : 3; //0: closed, 1: Normal Storage open, 2: guild storage open [Skotlex], 3: Premium Storage
 		unsigned int snovice_dead_flag : 1; //Explosion spirits on death: 0 off, 1 used.
 		unsigned int abra_flag : 2; // Abracadabra bugfix by Aru
 		unsigned int autocast : 1; // Autospell flag [Inkfish]
@@ -260,6 +270,10 @@ struct s_map_session_data {
 		uint8 isBoundTrading; // Player is currently add bound item to trade list [Cydh]
 		bool ignoretimeout; // Prevent the SECURE_NPCTIMEOUT function from closing current script.
 		unsigned int workinprogress : 2; // See clif.h::e_workinprogress
+		bool pc_loaded; // Ensure inventory data and status data is loaded before we calculate player stats
+		bool keepshop; // Whether shop data should be removed when the player disconnects
+		bool mail_writing; // Whether the player is currently writing a mail in RODEX or not
+		bool cashshop_open;
 	} state;
 	struct {
 		unsigned char no_weapon_damage, no_magic_damage, no_misc_damage;
@@ -281,12 +295,16 @@ struct s_map_session_data {
 	int count_rewarp; //count how many time we being rewarped
 
 	int langtype;
-	uint32 packet_ver;  // 5: old, 6: 7july04, 7: 13july04, 8: 26july04, 9: 9aug04/16aug04/17aug04, 10: 6sept04, 11: 21sept04, 12: 18oct04, 13: 25oct04 ... 18
 	struct s_mmo_charstatus status;
+
+	// Item Storages
+	struct s_storage storage, premiumStorage;
+	struct s_storage inventory;
+	struct s_storage cart;
 
 	struct s_item_data* inventory_data[MAX_INVENTORY]; // direct pointers to itemdb entries (faster than doing item_id lookups)
 	short equip_index[EQI_MAX];
-	unsigned int weight,max_weight;
+	unsigned int weight,max_weight,add_max_weight;
 	int cart_weight,cart_num,cart_weight_max;
 	int fd;
 	unsigned short mapindex;
@@ -520,10 +538,14 @@ struct s_map_session_data {
 	short guild_x,guild_y; // For guildmate position display. [Skotlex] should be short [zzo]
 	int guildspy; // [Syrus22]
 	int partyspy; // [Syrus22]
+	int clanspy;
+
+	struct s_clan *clan;
 
 	int vended_id;
 	int vender_id;
 	int vend_num;
+	uint16 vend_skill_lv;
 	char message[MESSAGE_SIZE];
 	struct s_vending vending[MAX_VENDING];
 
@@ -572,9 +594,12 @@ struct s_map_session_data {
 
 	// Mail System [Zephyrus]
 	struct s_mail {
-		unsigned short nameid;
-		int index, amount, zeny;
-		struct s_mail_data inbox;
+		struct {
+			unsigned short nameid;
+			int index, amount;
+		} item[MAIL_MAX_ITEM];
+		int zeny;
+		s_mail_data inbox;
 		bool changed; // if true, should sync with charserver on next mailbox request
 	} mail;
 
@@ -583,6 +608,21 @@ struct s_map_session_data {
 	int avail_quests;        ///< Number of Q_ACTIVE and Q_INACTIVE entries in quest log (index of the first Q_COMPLETE entry)
 	struct s_quest *quest_log; ///< Quest log entries (note: Q_COMPLETE quests follow the first <avail_quests>th enties
 	bool save_quest;         ///< Whether the quest_log entries were modified and are waitin to be saved
+
+	// Achievement log system
+	struct s_achievement_data {
+		int total_score;                  ///< Total achievement points
+		int level;                        ///< Achievement level
+		bool save;                        ///< Flag to know if achievements need to be saved
+		bool sendlist;                    ///< Flag to know if all achievements should be sent to the player (refresh list if an achievement has a title)
+		uint16 count;                     ///< Total achievements in log
+		uint16 incompleteCount;           ///< Total incomplete achievements in log
+		s_achievement *achievements; ///< Achievement log entries
+	} achievement_data;
+
+	// Title system
+	int *titles;
+	uint8 titleCount;
 
 	/* ShowEvent Data Cache flags from map */
 	bool *qi_display;
@@ -633,7 +673,7 @@ struct s_map_session_data {
 	struct s_Channel *gcbind;
 	bool stealth;
 	unsigned char fontcolor;
-	unsigned int channel_tick;
+	unsigned int *channel_tick;
 
 	/* [Ind] */
 	struct sc_display_entry **sc_display;
@@ -658,7 +698,6 @@ struct s_map_session_data {
 	int c_marker[MAX_SKILL_CRIMSON_MARKER]; /// Store target that marked by Crimson Marker [Cydh]
 	bool flicker; /// Check RL_FLICKER usage status [Cydh]
 
-	int storage_size; /// Holds player storage size (VIP system).
 #ifdef VIP_ENABLE
 	struct vip_info vip;
 #endif
@@ -713,8 +752,6 @@ extern struct s_eri *pc_itemgrouphealrate_ers; /// Player's Item Group Heal Rate
  **/
 extern struct s_eri *num_reg_ers;
 extern struct s_eri *str_reg_ers;
-/* */
-extern bool reg_load;
 
 /* Global Expiration Timer ID */
 extern int pc_expiration_tid;
@@ -793,6 +830,14 @@ enum e_adopt_responses {
 	ADOPT_MARRIED,
 };
 
+enum e_item_check {
+	ITMCHK_NONE      = 0x0,
+	ITMCHK_INVENTORY = 0x1,
+	ITMCHK_CART      = 0x2,
+	ITMCHK_STORAGE   = 0x4,
+	ITMCHK_ALL       = ITMCHK_INVENTORY|ITMCHK_CART|ITMCHK_STORAGE,
+};
+
 struct s_job_info {
 	unsigned int base_hp[MAX_LEVEL], base_sp[MAX_LEVEL]; //Storage for the first calculation with hp/sp factor and multiplicator
 	int hp_factor, hp_multiplicator, sp_factor;
@@ -850,9 +895,9 @@ extern struct s_job_info job_info[CLASS_COUNT];
 #define pc_iscloaking(sd)     ( !((sd)->sc.option&OPTION_CHASEWALK) && ((sd)->sc.option&OPTION_CLOAK) )
 #define pc_ischasewalk(sd)    ( (sd)->sc.option&OPTION_CHASEWALK )
 #ifdef VIP_ENABLE
-	#define pc_isvip(sd)      ( sd->vip.enabled ? 1 : 0 )
+	#define pc_isvip(sd)      ( sd->vip.enabled ? true : false )
 #else
-	#define pc_isvip(sd)      ( 0 )
+	#define pc_isvip(sd)      ( false )
 #endif
 #ifdef NEW_CARTS
 	#define pc_iscarton(sd)       ( (sd)->sc.data[SC_PUSH_CART] )
@@ -862,11 +907,10 @@ extern struct s_job_info job_info[CLASS_COUNT];
 
 #define pc_isfalcon(sd)       ( (sd)->sc.option&OPTION_FALCON )
 #define pc_isriding(sd)       ( (sd)->sc.option&OPTION_RIDING )
-#define pc_isinvisible(sd)    ( (sd)->sc.option&OPTION_INVISIBLE )
+#define pc_isinvisible(sd)    ( (sd)->sc.option&OPTION_INVISIBLE && !((sd)->sc.data && (sd)->sc.data[SC__FEINTBOMB]) )
 #define pc_is50overweight(sd) ( (sd)->weight*100 >= (sd)->max_weight*battle_config.natural_heal_weight_rate )
 #define pc_is90overweight(sd) ( (sd)->weight*10 >= (sd)->max_weight*9 )
 
-enum e_wip_block : uint8_t;
 static inline bool pc_hasprogress(s_map_session_data *sd, enum e_wip_block progress) {
 	return sd == NULL || (sd->state.workinprogress&progress) == progress;
 }
@@ -909,7 +953,10 @@ short pc_maxaspd(s_map_session_data *sd);
 	( (class_) >= JOB_BABY_RUNE      && (class_) <= JOB_BABY_MECHANIC2 ) || \
 	( (class_) >= JOB_SUPER_NOVICE_E && (class_) <= JOB_SUPER_BABY_E   ) || \
 	( (class_) >= JOB_KAGEROU        && (class_) <= JOB_OBORO          ) || \
-	  (class_) == JOB_REBELLION      || (class_) == JOB_SUMMONER            \
+	  (class_) == JOB_REBELLION      || (class_) == JOB_SUMMONER         || \
+	  (class_) == JOB_BABY_SUMMONER 				     || \
+	( (class_) >= JOB_BABY_NINJA     && (class_) <= JOB_BABY_REBELLION ) || \
+	  (class_) == JOB_BABY_STAR_GLADIATOR2 \
 )
 #define pcdb_checkid(class_) pcdb_checkid_sub((unsigned int)class_)
 
@@ -944,11 +991,12 @@ short pc_maxaspd(s_map_session_data *sd);
     )
 #endif
 
+void pc_set_reg_load(bool val);
 int pc_split_atoi(char* str, int* val, char sep, int max);
 int pc_class2idx(int class_);
 int pc_get_group_level(s_map_session_data *sd);
 int pc_get_group_id(s_map_session_data *sd);
-int pc_getrefinebonus(int lv,int type);
+bool pc_can_sell_item(s_map_session_data* sd, s_item * item);
 bool pc_can_give_items(s_map_session_data *sd);
 bool pc_can_give_bounded_items(s_map_session_data *sd);
 
@@ -966,8 +1014,10 @@ void pc_reg_received(s_map_session_data *sd);
 void pc_close_npc(s_map_session_data *sd,int flag);
 int pc_close_npc_timer(int tid, unsigned int tick, int id, intptr_t data);
 
+void pc_setequipindex(s_map_session_data *sd);
 uint8 pc_isequip(s_map_session_data *sd,int n);
 int pc_equippoint(s_map_session_data *sd,int n);
+int pc_equippoint_sub(s_map_session_data *sd, s_item_data* id);
 void pc_setinventorydata(s_map_session_data *sd);
 
 int pc_get_skillcooldown(s_map_session_data *sd, uint16 skill_id, uint16 skill_lv);
@@ -978,7 +1028,7 @@ bool pc_checkequip2(s_map_session_data *sd, unsigned short nameid, int min, int 
 void pc_scdata_received(s_map_session_data *sd);
 void pc_check_expiration(s_map_session_data *sd);
 int pc_expiration_timer(int tid, unsigned int tick, int id, intptr_t data);
-int pc_global_expiration_timer(int tid, unsigned tick, int id, intptr_t data);
+int pc_global_expiration_timer(int tid, unsigned int tick, int id, intptr_t data);
 void pc_expire_check(s_map_session_data *sd);
 
 void pc_calc_skilltree(s_map_session_data *sd);
@@ -1089,7 +1139,7 @@ int pc_resethate(s_map_session_data*);
 bool pc_equipitem(s_map_session_data *sd, short n, int req_pos);
 bool pc_unequipitem(s_map_session_data*,int,int);
 void pc_checkitem(s_map_session_data*);
-void pc_check_available_item(s_map_session_data *sd);
+void pc_check_available_item(s_map_session_data *sd, uint8 type);
 int pc_useitem(s_map_session_data*,int);
 
 int pc_skillatk_bonus(s_map_session_data *sd, uint16 skill_id);
@@ -1120,7 +1170,7 @@ bool pc_setreg(s_map_session_data *sd, int64 reg, int val);
 char *pc_readregstr(s_map_session_data *sd, int64 reg);
 bool pc_setregstr(s_map_session_data *sd, int64 reg, const char *str);
 int pc_readregistry(s_map_session_data *sd, int64 reg);
-bool pc_setregistry(s_map_session_data *sd, int64 reg, int val);
+int pc_setregistry(s_map_session_data *sd, int64 reg, int val);
 char *pc_readregistry_str(s_map_session_data *sd, int64 reg);
 int pc_setregistry_str(s_map_session_data *sd, int64 reg, const char *val);
 
@@ -1183,7 +1233,7 @@ struct s_sg_data {
 	short comfort_id;
 	char feel_var[NAME_LENGTH];
 	char hate_var[NAME_LENGTH];
-	int (*day_func)(void);
+	bool (*day_func)(void);
 };
 extern const struct s_sg_data sg_info[MAX_PC_FEELHATE];
 

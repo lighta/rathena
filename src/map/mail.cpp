@@ -232,7 +232,7 @@ bool mail_setattachment(s_map_session_data *sd, struct s_mail_message *msg)
 		int index = sd->mail.item[i].index;
 
 		if( sd->mail.item[i].nameid == 0 || sd->mail.item[i].amount == 0 ){
-			memset(&msg->item[i], 0x00, sizeof(struct item));
+			memset(&msg->item[i], 0x00, sizeof(s_item));
 			continue;
 		}
 
@@ -247,7 +247,7 @@ bool mail_setattachment(s_map_session_data *sd, struct s_mail_message *msg)
 		if( sd->weight > sd->max_weight ) // TODO: Why check something weird like this here?
 			return false;
 
-		memcpy(&msg->item[i], &sd->inventory.u.items_inventory[index], sizeof(struct item));
+		memcpy(&msg->item[i], &sd->inventory.u.items_inventory[index], sizeof(s_item));
 		msg->item[i].amount = sd->mail.item[i].amount;
 	}
 
@@ -270,7 +270,7 @@ bool mail_setattachment(s_map_session_data *sd, struct s_mail_message *msg)
 	return true;
 }
 
-void mail_getattachment(s_map_session_data* sd, struct mail_message* msg, int zeny, struct item* item){
+void mail_getattachment(s_map_session_data* sd, s_mail_message* msg, int zeny, s_item* item){
 	int i;
 	bool item_received = false;
 

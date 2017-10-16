@@ -5,8 +5,10 @@
 #define _CASHSHOP_H_
 
 #include "../common_old/cbasetypes.h" // uint16, uint32
+#include "../common_old/timer.h" // ShowWarning, ShowStatus
+#include "../config/packets.h"
 
-s_map_session_data;
+struct s_map_session_data;
 
 void do_init_cashshop( void );
 void do_final_cashshop( void );
@@ -58,7 +60,7 @@ struct s_cash_item_db{
 	uint32 count;
 };
 
-extern struct cash_item_db cash_shop_items[CASHSHOP_TAB_MAX];
+extern s_cash_item_db cash_shop_items[CASHSHOP_TAB_MAX];
 extern bool cash_shop_defined;
 
 enum e_sale_add_result {

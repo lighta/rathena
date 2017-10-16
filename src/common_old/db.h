@@ -1127,12 +1127,12 @@ void  linkdb_foreach (struct s_linkdb_node** head, LinkDBFunc func, ...);
 ///
 /// @param __vec Vector
 /// @param __n Size
-#define VECTOR_RESIZE(__vec,__n,_cast) \
+#define VECTOR_RESIZE(__vec,__n,__cast) \
 	do{ \
 		if( (__n) > VECTOR_CAPACITY(__vec) ) \
 		{ /* increase size */ \
-			if( VECTOR_CAPACITY(__vec) == 0 ) VECTOR_DATA(__vec) = (_cast) aMalloc((__n)*sizeof(VECTOR_FIRST(__vec))); /* allocate new */ \
-			else VECTOR_DATA(__vec) = (_cast) aRealloc(VECTOR_DATA(__vec),(__n)*sizeof(VECTOR_FIRST(__vec))); /* reallocate */ \
+			if( VECTOR_CAPACITY(__vec) == 0 ) VECTOR_DATA(__vec) = (__cast)(aMalloc((__n)*sizeof(VECTOR_FIRST(__vec))) ); /* allocate new */ \
+			else VECTOR_DATA(__vec) = (__cast)(aRealloc(VECTOR_DATA(__vec),(__n)*sizeof(VECTOR_FIRST(__vec))) ); /* reallocate */ \
 			memset(VECTOR_DATA(__vec)+VECTOR_LENGTH(__vec), 0, (VECTOR_CAPACITY(__vec)-VECTOR_LENGTH(__vec))*sizeof(VECTOR_FIRST(__vec))); /* clear new data */ \
 			VECTOR_CAPACITY(__vec) = (__n); /* update capacity */ \
 		} \
@@ -1144,7 +1144,7 @@ void  linkdb_foreach (struct s_linkdb_node** head, LinkDBFunc func, ...);
 		} \
 		else if( (__n) < VECTOR_CAPACITY(__vec) ) \
 		{ /* reduce size */ \
-			VECTOR_DATA(__vec) = (_cast) aRealloc(VECTOR_DATA(__vec),(__n)*sizeof(VECTOR_FIRST(__vec))); /* reallocate */ \
+			VECTOR_DATA(__vec) = (__cast)(aRealloc(VECTOR_DATA(__vec),(__n)*sizeof(VECTOR_FIRST(__vec))) ); /* reallocate */ \
 			VECTOR_CAPACITY(__vec) = (__n); /* update capacity */ \
 			if( VECTOR_LENGTH(__vec) > (__n) ) VECTOR_LENGTH(__vec) = (__n); /* update length */ \
 		} \
@@ -1158,14 +1158,16 @@ void  linkdb_foreach (struct s_linkdb_node** head, LinkDBFunc func, ...);
 /// @param __vec Vector
 /// @param __n Empty positions
 /// @param __step Increase
-#define VECTOR_ENSURE(__vec,__n,__step,_cast) \
+#define VECTOR_ENSURE2(__vec,__n,__step,__cast) \
 	do{ \
 		size_t _empty_ = VECTOR_CAPACITY(__vec)-VECTOR_LENGTH(__vec); \
 		if( (__n) > _empty_ ) { \
-			_empty_ += (((__n)-_empty_)/(__step)+1)*(__step); \
-			VECTOR_RESIZE(__vec,_empty_+VECTOR_LENGTH(__vec),_cast); \
+			while( (__n) > _empty_ ) _empty_ += (__step); \
+			VECTOR_RESIZE(__vec,_empty_+VECTOR_LENGTH(__vec),__cast); \
 		} \
 	}while(0)
+#define VECTOR_ENSURE(__vec,__n,__step) VECTOR_ENSURE2(__vec,__n,__step,int*)
+
 
 /// Inserts a zeroed value in the target index.
 /// Assumes the index is valid and there is enough capacity.
@@ -1419,8 +1421,8 @@ void  linkdb_foreach (struct s_linkdb_node** head, LinkDBFunc func, ...);
 /// @param __heap Binary heap
 /// @param __n Empty positions
 /// @param __step Increase
-#define BHEAP_ENSURE(__heap,__n,__step,__cast) VECTOR_ENSURE(__heap,__n,__step,__cast)
-
+#define BHEAP_ENSURE(__heap,__n,__step) VECTOR_ENSURE(__heap,__n,__step)
+#define BHEAP_ENSURE2(__heap,__n,__step,__cast) VECTOR_ENSURE2(__heap,__n,__step,__cast)
 
 
 /// Returns the top value of the heap.

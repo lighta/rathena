@@ -5,6 +5,7 @@
 #define	CHANNEL_H
 
 #include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h"
 
 //namespace rA {
 
@@ -30,10 +31,10 @@ enum e_Channel_Opt {
 };
 
 enum e_Channel_Type {
-	CHAN_TYPE_PUBLIC	= 0,	//config file made
-	CHAN_TYPE_PRIVATE	= 1,	//user made
-	CHAN_TYPE_MAP		= 2,	//made by map
-	CHAN_TYPE_ALLY		= 3,	//guild
+	CHAN_TYPE_PUBLIC  = 0, ///< Config file made
+	CHAN_TYPE_PRIVATE = 1, ///< User's channel
+	CHAN_TYPE_MAP	  = 2, ///< Local map
+	CHAN_TYPE_ALLY	  = 3, ///< Guild + its alliance
 };
 
 struct s_Channel {
@@ -94,7 +95,7 @@ int channel_delete(struct s_Channel *channel, bool force);
 int channel_join(struct s_Channel *channel, s_map_session_data *sd);
 int channel_mjoin(s_map_session_data *sd);
 int channel_gjoin(s_map_session_data *sd, int flag);
-int channel_ajoin(struct guild *g);
+int channel_ajoin(s_guild *g);
 int channel_clean(struct s_Channel *channel, s_map_session_data *sd, int flag);
 int channel_pcquit(s_map_session_data *sd, int type);
 

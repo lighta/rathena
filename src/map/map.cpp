@@ -582,7 +582,7 @@ struct s_skill_unit* map_find_skill_unit_oncell(struct s_block_list* target,int1
 /*==========================================
  * Adapted from foreachinarea for an easier invocation. [Skotlex]
  *------------------------------------------*/
-int map_foreachinrangeV(int (*func)(struct s_block_list*,va_list),struct block_list* center, int16 range, int type, va_list ap, bool wall_check)
+int map_foreachinrangeV(int (*func)(struct s_block_list*,va_list),s_block_list* center, int16 range, int type, va_list ap, bool wall_check)
 {
 	int bx, by, m;
 	int returnCount = 0;	//total sum of returned values of func() [Skotlex]
@@ -652,7 +652,7 @@ int map_foreachinrangeV(int (*func)(struct s_block_list*,va_list),struct block_l
 	return returnCount;	//[Skotlex]
 }
 
-int map_foreachinrange(int (*func)(struct block_list*,va_list), struct block_list* center, int16 range, int type, ...)
+int map_foreachinrange(int (*func)(s_block_list*,va_list), s_block_list* center, int16 range, int type, ...)
 {
 	int returnCount = 0;
 	va_list ap;
@@ -662,7 +662,7 @@ int map_foreachinrange(int (*func)(struct block_list*,va_list), struct block_lis
 	return returnCount;
 }
 
-int map_foreachinallrange(int (*func)(struct block_list*,va_list), struct block_list* center, int16 range, int type, ...)
+int map_foreachinallrange(int (*func)(s_block_list*,va_list), s_block_list* center, int16 range, int type, ...)
 {
 	int returnCount = 0;
 	va_list ap;
@@ -675,7 +675,7 @@ int map_foreachinallrange(int (*func)(struct block_list*,va_list), struct block_
 /*==========================================
  * Same as foreachinrange, but there must be a shoot-able range between center and target to be counted in. [Skotlex]
  *------------------------------------------*/
-int map_foreachinshootrange(int (*func)(struct block_list*,va_list),struct block_list* center, int16 range, int type,...)
+int map_foreachinshootrange(int (*func)(s_block_list*,va_list),s_block_list* center, int16 range, int type,...)
 {
 	int returnCount = 0;
 	va_list ap;
@@ -696,7 +696,7 @@ int map_foreachinshootrange(int (*func)(struct block_list*,va_list),struct block
  * @param y1: North end of area
  * @param type: Type of bl to search for
 *------------------------------------------*/
-int map_foreachinareaV(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, va_list ap, bool wall_check)
+int map_foreachinareaV(int(*func)(s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, va_list ap, bool wall_check)
 {
 	int bx, by, cx, cy;
 	int returnCount = 0;	//total sum of returned values of func()
@@ -768,7 +768,7 @@ int map_foreachinareaV(int(*func)(struct block_list*, va_list), int16 m, int16 x
 	return returnCount;
 }
 
-int map_foreachinallarea(int (*func)(struct block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+int map_foreachinallarea(int (*func)(s_block_list*,va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
 {
 	int returnCount = 0;
 	va_list ap;
@@ -778,7 +778,7 @@ int map_foreachinallarea(int (*func)(struct block_list*,va_list), int16 m, int16
 	return returnCount;
 }
 
-int map_foreachinshootarea(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+int map_foreachinshootarea(int(*func)(s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
 {
 	int returnCount = 0;
 	va_list ap;
@@ -787,7 +787,7 @@ int map_foreachinshootarea(int(*func)(struct block_list*, va_list), int16 m, int
  	va_end(ap);
 	return returnCount;
 }
-int map_foreachinarea(int(*func)(struct block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
+int map_foreachinarea(int(*func)(s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...)
 {
 	int returnCount = 0;
 	va_list ap;
@@ -2033,7 +2033,6 @@ int map_quit(s_map_session_data *sd) {
 			// Both these statuses are removed on logout. [L0ne_W0lf]
 			status_change_end(&sd->bl, SC_SLOWCAST, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_CRITICALWOUND, INVALID_TIMER);
-			status_change_end(&sd->bl, SC_HEAT_BARREL_AFTER, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_H_MINE, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_ANTI_M_BLAST, INVALID_TIMER);
 			status_change_end(&sd->bl, SC_B_TRAP, INVALID_TIMER);

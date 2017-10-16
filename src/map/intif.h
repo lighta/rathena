@@ -14,10 +14,14 @@ struct s_pet;
 struct s_homunculus;
 struct s_mercenary;
 struct s_elemental;
+enum e_mail_inbox_type : uint8;
+enum e_mail_attachment_type : uint8;
 struct s_mail_message;
 struct s_auction_data;
-enum e_storage_type;
+enum e_storage_type : uint8 ;
+enum e_party_member_withdraw : uint8_t;
 struct s_achievement_db;
+struct s_map_session_data;
 
 int intif_parse(int fd);
 
@@ -95,10 +99,10 @@ int intif_mercenary_save(struct s_mercenary *merc);
 // MAIL SYSTEM
 int intif_Mail_requestinbox(uint32 char_id, unsigned char flag, enum e_mail_inbox_type type);
 int intif_Mail_read(int mail_id);
-bool intif_mail_getattach( s_map_session_data* sd, struct mail_message *msg, enum e_mail_attachment_type type );
+bool intif_mail_getattach( s_map_session_data* sd, s_mail_message *msg, enum e_mail_attachment_type type );
 int intif_Mail_delete(uint32 char_id, int mail_id);
 int intif_Mail_return(uint32 char_id, int mail_id);
-int intif_Mail_send(uint32 account_id, struct mail_message *msg);
+int intif_Mail_send(uint32 account_id, s_mail_message *msg);
 bool intif_mail_checkreceiver(s_map_session_data* sd, char* name);
 // AUCTION SYSTEM
 int intif_Auction_requestlist(uint32 char_id, short type, int price, const char* searchtext, short page);

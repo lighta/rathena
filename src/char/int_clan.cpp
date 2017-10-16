@@ -16,7 +16,7 @@
 #include <string.h> //memset
 
 //clan cache
-static s_DBMap* clan_db; // int clan_id -> struct clan*
+static s_DBMap* clan_db; // int clan_id -> s_clan*
 
 int inter_clan_removemember_tosql(uint32 account_id, uint32 char_id){
 	if( SQL_ERROR == Sql_Query( sql_handle, "UPDATE `%s` SET `clan_id` = '0' WHERE `char_id` = '%d'", schema_config.char_db, char_id ) ){

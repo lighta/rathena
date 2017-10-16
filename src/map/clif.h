@@ -11,8 +11,7 @@
 struct s_Channel;
 struct s_clan;
 struct s_item;
-struct s_storage_data;
-struct s_guild_storage;
+struct s_storage;
 //#include "map.h"
 struct s_block_list;
 struct s_unit_data;
@@ -33,9 +32,9 @@ struct s_quest;
 struct s_party_booking_ad_info;
 enum e_party_member_withdraw : uint8_t;
 struct s_sale_item_data;
-enum e_mail_inbox_type;
+enum e_mail_inbox_type : uint8;
 struct s_mail_message;
-enum e_mail_attachment_type;
+enum e_mail_attachment_type : uint8;
 struct s_achievement;
 #include <cstdarg>
 
@@ -169,6 +168,14 @@ enum e_party_invite_reply {
 	PARTY_REPLY_INVALID_MAPPROPERTY_ME, ///< return=9 : !TODO "Cannot join a party in this map" -> MsgStringTable[1871] (since 20110205)
 };
 
+/// Enum for Convex Mirror (SC_BOSSMAPINFO)
+enum e_bossmap_info {
+	BOSS_INFO_NOT = 0,
+	BOSS_INFO_ALIVE,
+	BOSS_INFO_ALIVE_WITHMSG,
+	BOSS_INFO_DEAD,
+};
+
 #define packet_len(cmd) packet_db[cmd].len
 extern struct s_packet_db packet_db[MAX_PACKET_DB+1];
 extern int packet_db_ack[MAX_ACK_FUNC + 1];
@@ -209,7 +216,7 @@ enum e_send_target : uint8 {
 	BG_AREA_WOS,
 
 	CLAN,				// Clan System
-} send_target;
+};
 
 enum e_broadcast_flags : uint8{
 	BC_ALL			= 0,
@@ -445,6 +452,7 @@ enum e_useskill_fail_cause  : uint8
 	//XXX_USESKILL_FAIL_II_HELLS_PLANT_BOTTLE = 68,
 	//XXX_USESKILL_FAIL_II_MANDRAGORA_FLOWERPOT = 69,
 	USESKILL_FAIL_MANUAL_NOTIFY = 70,
+	// CAUTION: client uses unidentified display name for displaying the required item. Still broken on 2017-05-31 [Lemongrass]
 	USESKILL_FAIL_NEED_ITEM = 71,
 	USESKILL_FAIL_NEED_EQUIPMENT = 72,
 	USESKILL_FAIL_COMBOSKILL = 73,
@@ -459,6 +467,7 @@ enum e_useskill_fail_cause  : uint8
 	USESKILL_FAIL_STYLE_CHANGE_GRAPPLER = 82,
 	USESKILL_FAIL_THERE_ARE_NPC_AROUND = 83,
 	USESKILL_FAIL_NEED_MORE_BULLET = 84,
+	USESKILL_FAIL_COINS = 85,
 
 	USESKILL_FAIL_MAX
 };
@@ -497,6 +506,12 @@ enum e_clif_messages  : uint16 {
 	MERGE_ITEM_NOT_AVAILABLE = 0x887,
 	GUILD_MASTER_WOE = 0xb93, /// <"Currently in WoE hours, unable to delegate Guild leader"
 	GUILD_MASTER_DELAY = 0xb94, /// <"You have to wait for one day before delegating a new Guild leader"
+	SKILL_NEED_GATLING = 0x9fa,
+	SKILL_NEED_SHOTGUN = 0x9fb,
+	SKILL_NEED_RIFLE = 0x9fc,
+	SKILL_NEED_REVOLVER = 0x9fd,
+	SKILL_NEED_HOLY_BULLET = 0x9fe,
+	SKILL_NEED_GRENADE = 0xa01,
 };
 
 enum e_personalinfo  : uint8 {
@@ -623,9 +638,9 @@ void clif_tradecompleted(s_map_session_data* sd, int fail);
 void clif_tradeundo(s_map_session_data* sd);
 
 // storage
-void clif_storagelist(s_map_session_data* sd, struct s_item* items, int items_length);
+void clif_storagelist(s_map_session_data* sd, s_item* items, int items_length, const char *storename);
 void clif_updatestorageamount(s_map_session_data* sd, int amount, int max_amount);
-void clif_storageitemadded(s_map_session_data* sd, struct s_item* i, int index, int amount);
+void clif_storageitemadded(s_map_session_data* sd, s_item* i, int index, int amount);
 void clif_storageitemremoved(s_map_session_data* sd, int index, int amount);
 void clif_storageclose(s_map_session_data* sd);
 
@@ -819,7 +834,7 @@ void clif_friendslist_reqack(s_map_session_data *sd, s_map_session_data *f_sd, i
 void clif_weather(int16 m); // [Valaris]
 void clif_specialeffect(struct s_block_list* bl, int type, enum e_send_target target); // special effects [Valaris]
 void clif_specialeffect_single(struct s_block_list* bl, int type, int fd);
-void clif_messagecolor_target(struct block_list *bl, unsigned long color, const char *msg, bool rgb2bgr, enum send_target type, s_map_session_data *sd);
+void clif_messagecolor_target(s_block_list *bl, unsigned long color, const char *msg, bool rgb2bgr, e_send_target type, s_map_session_data *sd);
 #define clif_messagecolor(bl, color, msg, rgb2bgr, type) clif_messagecolor_target(bl, color, msg, rgb2bgr, type, NULL) // Mob/Npc color talk [SnakeDrak]
 void clif_specialeffect_value(struct s_block_list* bl, int effect_id, int num, e_send_target target);
 
@@ -828,7 +843,7 @@ void clif_GM_kick(s_map_session_data *sd,s_map_session_data *tsd);
 void clif_manner_message(s_map_session_data* sd, uint32 type);
 void clif_GM_silence(s_map_session_data* sd, s_map_session_data* tsd, uint8 type);
 
-void clif_disp_overhead_(struct block_list *bl, const char* mes, enum send_target flag);
+void clif_disp_overhead_(s_block_list *bl, const char* mes, e_send_target flag);
 #define clif_disp_overhead(bl, mes) clif_disp_overhead_(bl, mes, AREA)
 
 void clif_get_weapon_view(s_map_session_data* sd, unsigned short *rhand, unsigned short *lhand);
@@ -884,12 +899,12 @@ enum e_mail_send_result{
 
 void clif_Mail_window(int fd, int flag);
 void clif_Mail_read(s_map_session_data *sd, int mail_id);
-void clif_mail_delete(s_map_session_data* sd, struct mail_message *msg, bool success);
+void clif_mail_delete(s_map_session_data* sd, s_mail_message *msg, bool success);
 void clif_Mail_return(int fd, int mail_id, short fail);
-void clif_Mail_send(s_map_session_data* sd, enum mail_send_result result);
+void clif_Mail_send(s_map_session_data* sd, e_mail_send_result result);
 void clif_Mail_new(s_map_session_data* sd, int mail_id, const char *sender, const char *title);
-void clif_Mail_refreshinbox(s_map_session_data *sd,enum mail_inbox_type type,int64 mailID);
-void clif_mail_getattachment(s_map_session_data* sd, struct mail_message *msg, uint8 result, enum mail_attachment_type type);
+void clif_Mail_refreshinbox(s_map_session_data *sd,e_mail_inbox_type type,int64 mailID);
+void clif_mail_getattachment(s_map_session_data* sd, s_mail_message *msg, uint8 result, e_mail_attachment_type type);
 void clif_Mail_Receiver_Ack(s_map_session_data* sd, uint32 char_id, short class_, uint32 level, const char* name);
 void clif_mail_removeitem(s_map_session_data* sd, bool success, int index, int amount);
 // AUCTION SYSTEM
@@ -899,7 +914,7 @@ void clif_Auction_message(int fd, unsigned char flag);
 void clif_Auction_close(int fd, unsigned char flag);
 void clif_parse_Auction_cancelreg(int fd, s_map_session_data *sd);
 
-void clif_bossmapinfo(int fd, struct s_mob_data *md, short flag);
+void clif_bossmapinfo(s_map_session_data *sd, s_mob_data *md, enum e_bossmap_info flag);
 void clif_cashshop_show(s_map_session_data *sd, struct s_npc_data *nd);
 
 // ADOPTION
@@ -925,7 +940,7 @@ void clif_party_show_picker(s_map_session_data * sd, struct s_item * item_data);
 // Progress Bar [Inkfish]
 void clif_progressbar(s_map_session_data * sd, unsigned long color, unsigned int second);
 void clif_progressbar_abort(s_map_session_data * sd);
-void clif_progressbar_npc(struct npc_data *nd, s_map_session_data* sd);
+void clif_progressbar_npc(s_npc_data *nd, s_map_session_data* sd);
 #define clif_progressbar_npc_area(nd) clif_progressbar_npc((nd),NULL)
 
 void clif_PartyBookingRegisterAck(s_map_session_data *sd, int flag);
@@ -1003,14 +1018,14 @@ void clif_monster_hp_bar( struct s_mob_data* md, int fd );
 
 // Clan System
 void clif_clan_basicinfo( s_map_session_data *sd );
-void clif_clan_message(struct clan *clan,const char *mes,int len);
-void clif_clan_onlinecount( struct clan* clan );
+void clif_clan_message(s_clan *clan,const char *mes,int len);
+void clif_clan_onlinecount( s_clan* clan );
 void clif_clan_leave( s_map_session_data* sd );
 
 // Bargain Tool
-void clif_sale_start(struct sale_item_data* sale_item, struct block_list* bl, enum send_target target);
-void clif_sale_end(struct sale_item_data* sale_item, struct block_list* bl, enum send_target target);
-void clif_sale_amount(struct sale_item_data* sale_item, struct block_list* bl, enum send_target target);
+void clif_sale_start(s_sale_item_data* sale_item, s_block_list* bl, e_send_target target);
+void clif_sale_end(s_sale_item_data* sale_item, s_block_list* bl, e_send_target target);
+void clif_sale_amount(s_sale_item_data* sale_item, s_block_list* bl, e_send_target target);
 
 /**
  * Color Table
@@ -1035,7 +1050,7 @@ void clif_update_rankingpoint(s_map_session_data *sd, int rankingtype, int point
 
 void clif_crimson_marker(s_map_session_data *sd, struct s_block_list *bl, bool remove);
 
-void clif_showscript(struct block_list* bl, const char* message, enum send_target flag);
+void clif_showscript(s_block_list* bl, const char* message, e_send_target flag);
 void clif_party_leaderchanged(s_map_session_data *sd, int prev_leader_aid, int new_leader_aid);
 
 void clif_account_name(int fd, uint32 account_id, const char* accname);
@@ -1051,7 +1066,7 @@ void clif_SelectCart(s_map_session_data *sd);
 
 /// Achievement System
 void clif_achievement_list_all(s_map_session_data *sd);
-void clif_achievement_update(s_map_session_data *sd, struct achievement *ach, int count);
+void clif_achievement_update(s_map_session_data *sd, s_achievement *ach, int count);
 void clif_pAchievementCheckReward(int fd, s_map_session_data *sd);
 void clif_achievement_reward_ack(int fd, unsigned char result, int ach_id);
 

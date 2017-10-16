@@ -1,20 +1,23 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
-
-#include "../common/cbasetypes.h"
-#include "../common/mmo.h"
-#include "../common/malloc.h"
-#include "../common/nullpo.h"
-#include "../common/showmsg.h"
-
 #include "clan.h"
+
+#include <string.h> //memset
+
+#include "../common_old/cbasetypes.h"
+#include "../common_old/mmo.h"
+#include "../common_old/malloc.h"
+#include "../common_old/nullpo.h"
+#include "../common_old/showmsg.h"
+
 #include "clif.h"
 #include "intif.h"
 #include "pc.h"
 #include "script.h"
 #include "status.h"
+#include "log.h"
 
-static DBMap* clan_db; // int clan_id -> struct clan*
+static s_DBMap* clan_db; // int clan_id -> s_clan*
 
 void do_init_clan(){
 	clan_db = idb_alloc(DB_OPT_RELEASE_DATA);
@@ -24,41 +27,41 @@ void do_final_clan(){
 	db_destroy(clan_db);
 }
 
-void clan_load_clandata( int count, struct clan* clans ){
+void clan_load_clandata( int count, s_clan* clans ){
 	int i,j;
 
 	nullpo_retv( clans );
 
 	for( i = 0, j = 0; i < count; i++, clans++ ){
-		struct clan* clan = clans;
-		struct clan* clanCopy;
+		s_clan* clan = clans;
+		s_clan* clanCopy;
 
-		clanCopy = (struct clan*)aMalloc( sizeof( struct clan ) );
+		clanCopy = (s_clan*)aMalloc( sizeof( s_clan ) );
 
 		if( clanCopy == NULL ){
 			ShowError("Memory could not be allocated for a clan.\n");
 			break;
 		}
 
-		memcpy( clanCopy, clan, sizeof( struct clan ) );
+		memcpy( clanCopy, clan, sizeof( s_clan ) );
 		memset( clanCopy->members, 0, sizeof( clanCopy->members ) );
 
 		idb_put( clan_db, clanCopy->id, clanCopy );
 		j++;
 	}
 
-	ShowStatus( "Received '"CL_WHITE"%d"CL_RESET"' clans from char-server.\n", j );
+	ShowStatus( "Received '" CL_WHITE "%d" CL_RESET "' clans from char-server.\n", j );
 }
 
-struct clan* clan_search( int id ){
-	return (struct clan*)idb_get(clan_db,id);
+s_clan* clan_search( int id ){
+	return (s_clan*)idb_get(clan_db,id);
 }
 
-struct clan* clan_searchname( const char* name ){
-	struct clan* c;
+s_clan* clan_searchname( const char* name ){
+	s_clan* c;
 
-	DBIterator *iter = db_iterator(clan_db);
-	for( c = (struct clan*)dbi_first(iter); dbi_exists(iter); c = (struct clan*)dbi_next(iter) ){
+	s_DBIterator *iter = db_iterator(clan_db);
+	for( c = (s_clan*)dbi_first(iter); dbi_exists(iter); c = (s_clan*)dbi_next(iter) ){
 		if( strncmpi( c->name, name, NAME_LENGTH ) == 0 ){
 			break;
 		}
@@ -68,7 +71,7 @@ struct clan* clan_searchname( const char* name ){
 	return c;
 }
 
-s_map_session_data* clan_getavailablesd( struct clan* clan ){
+s_map_session_data* clan_getavailablesd( s_clan* clan ){
 	int i;
 
 	nullpo_retr(NULL, clan);
@@ -77,7 +80,7 @@ s_map_session_data* clan_getavailablesd( struct clan* clan ){
 	return ( i < clan->max_member ) ? clan->members[i] : NULL;
 }
 
-int clan_getMemberIndex( struct clan* clan, uint32 account_id ){
+int clan_getMemberIndex( s_clan* clan, uint32 account_id ){
 	int i;
 
 	nullpo_retr(-1,clan);
@@ -91,7 +94,7 @@ int clan_getMemberIndex( struct clan* clan, uint32 account_id ){
 	}
 }
 
-int clan_getNextFreeMemberIndex( struct clan* clan ){
+int clan_getNextFreeMemberIndex( s_clan* clan ){
 	int i;
 
 	nullpo_retr(-1,clan);
@@ -106,7 +109,7 @@ int clan_getNextFreeMemberIndex( struct clan* clan ){
 }
 
 void clan_member_joined( s_map_session_data* sd ){
-	struct clan* clan;
+	s_clan* clan;
 	int index;
 
 	nullpo_retv(sd);
@@ -129,7 +132,7 @@ void clan_member_joined( s_map_session_data* sd ){
 
 void clan_member_left( s_map_session_data* sd ){
 	int index;
-	struct clan* clan;
+	s_clan* clan;
 
 	nullpo_retv(sd);
 	nullpo_retv(clan = sd->clan);
@@ -144,7 +147,7 @@ void clan_member_left( s_map_session_data* sd ){
 }
 
 bool clan_member_join( s_map_session_data *sd, int clan_id, uint32 account_id, uint32 char_id ){
-	struct clan *clan;
+	s_clan *clan;
 
 	nullpo_ret(sd);
 
@@ -164,7 +167,7 @@ bool clan_member_join( s_map_session_data *sd, int clan_id, uint32 account_id, u
 }
 
 bool clan_member_leave( s_map_session_data* sd, int clan_id, uint32 account_id, uint32 char_id ){
-	struct clan *clan;
+	s_clan *clan;
 
 	nullpo_ret(sd);
 
@@ -183,7 +186,7 @@ bool clan_member_leave( s_map_session_data* sd, int clan_id, uint32 account_id, 
 }
 
 void clan_recv_message(int clan_id,uint32 account_id,const char *mes,int len) {
-	struct clan *clan;
+	s_clan *clan;
 
 	nullpo_retv( clan = clan_search(clan_id) );
 
@@ -199,7 +202,7 @@ void clan_send_message( s_map_session_data *sd, const char *mes, int len ){
 	log_chat( LOG_CHAT_CLAN, sd->status.clan_id, sd->status.char_id, sd->status.account_id, mapindex_id2name( sd->mapindex ), sd->bl.x, sd->bl.y, NULL, mes );
 }
 
-int clan_get_alliance_count( struct clan *clan, int flag ){
+int clan_get_alliance_count( s_clan *clan, int flag ){
 	int i, count;
 
 	nullpo_ret(clan);

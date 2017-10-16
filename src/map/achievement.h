@@ -4,12 +4,8 @@
 #ifndef MAP_ACHIEVEMENTS_H
 #define MAP_ACHIEVEMENTS_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include "../common/mmo.h"
-#include "../common/db.h"
+#include "../common_old/mmo.h"
+#include "../common_old/db.h"
 
 enum e_achievement_group {
 	AG_NONE = 0,
@@ -78,7 +74,7 @@ struct av_condition {
 	long long value;
 };
 
-struct achievement_db {
+struct s_achievement_db {
 	int achievement_id;
 	char name[ACHIEVEMENT_NAME_LENGTH];
 	enum e_achievement_group group;
@@ -90,7 +86,7 @@ struct achievement_db {
 	int16 mapindex;
 	struct ach_reward {
 		unsigned short nameid, amount;
-		struct script_code *script;
+		struct s_script_code *script;
 		int title_id;
 	} rewards;
 	int score;
@@ -100,12 +96,12 @@ struct achievement_db {
 struct s_map_session_data;
 struct s_block_list;
 
-extern struct achievement_db achievement_dummy;	///< Dummy entry for invalid achievement lookups
+extern struct s_achievement_db achievement_dummy;	///< Dummy entry for invalid achievement lookups
 
-struct achievement_db *achievement_search(int achievement_id);
+struct s_achievement_db *achievement_search(int achievement_id);
 bool achievement_mobexists(int mob_id);
 void achievement_get_reward(s_map_session_data *sd, int achievement_id, time_t rewarded);
-struct achievement *achievement_add(s_map_session_data *sd, int achievement_id);
+s_achievement *achievement_add(s_map_session_data *sd, int achievement_id);
 bool achievement_remove(s_map_session_data *sd, int achievement_id);
 bool achievement_update_achievement(s_map_session_data *sd, int achievement_id, bool complete);
 void achievement_check_reward(s_map_session_data *sd, int achievement_id);
@@ -126,8 +122,5 @@ const char *av_parse_simpleexpr(const char *p, struct av_condition *parent);
 long long achievement_check_condition(struct av_condition *condition, s_map_session_data *sd, int *count);
 void achievement_script_free(struct av_condition *condition);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* MAP_ACHIEVEMENTS_H */

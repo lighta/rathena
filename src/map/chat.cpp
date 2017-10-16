@@ -17,6 +17,7 @@
 #include "npc.h" // npc_event_do()
 #include "pc.h"
 #include "pc_groups.h"
+#include "achievement.h"
 
 int chat_triggerevent(struct s_chat_data *cd); // forward declaration
 

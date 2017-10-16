@@ -33,6 +33,7 @@
 #include "guild.h"
 #include "battle.h"
 #include "log.h"
+#include "achievement.h"
 
 #define ACTIVE_AI_RANGE 2	//Distance added on top of 'AREA_SIZE' at which mobs enter active AI mode.
 
@@ -40,10 +41,10 @@
 
 // Probability for mobs far from players from doing their IDLE skill. (rate of 1000 minute)
 // in Aegis, this is 100% for mobs that have been activated by players and none otherwise.
-#define MOB_LAZYSKILLPERC(md) (md->state.spotted?1000:0)
+#define MOB_LAZYSKILLPERC(md) (mob_is_spotted(md)?1000:0)
 // Move probability for mobs away from players (rate of 1000 minute)
 // in Aegis, this is 100% for mobs that have been activated by players and none otherwise.
-#define MOB_LAZYMOVEPERC(md) (md->state.spotted?1000:0)
+#define MOB_LAZYMOVEPERC(md) (mob_is_spotted(md)?1000:0)
 #define MOB_MAX_DELAY (24*3600*1000)
 #define MAX_MINCHASE 30	//Max minimum chase value to use for mobs.
 #define RUDE_ATTACKED_COUNT 1	//After how many rude-attacks should the skill be used?
@@ -149,7 +150,7 @@ static int mobdb_searchname_array_sub(struct s_mob_db* mob, const char *str)
 * Removes all characters that spotted the monster but are no longer online
 * @param md: Monster whose spotted log should be cleaned
 *------------------------------------------*/
-void mob_clean_spotted(struct mob_data *md) {
+void mob_clean_spotted(s_mob_data *md) {
 	int i;
 	for (i = 0; i < DAMAGELOG_SIZE; i++) {
 		if (md->spotted_log[i] && !map_charid2sd(md->spotted_log[i]))
@@ -162,7 +163,7 @@ void mob_clean_spotted(struct mob_data *md) {
 * @param md: Monster to whose spotted log char_id should be added
 * @param char_id: Char_id to add to the spotted log
 *------------------------------------------*/
-void mob_add_spotted(struct mob_data *md, uint32 char_id) {
+void mob_add_spotted(s_mob_data *md, uint32 char_id) {
 	int i;
 
 	//Check if char_id is already logged
@@ -185,7 +186,7 @@ void mob_add_spotted(struct mob_data *md, uint32 char_id) {
 * @param md: Monster to check
 * @return Returns true if the monster is spotted, otherwise 0
 *------------------------------------------*/
-bool mob_is_spotted(struct mob_data *md) {
+bool mob_is_spotted(s_mob_data *md) {
 	int i;
 
 	//Check if monster is spotted
@@ -341,7 +342,7 @@ int mobdb_checkid(const int id)
 struct s_view_data * mob_get_viewdata(int mob_id)
 {
 	if (mob_db(mob_id) == mob_dummy)
-		return 0;
+		return NULL;
 	return &mob_db(mob_id)->vd;
 }
 
@@ -349,14 +350,14 @@ struct s_view_data * mob_get_viewdata(int mob_id)
  * Create unique view data associated to a spawned monster.
  * @param md: Mob to adjust
  */
-void mob_set_dynamic_viewdata( struct mob_data* md ){
+void mob_set_dynamic_viewdata( s_mob_data* md ){
 	// If it is a valid monster and it has not already been created
 	if( md && !md->vd_changed ){
 		// Allocate a dynamic entry
-		struct view_data* vd = (struct view_data*)aMalloc( sizeof( struct view_data ) );
+		s_view_data* vd = (s_view_data*)aMalloc( sizeof( s_view_data ) );
 
 		// Copy the current values
-		memcpy( vd, md->vd, sizeof( struct view_data ) );
+		memcpy( vd, md->vd, sizeof( s_view_data ) );
 
 		// Update the pointer to the new entry
 		md->vd = vd;
@@ -370,7 +371,7 @@ void mob_set_dynamic_viewdata( struct mob_data* md ){
  * Free any view data associated to a spawned monster.
  * @param md: Mob to free
  */
-void mob_free_dynamic_viewdata( struct mob_data* md ){
+void mob_free_dynamic_viewdata( s_mob_data* md ){
 	// If it is a valid monster and it has already been allocated
 	if( md && md->vd_changed ){
 		// Free it
@@ -585,7 +586,7 @@ bool mob_ksprotected (struct s_block_list *src, struct s_block_list *target)
 	return false;
 }
 
-struct s_mob_data *mob_once_spawn_sub(struct s_block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, unsigned int ai)
+struct s_mob_data *mob_once_spawn_sub(struct s_block_list *bl, int16 m, int16 x, int16 y, const char *mobname, int mob_id, const char *event, unsigned int size, e_mob_ai ai)
 {
 	struct s_spawn_data data;
 
@@ -627,7 +628,7 @@ struct s_mob_data *mob_once_spawn_sub(struct s_block_list *bl, int16 m, int16 x,
 /*==========================================
  * Spawn a single mob on the specified coordinates.
  *------------------------------------------*/
-int mob_once_spawn(s_map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
+int mob_once_spawn(s_map_session_data* sd, int16 m, int16 x, int16 y, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, e_mob_ai ai)
 {
 	struct s_mob_data* md = NULL;
 	int count, lv;
@@ -679,7 +680,7 @@ int mob_once_spawn(s_map_session_data* sd, int16 m, int16 x, int16 y, const char
 /*==========================================
  * Spawn mobs in the specified area.
  *------------------------------------------*/
-int mob_once_spawn_area(s_map_session_data* sd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, enum mob_ai ai)
+int mob_once_spawn_area(s_map_session_data* sd, int16 m, int16 x0, int16 y0, int16 x1, int16 y1, const char* mobname, int mob_id, int amount, const char* event, unsigned int size, e_mob_ai ai)
 {
 	int i, max, id = 0;
 	int lx = -1, ly = -1;
@@ -1429,7 +1430,7 @@ static int mob_ai_sub_hard_slavemob(struct s_mob_data *md,unsigned int tick)
 				&& unit_walktoxy(&md->bl, x, y, 0))
 				return 1;
 		}
-	} else if (bl->m != md->bl.m && map_flag_gvg(md->bl.m)) {
+	} else if (bl->m != md->bl.m && map_flag_gvg2(md->bl.m)) {
 		//Delete the summoned mob if it's in a gvg ground and the master is elsewhere. [Skotlex]
 		status_kill(&md->bl);
 		return 1;
@@ -1630,7 +1631,7 @@ int mob_warpchase(struct s_mob_data *md, struct s_block_list *target)
 		return 1; //Already walking to a warp.
 
 	//Search for warps within mob's viewing range.
-	map_foreachinrange (mob_warpchase_sub, &md->bl,
+	map_foreachinallrange(mob_warpchase_sub, &md->bl,
 		md->db->range2, BL_NPC, target, &warp, &distance);
 
 	if (warp && unit_walktobl(&md->bl, &warp->bl, 1, 1))
@@ -1934,7 +1935,7 @@ static bool mob_ai_sub_hard(struct s_mob_data *md, unsigned int tick)
 
 static int mob_ai_sub_hard_timer(struct s_block_list *bl,va_list ap)
 {
-	struct mob_data *md = (struct mob_data*)bl;
+	s_mob_data *md = (s_mob_data*)bl;
 	uint32 char_id = va_arg(ap, uint32);
 	unsigned int tick = va_arg(ap, unsigned int);
 	if (mob_ai_sub_hard(md, tick))
@@ -2055,7 +2056,7 @@ static int mob_ai_hard(int tid, unsigned int tick, int id, intptr_t data)
  * @param mobdrop Drop data
  * @author [Cydh]
  **/
-void mob_setdropitem_option(struct item *itm, struct s_mob_drop *mobdrop) {
+void mob_setdropitem_option(s_item *itm, struct s_mob_drop *mobdrop) {
 	struct s_random_opt_group *g = NULL;
 	if (!itm || !mobdrop || mobdrop->randomopt_group == RDMOPTG_None)
 		return;
@@ -2071,7 +2072,7 @@ void mob_setdropitem_option(struct item *itm, struct s_mob_drop *mobdrop) {
 /*==========================================
  * Initializes the delay drop structure for mob-dropped items.
  *------------------------------------------*/
-static struct item_drop* mob_setdropitem(struct s_mob_drop *mobdrop, int qty, unsigned short mob_id)
+static s_item_drop* mob_setdropitem(struct s_mob_drop *mobdrop, int qty, unsigned short mob_id)
 {
 	struct s_item_drop *drop = ers_alloc(item_drop_ers, struct s_item_drop);
 	memset(&drop->item_data, 0, sizeof(struct s_item));
@@ -2862,7 +2863,7 @@ int mob_dead(struct s_mob_data *md, struct s_block_list *src, int type)
 			}
 
 			for(i = 0; i < MAX_MVP_DROP_TOTAL; i++) {
-				struct item_data *i_data;
+				s_item_data *i_data;
 
 				if(mdrop[i].nameid <= 0 || !(i_data = itemdb_exists(mdrop[i].nameid)))
 					continue;
@@ -2929,7 +2930,7 @@ int mob_dead(struct s_mob_data *md, struct s_block_list *src, int type)
 		}
 
 		if (sd) {
-			struct mob_db *mission_mdb = mobdb_exists(sd->mission_mobid);
+			s_mob_db *mission_mdb = mobdb_exists(sd->mission_mobid);
 
 			if ((sd->mission_mobid == md->mob_id) ||
 				(battle_config.taekwon_mission_mobname == 1 && mission_mdb && status_get_race2(&md->bl) == RC2_GOBLIN && mission_mdb->race2 == RC2_GOBLIN) ||
@@ -4830,8 +4831,8 @@ static bool mob_readdb_itemratio(char* str[], int columns, int current)
 static bool mob_readdb_drop(char* str[], int columns, int current) {
 	unsigned short mobid, nameid;
 	int rate, i, size, flag = 0;
-	struct mob_db *mob;
-	struct s_mob_drop *drop;
+	s_mob_db *mob;
+	s_mob_drop *drop;
 
 	mobid = atoi(str[0]);
 	if ((mob = mob_db(mobid)) == mob_dummy) {
@@ -5245,13 +5246,13 @@ static void mob_load(void)
  */
 void mob_db_load(bool is_reload){
 	memset(mob_db_data,0,sizeof(mob_db_data)); //Clear the array
-	mob_db_data[0] = (struct mob_db*)aCalloc(1, sizeof (struct mob_db));	//This mob is used for random spawns
+	mob_db_data[0] = (s_mob_db*)aCalloc(1, sizeof (s_mob_db));	//This mob is used for random spawns
 	mob_makedummymobdb(0); //The first time this is invoked, it creates the dummy mob
 	if( !is_reload ) {
 		// on mobdbreload it's not neccessary to execute this
 		// item ers needs to be allocated only once
-		item_drop_ers = ers_new(sizeof(struct item_drop),"mob.cpp::item_drop_ers",ERS_OPT_CLEAN);
-		item_drop_list_ers = ers_new(sizeof(struct item_drop_list),"mob.cpp::item_drop_list_ers",ERS_OPT_NONE);
+		item_drop_ers = ers_new(sizeof(s_item_drop),"mob.cpp::item_drop_ers",ERS_OPT_CLEAN);
+		item_drop_list_ers = ers_new(sizeof(s_item_drop_list),"mob.cpp::item_drop_list_ers",ERS_OPT_NONE);
 	}
 	mob_item_drop_ratio = idb_alloc(DB_OPT_BASE);
 	mob_skill_db = idb_alloc(DB_OPT_BASE);
@@ -5265,7 +5266,7 @@ void mob_db_load(bool is_reload){
  * @param args: va_list of arguments
  * @return 0
  */
-static int mob_reload_sub( struct mob_data *md, va_list args ){
+static int mob_reload_sub( s_mob_data *md, va_list args ){
 	// Relink the mob to the new database entry
 	md->db = mob_db(md->mob_id);
 
@@ -5291,7 +5292,7 @@ static int mob_reload_sub( struct mob_data *md, va_list args ){
  * @param args: va_list of arguments
  * @return 0
  */
-static int mob_reload_sub_npc( struct npc_data *nd, va_list args ){
+static int mob_reload_sub_npc( s_npc_data *nd, va_list args ){
 	// If the view data points to a mob
 	if( mobdb_checkid(nd->class_) ){
 		// Get the new view data from the mob database

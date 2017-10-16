@@ -909,7 +909,7 @@ void guild_retrieveitembound(uint32 char_id, uint32 account_id, int guild_id) {
 		j = pc_bound_chk(sd,BOUND_GUILD,idxlist);
 		if (j) {
 			struct s_storage* stor = guild2storage(sd->status.guild_id);
-			struct guild *g = guild_search(guild_id);
+			s_guild *g = guild_search(guild_id);
 			int i;
 			if (stor && stor->status) { //Someone is in guild storage, close them
 				for (i = 0; i < g->max_member; i++) {
@@ -927,7 +927,7 @@ void guild_retrieveitembound(uint32 char_id, uint32 account_id, int guild_id) {
 		}
 	} else { //Character is offline, ask char server to do the job
 		struct s_storage* stor = guild2storage2(guild_id);
-		struct guild *g = guild_search(guild_id);
+		s_guild *g = guild_search(guild_id);
 		nullpo_retv(g);
 		if (stor && stor->status) { //Someone is in guild storage, close them
 			int i;
@@ -1768,7 +1768,7 @@ int guild_broken(int guild_id,int flag) {
 * @param sd New guild master
 */
 int guild_gm_change(int guild_id, uint32 char_id) {
-	struct guild *g;
+	s_guild *g;
 	char *name;
 	int i;
 

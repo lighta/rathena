@@ -798,7 +798,7 @@ int map_addblock(struct s_block_list* bl);
 int map_delblock(struct s_block_list* bl);
 int map_moveblock(struct s_block_list *, int, int, unsigned int);
 int map_foreachinrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int type, ...);
-int map_foreachinallrange(int (*func)(struct s_block_list*,va_list), struct block_list* center, int16 range, int type, ...);
+int map_foreachinallrange(int (*func)(struct s_block_list*,va_list), s_block_list* center, int16 range, int type, ...);
 int map_foreachinshootrange(int (*func)(struct s_block_list*,va_list), struct s_block_list* center, int16 range, int type, ...);
 int map_foreachinarea(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...);
 int map_foreachinallarea(int(*func)(struct s_block_list*, va_list), int16 m, int16 x0, int16 y0, int16 x1, int16 y1, int type, ...);
@@ -980,7 +980,7 @@ extern char log_db_db[32];
 
 #endif
 
-
+//#include "../common/sql.h"
 
 extern int db_use_sqldbs;
 
