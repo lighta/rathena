@@ -11,10 +11,10 @@
 #include "../custom/defines_pre.h"
 
 /// Max number of items on @autolootid list
-#define AUTOLOOTITEM_SIZE 10
+#define AUTOLOOTITEM_SIZE    10
 
 /// The maximum number of atcommand and @warp suggestions
-#define MAX_SUGGESTIONS 10
+#define MAX_SUGGESTIONS      10
 
 /// Comment to disable the official walk path
 /// The official walkpath disables users from taking non-clear walk paths,
@@ -62,13 +62,13 @@
 /// The primary effects of this are restrictions on non-VIP players, such as requiring
 /// a Reset Stone to change into third classes, paying more for equipment upgrades, and
 /// so forth. Note that the changes are based on euRO, not iRO.
-#define VIP_SCRIPT 0
+#define VIP_SCRIPT                  0
 
 #ifdef VIP_ENABLE
-	#define MIN_STORAGE 300 // Default number of storage slots.
-	#define MIN_CHARS 3 // Default number of characters per account.
-	#define MAX_CHAR_VIP 6 // This must be less than MAX_CHARS
-	#define MAX_CHAR_BILLING 0 // This must be less than MAX_CHARS
+	#define MIN_STORAGE         300 // Default number of storage slots.
+	#define MIN_CHARS           3   // Default number of characters per account.
+	#define MAX_CHAR_VIP        6   // This must be less than MAX_CHARS
+	#define MAX_CHAR_BILLING    0   // This must be less than MAX_CHARS
 #endif
 
 /// Comment to disable warnings for deprecated script commands

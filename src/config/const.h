@@ -32,54 +32,54 @@
  * Path within the /db folder to (non-)renewal specific db files
  **/
 #ifdef RENEWAL
-	#define DBPATH "re/"
+	#define DBPATH    "re/"
 #else
-	#define DBPATH "pre-re/"
+	#define DBPATH    "pre-re/"
 #endif
 
-#define DBIMPORT "import"
+#define DBIMPORT          "import"
 
 /**
  * DefType
  **/
 #ifdef RENEWAL
-	typedef short defType;
-	#define DEFTYPE_MIN SHRT_MIN
-	#define DEFTYPE_MAX SHRT_MAX
+typedef short         defType;
+	#define DEFTYPE_MIN    SHRT_MIN
+	#define DEFTYPE_MAX    SHRT_MAX
 #else
-	typedef signed char defType;
-	#define DEFTYPE_MIN CHAR_MIN
-	#define DEFTYPE_MAX CHAR_MAX
+typedef signed char   defType;
+	#define DEFTYPE_MIN    CHAR_MIN
+	#define DEFTYPE_MAX    CHAR_MAX
 #endif
 
 /* pointer size fix which fixes several gcc warnings */
 #ifdef __64BIT__
-	#define __64BPRTSIZE(y) (intptr)y
+	#define __64BPRTSIZE(y)    (intptr)y
 #else
-	#define __64BPRTSIZE(y) y
+	#define __64BPRTSIZE(y)    y
 #endif
 
 /* ATCMD_FUNC(mobinfo) HIT and FLEE calculations */
 #ifdef RENEWAL
-	#define MOB_FLEE(mob) ( mob->lv + mob->status.agi + 100 )
-	#define MOB_HIT(mob)  ( mob->lv + mob->status.dex + 175 )
+	#define MOB_FLEE(mob)    (mob->lv + mob->status.agi + 100)
+	#define MOB_HIT(mob)     (mob->lv + mob->status.dex + 175)
 #else
-	#define MOB_FLEE(mob) ( mob->lv + mob->status.agi )
-	#define MOB_HIT(mob)  ( mob->lv + mob->status.dex )
+	#define MOB_FLEE(mob)    (mob->lv + mob->status.agi)
+	#define MOB_HIT(mob)     (mob->lv + mob->status.dex)
 #endif
 
 /* Renewal's dmg level modifier, used as a macro for a easy way to turn off. */
 #ifdef RENEWAL_LVDMG
-	#define RE_LVL_DMOD(val) \
-		if( status_get_lv(src) > 100 && val > 0 ) \
-			skillratio = skillratio * status_get_lv(src) / val;
-	#define RE_LVL_MDMOD(val) \
-		if( status_get_lv(src) > 100 && val > 0) \
-			md.damage = md.damage * status_get_lv(src) / val;
-	/* ranger traps special */
-	#define RE_LVL_TMDMOD() \
-		if( status_get_lv(src) > 100 ) \
-			md.damage = md.damage * 150 / 100 + md.damage * status_get_lv(src) / 100;
+	#define RE_LVL_DMOD(val)                 \
+	if (status_get_lv(src) > 100 && val > 0) \
+		skillratio = skillratio * status_get_lv(src) / val;
+	#define RE_LVL_MDMOD(val)                \
+	if (status_get_lv(src) > 100 && val > 0) \
+		md.damage = md.damage * status_get_lv(src) / val;
+/* ranger traps special */
+	#define RE_LVL_TMDMOD()       \
+	if (status_get_lv(src) > 100) \
+		md.damage = md.damage * 150 / 100 + md.damage * status_get_lv(src) / 100;
 #else
 	#define RE_LVL_DMOD(val)
 	#define RE_LVL_MDMOD(val)
@@ -88,10 +88,10 @@
 
 // Renewal variable cast time reduction
 #ifdef RENEWAL_CAST
-	#define VARCAST_REDUCTION(val){ \
-		if( (varcast_r += val) != 0 && varcast_r >= 0 ) \
-			time = time * (1 - (float)min(val, 100) / 100); \
-	}
+	#define VARCAST_REDUCTION(val)    {                              \
+		if ((varcast_r += val) != 0 && varcast_r >= 0)           \
+			time = time * (1 - (float)min(val, 100) / 100);  \
+}
 #endif
 
 /**
@@ -99,13 +99,13 @@
  * That map should be loaded by a mapserv
  **/
 #ifdef RENEWAL
-    #define MAP_DEFAULT_NAME "iz_int"
-    #define MAP_DEFAULT_X 97
-    #define MAP_DEFAULT_Y 90
+    #define MAP_DEFAULT_NAME    "iz_int"
+    #define MAP_DEFAULT_X       97
+    #define MAP_DEFAULT_Y       90
 #else
-    #define MAP_DEFAULT_NAME "new_1-1"
-    #define MAP_DEFAULT_X 53
-    #define MAP_DEFAULT_Y 111
+    #define MAP_DEFAULT_NAME    "new_1-1"
+    #define MAP_DEFAULT_X       53
+    #define MAP_DEFAULT_Y       111
 #endif
 
 /**
