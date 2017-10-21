@@ -26,7 +26,7 @@ void evdp_init()
 		ShowFatalError("evdp [EPOLL]: Cannot create event dispatcher (errno: %u / %s)\n", errno, strerror(errno));
 		exit(1);
 	}
-}//end: evdp_init()
+} //end: evdp_init()
 
 
 void evdp_final()
@@ -35,14 +35,14 @@ void evdp_final()
 		close(epoll_fd);
 		epoll_fd = -1;
 	}
-}//end: evdp_final()
+} //end: evdp_final()
 
 
-int32 evdp_wait(s_EVDP_EVENT *out_fds, int32 max_events, int32 timeout_ticks)
+int32 evdp_wait(s_EVDP_EVENT* out_fds, int32 max_events, int32 timeout_ticks)
 {
-	struct epoll_event          l_events[EPOLL_MAX_PER_CYCLE];
-	register struct epoll_event *ev;
-	register int                nfds, n;
+	struct epoll_event           l_events[EPOLL_MAX_PER_CYCLE];
+	register struct epoll_event* ev;
+	register int                 nfds, n;
 
 	if (max_events > EPOLL_MAX_PER_CYCLE)
 		max_events = EPOLL_MAX_PER_CYCLE;
@@ -76,10 +76,10 @@ int32 evdp_wait(s_EVDP_EVENT *out_fds, int32 max_events, int32 timeout_ticks)
 	}
 
 	return nfds; // 0 on timeout or > 0  ..
-}//end: evdp_wait()
+} //end: evdp_wait()
 
 
-void evdp_remove(int32 fd, s_EVDP_DATA *ep)
+void evdp_remove(int32 fd, s_EVDP_DATA* ep)
 {
 	if (ep->ev_added == true) {
 		if (epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, &ep->ev_data) != 0) {
@@ -91,10 +91,10 @@ void evdp_remove(int32 fd, s_EVDP_DATA *ep)
 
 		ep->ev_added = false;     // not added!
 	}
-}//end: evdp_remove()
+} //end: evdp_remove()
 
 
-bool evdp_addlistener(int32 fd, s_EVDP_DATA *ep)
+bool evdp_addlistener(int32 fd, s_EVDP_DATA* ep)
 {
 	ep->ev_data.events  = EPOLLET | EPOLLIN;
 	ep->ev_data.data.fd = fd;
@@ -112,10 +112,10 @@ bool evdp_addlistener(int32 fd, s_EVDP_DATA *ep)
 	ep->ev_added = true;
 
 	return true;
-}//end: evdp_addlistener()
+} //end: evdp_addlistener()
 
 
-bool evdp_addclient(int32 fd, s_EVDP_DATA *ep)
+bool evdp_addclient(int32 fd, s_EVDP_DATA* ep)
 {
 	ep->ev_data.events  = EPOLLIN | EPOLLHUP;
 	ep->ev_data.data.fd = fd;
@@ -134,10 +134,10 @@ bool evdp_addclient(int32 fd, s_EVDP_DATA *ep)
 	ep->ev_added = true;
 
 	return true;
-}//end: evdp_addclient()
+} //end: evdp_addclient()
 
 
-bool evdp_addconnecting(int32 fd, s_EVDP_DATA *ep)
+bool evdp_addconnecting(int32 fd, s_EVDP_DATA* ep)
 {
 	ep->ev_data.events  = EPOLLET | EPOLLOUT | EPOLLHUP;
 	ep->ev_data.data.fd = fd;
@@ -151,10 +151,10 @@ bool evdp_addconnecting(int32 fd, s_EVDP_DATA *ep)
 	ep->ev_added = true;
 
 	return true;
-}//end: evdp_addconnecting()
+} //end: evdp_addconnecting()
 
 
-bool evdp_outgoingconnection_established(int32 fd, s_EVDP_DATA *ep)
+bool evdp_outgoingconnection_established(int32 fd, s_EVDP_DATA* ep)
 {
 	int32 saved_mask;
 
@@ -175,10 +175,10 @@ bool evdp_outgoingconnection_established(int32 fd, s_EVDP_DATA *ep)
 	}
 
 	return true;
-}//end: evdp_outgoingconnection_established()
+} //end: evdp_outgoingconnection_established()
 
 
-bool evdp_writable_add(int32 fd, s_EVDP_DATA *ep)
+bool evdp_writable_add(int32 fd, s_EVDP_DATA* ep)
 {
 	if (ep->ev_added != true) {
 		ShowError("evdp [EPOLL]: evdp_writable_add - tried to add not added fd #%u\n", fd);
@@ -195,10 +195,10 @@ bool evdp_writable_add(int32 fd, s_EVDP_DATA *ep)
 	}
 
 	return true;
-}//end: evdp_writable_add()
+} //end: evdp_writable_add()
 
 
-void evdp_writable_remove(int32 fd, s_EVDP_DATA *ep)
+void evdp_writable_remove(int32 fd, s_EVDP_DATA* ep)
 {
 	if (ep->ev_added != true) {
 		ShowError("evdp [EPOLL]: evdp_writable_remove - tried to remove not added fd #%u\n", fd);
@@ -213,4 +213,4 @@ void evdp_writable_remove(int32 fd, s_EVDP_DATA *ep)
 			return;
 		}
 	}
-}//end: evdp_writable_remove()
+} //end: evdp_writable_remove()

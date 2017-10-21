@@ -19,7 +19,6 @@
 #include "../common_old/strlib.h"
 #include "login.h"
 
-
 /**
  * Login-server console help: starting option info.
  *  Do not rename function used as extern.
@@ -46,19 +45,17 @@ struct c_ModuleCnslif::pImpl {
 	pImpl(){}
 };
 
-
 c_ModuleCnslif::c_ModuleCnslif()
 	: aPimpl(new c_ModuleCnslif::pImpl)
 {
 }
 
-c_ModuleCnslif &c_ModuleCnslif::smGetInstance()
+c_ModuleCnslif& c_ModuleCnslif::smGetInstance()
 {
 	static c_ModuleCnslif lInstance;
 
 	return lInstance;
 }
-
 
 /**
  * Read the option specified in command line
@@ -67,18 +64,18 @@ c_ModuleCnslif &c_ModuleCnslif::smGetInstance()
  * @param argv:
  * @return true or Exit on failure.
  */
-int logcnslif_get_options(int argc, char **argv)
+int logcnslif_get_options(int argc, char** argv)
 {
 	int i = 0;
 
 	for (i = 1; i < argc; i++)
 	{
-		const char *arg = argv[i];
+		const char* arg = argv[i];
 
-		if (arg[0] != '-' && (arg[0] != '/' || arg[1] == '-')) {// -, -- and /
+		if (arg[0] != '-' && (arg[0] != '/' || arg[1] == '-')) { // -, -- and /
 			ShowError("Unknown option '%s'.\n", argv[i]);
 			exit(EXIT_FAILURE);
-		} else if ((++arg)[0] == '-') {// long option
+		} else if ((++arg)[0] == '-') { // long option
 			arg++;
 
 			if (strcmp(arg, "help") == 0) {
@@ -125,7 +122,6 @@ int logcnslif_get_options(int argc, char **argv)
 	return 1;
 } // logcnslif_get_options
 
-
 /**
  * Console Command Parser
  * Transmited from command cli.c
@@ -134,7 +130,7 @@ int logcnslif_get_options(int argc, char **argv)
  * @param buf: buffer to parse, (from console)
  * @return 1=success
  */
-int cnslif_parse(const char *buf)
+int cnslif_parse(const char* buf)
 {
 	char type[64];
 	char command[64];
@@ -191,7 +187,6 @@ int cnslif_parse(const char *buf)
 	return 1;
 } // cnslif_parse
 
-
 /**
  * Initialize the module.
  * Launched at login-serv start, create db or other long scope variable here.
@@ -203,7 +198,6 @@ void do_init_logincnslif(void)
 		add_timer_interval(gettick() + 1000, parse_console_timer, 0, 0, 1000); //start in 1s each 1sec
 	}
 }
-
 
 /**
  * Handler to cleanup module, called when login-server stops.

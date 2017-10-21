@@ -15,11 +15,11 @@ namespace common_new {
 class c_timer {
 public:
 	c_timer();
-	c_timer(const c_timer &orig);
+	c_timer(const c_timer& orig);
 	virtual ~c_timer();
 private:
 public:
-	static std::string timestamp2string(time_t timestamp, const char *format);
+	static std::string timestamp2string(time_t timestamp, const char* format);
 };
 }
 }

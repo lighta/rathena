@@ -27,18 +27,18 @@ private:
 	c_ModuleChrif();
 
 	void logchrif_on_disconnect(int id);
-	int logchrif_parse_reqauth(int fd, int id, char *ip);
+	int logchrif_parse_reqauth(int fd, int id, char* ip);
 	int logchrif_parse_ackusercount(int fd, int id);
 	int logchrif_send_accdata(int fd, uint32 aid);
 	int logchrif_sendvipdata(int fd, struct s_mmo_account acc, unsigned char flag, int mapfd);
-	int logchrif_parse_reqaccdata(int fd, int id, char *ip);
+	int logchrif_parse_reqaccdata(int fd, int id, char* ip);
 	int logchrif_parse_keepalive(int fd);
-	int logchrif_parse_reqchangemail(int fd, int id, char *ip);
-	int logchrif_parse_requpdaccstate(int fd, int id, char *ip);
-	int logchrif_parse_reqbanacc(int fd, int id, char *ip);
-	int logchrif_parse_reqchgsex(int fd, int id, char *ip);
-	int logchrif_parse_upd_global_accreg(int fd, int id, char *ip);
-	int logchrif_parse_requnbanacc(int fd, int id, char *ip);
+	int logchrif_parse_reqchangemail(int fd, int id, char* ip);
+	int logchrif_parse_requpdaccstate(int fd, int id, char* ip);
+	int logchrif_parse_reqbanacc(int fd, int id, char* ip);
+	int logchrif_parse_reqchgsex(int fd, int id, char* ip);
+	int logchrif_parse_upd_global_accreg(int fd, int id, char* ip);
+	int logchrif_parse_requnbanacc(int fd, int id, char* ip);
 	int logchrif_parse_setacconline(int fd, int id);
 	int logchrif_parse_setaccoffline(int fd);
 	int logchrif_parse_updonlinedb(int fd, int id);
@@ -49,6 +49,7 @@ private:
 #if PACKETVER_SUPPORTS_PINCODE
 	int logchrif_parse_updpincode(int fd);
 	int logchrif_parse_pincode_authfail(int fd);
+
 #endif
 	int logchrif_parse_reqvipdata(int fd);
 	int logchrif_parse_accinfo(int fd);
@@ -57,7 +58,7 @@ private:
 	void logchrif_server_reset(int id);
 
 public:
-	static c_ModuleChrif &smGetInstance();
+	static c_ModuleChrif& smGetInstance();
 
 	static int logchrif_sync_ip_addresses(int tid, unsigned int tick, int id, intptr_t data);
 
@@ -76,7 +77,7 @@ public:
 	 * @param len: size of packet
 	 * @return : the number of char-serv the packet was sent to
 	 */
-	int logchrif_sendallwos(int sfd, uint8 *buf, size_t len);
+	int logchrif_sendallwos(int sfd, uint8* buf, size_t len);
 
 	/**
 	 * loginchrif constructor

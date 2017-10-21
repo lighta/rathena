@@ -21,7 +21,7 @@ private:
 	std::unique_ptr<pImpl> aPimpl;
 	c_ModuleClif();
 public:
-	static c_ModuleClif &smGetInstance();
+	static c_ModuleClif& smGetInstance();
 };
 
 /**

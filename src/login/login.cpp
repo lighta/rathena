@@ -38,17 +38,17 @@
 
 namespace ra {
 namespace login {
-static const int LOGIN_MAX_MSG = 30;        /// Max number predefined in msg_conf
-static char      *msg_table[LOGIN_MAX_MSG]; /// Login Server messages_conf
+static const int LOGIN_MAX_MSG = 30;       /// Max number predefined in msg_conf
+static char*     msg_table[LOGIN_MAX_MSG]; /// Login Server messages_conf
 
 //definition of exported var declared in .h
 struct s_mmo_char_server ch_server[MAX_SERVERS]; /// char server data
 struct s_Login_Config    login_config;           /// Configuration of login-serv
-s_DBMap                  *online_db;
-s_DBMap                  *auth_db;
+s_DBMap*                 online_db;
+s_DBMap*                 auth_db;
 
 // account database
-s_AccountDB *accounts = NULL;
+s_AccountDB* accounts = NULL;
 // Advanced subnet check [LuzZza]
 
 struct s_subnet {
@@ -67,13 +67,12 @@ struct c_ModuleLoginCore::pImpl {
 	}
 };
 
-
 c_ModuleLoginCore::c_ModuleLoginCore()
 	: aPimpl(new c_ModuleLoginCore::pImpl)
 {
 }
 
-c_ModuleLoginCore &c_ModuleLoginCore::smGetInstance()
+c_ModuleLoginCore& c_ModuleLoginCore::smGetInstance()
 {
 	static c_ModuleLoginCore lInstance;
 
@@ -81,16 +80,14 @@ c_ModuleLoginCore &c_ModuleLoginCore::smGetInstance()
 }
 
 //early declaration
-bool login_check_password(const char *md5key, int passwdenc, const char *passwd, const char *refpass);
-
+bool login_check_password(const char* md5key, int passwdenc, const char* passwd, const char* refpass);
 
 ///Accessors
 
-s_AccountDB *login_get_accounts_db(void)
+s_AccountDB* login_get_accounts_db(void)
 {
 	return accounts;
 }
-
 
 /**
  * Sub function to create an online_login_data and save it to db.
@@ -101,7 +98,7 @@ s_AccountDB *login_get_accounts_db(void)
  */
 s_DBData login_create_online_user(u_DBKey key, va_list args)
 {
-	struct s_online_login_data *p;
+	struct s_online_login_data* p;
 
 	CREATE(p, struct s_online_login_data, 1);
 	p->account_id         = key.i;
@@ -117,11 +114,11 @@ s_DBData login_create_online_user(u_DBKey key, va_list args)
  * @param account_id : aid connected
  * @return the new online_login_data for that user
  */
-struct s_online_login_data *login_add_online_user(int char_server, uint32 account_id)
+struct s_online_login_data* login_add_online_user(int char_server, uint32 account_id)
 {
-	struct s_online_login_data *p;
+	struct s_online_login_data* p;
 
-	p              = (struct s_online_login_data *)idb_ensure(online_db, account_id, login_create_online_user);
+	p              = (struct s_online_login_data*)idb_ensure(online_db, account_id, login_create_online_user);
 	p->char_server = char_server;
 	if (p->waiting_disconnect != INVALID_TIMER) {
 		delete_timer(p->waiting_disconnect, login_waiting_disconnect_timer);
@@ -129,7 +126,6 @@ struct s_online_login_data *login_add_online_user(int char_server, uint32 accoun
 	}
 	return p;
 }
-
 
 /**
  * Received info from char serv that the account_id is now offline
@@ -139,9 +135,9 @@ struct s_online_login_data *login_add_online_user(int char_server, uint32 accoun
  */
 void login_remove_online_user(uint32 account_id)
 {
-	struct s_online_login_data *p;
+	struct s_online_login_data* p;
 
-	p = (struct s_online_login_data *)idb_get(online_db, account_id);
+	p = (struct s_online_login_data*)idb_get(online_db, account_id);
 	if (p == NULL)
 		return;
 
@@ -150,7 +146,6 @@ void login_remove_online_user(uint32 account_id)
 
 	idb_remove(online_db, account_id);
 }
-
 
 /**
  * Timered function to disconnect a user from login.
@@ -165,7 +160,7 @@ void login_remove_online_user(uint32 account_id)
  */
 int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t data)
 {
-	struct s_online_login_data *p = (struct s_online_login_data *)idb_get(online_db, id);
+	struct s_online_login_data* p = (struct s_online_login_data*)idb_get(online_db, id);
 
 	if (p != NULL && p->waiting_disconnect == tid && p->account_id == (unsigned int)id) {
 		p->waiting_disconnect = INVALID_TIMER;
@@ -175,7 +170,6 @@ int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t 
 	return 0;
 }
 
-
 /**
  * Sub function to apply on online_db.
  * Mark a character as offline.
@@ -184,10 +178,10 @@ int login_waiting_disconnect_timer(int tid, unsigned int tick, int id, intptr_t 
  * @return : Value to be added up by the function that is applying this
  * @see DBApply
  */
-int login_online_db_setoffline(u_DBKey key, s_DBData *data, va_list ap)
+int login_online_db_setoffline(u_DBKey key, s_DBData* data, va_list ap)
 {
-	struct s_online_login_data *p     = (struct s_online_login_data *)db_data2ptr(data);
-	int                        server = va_arg(ap, int);
+	struct s_online_login_data* p      = (struct s_online_login_data*)db_data2ptr(data);
+	int                         server = va_arg(ap, int);
 
 	if (server == -1) {
 		p->char_server = -1;
@@ -196,10 +190,9 @@ int login_online_db_setoffline(u_DBKey key, s_DBData *data, va_list ap)
 			p->waiting_disconnect = INVALID_TIMER;
 		}
 	} else if (p->char_server == server)
-		p->char_server = -2; //Char server disconnected.
+		p->char_server = -2;  //Char server disconnected.
 	return 0;
 }
-
 
 /**
  * Sub function of login_online_data_cleanup.
@@ -209,15 +202,14 @@ int login_online_db_setoffline(u_DBKey key, s_DBData *data, va_list ap)
  * @return: Value to be added up by the function that is applying this
  * @see DBApply
  */
-static int login_online_data_cleanup_sub(u_DBKey key, s_DBData *data, va_list ap)
+static int login_online_data_cleanup_sub(u_DBKey key, s_DBData* data, va_list ap)
 {
-	struct s_online_login_data *character = (struct s_online_login_data *)db_data2ptr(data);
+	struct s_online_login_data* character = (struct s_online_login_data*)db_data2ptr(data);
 
 	if (character->char_server == -2) //Unknown server.. set them offline
 		login_remove_online_user(character->account_id);
 	return 0;
 }
-
 
 /**
  * Timered function to check if user is still connected.
@@ -234,7 +226,6 @@ static int login_online_data_cleanup(int tid, unsigned int tick, int id, intptr_
 	return 0;
 }
 
-
 /**
  * Create a new account and save it in db/sql.
  * @param userid: string for user login
@@ -247,7 +238,7 @@ static int login_online_data_cleanup(int tid, unsigned int tick, int id, intptr_
  *	1: incorrect pass or userid (userid|pass too short or already exist);
  *	3: registration limit exceeded;
  */
-int login_mmo_auth_new(const char *userid, const char *pass, const char sex, const char *last_ip)
+int login_mmo_auth_new(const char* userid, const char* pass, const char sex, const char* last_ip)
 {
 	static int           num_regs     = 0; // registration counter
 	static unsigned int  new_reg_tick = 0;
@@ -267,7 +258,7 @@ int login_mmo_auth_new(const char *userid, const char *pass, const char sex, con
 
 	// check for invalid inputs
 	if (sex != 'M' && sex != 'F')
-		return 0; // 0 = Unregistered ID
+		return 0;  // 0 = Unregistered ID
 
 	// check if the account doesn't exist already
 	if (accounts->load_str(accounts, &acc, userid)) {
@@ -296,7 +287,7 @@ int login_mmo_auth_new(const char *userid, const char *pass, const char sex, con
 
 	ShowNotice("Account creation (account %s, id: %d, pass: %s, sex: %c)\n", acc.userid.c_str(), acc.account_id, acc.pass.c_str(), acc.sex);
 
-	if (DIFF_TICK(tick, new_reg_tick) > 0) {// Update the registration check.
+	if (DIFF_TICK(tick, new_reg_tick) > 0) { // Update the registration check.
 		num_regs     = 0;
 		new_reg_tick = tick + login_config.time_allowed * 1000;
 	}
@@ -304,7 +295,6 @@ int login_mmo_auth_new(const char *userid, const char *pass, const char sex, con
 
 	return -1;
 } // login_mmo_auth_new
-
 
 /**
  * Check/authentication of a connection.
@@ -320,7 +310,7 @@ int login_mmo_auth_new(const char *userid, const char *pass, const char sex, con
  *	6: banned
  *	x: acc state (TODO document me deeper)
  */
-int login_mmo_auth(struct s_login_session_data *sd, bool isServer)
+int login_mmo_auth(struct s_login_session_data* sd, bool isServer)
 {
 	struct s_mmo_account acc;
 	size_t               len;
@@ -331,10 +321,10 @@ int login_mmo_auth(struct s_login_session_data *sd, bool isServer)
 
 	// DNS Blacklist check
 	if (login_config.use_dnsbl) {
-		char  r_ip[16];
-		char  ip_dnsbl[256];
-		char  *dnsbl_serv;
-		uint8 *sin_addr = (uint8 *)&session[sd->fd]->client_addr;
+		char   r_ip[16];
+		char   ip_dnsbl[256];
+		char*  dnsbl_serv;
+		uint8* sin_addr = (uint8*)&session[sd->fd]->client_addr;
 
 		sprintf(r_ip, "%u.%u.%u.%u", sin_addr[0], sin_addr[1], sin_addr[2], sin_addr[3]);
 
@@ -362,7 +352,7 @@ int login_mmo_auth(struct s_login_session_data *sd, bool isServer)
 
 			result = login_mmo_auth_new(sd->userid, sd->passwd, TOUPPER(sd->userid[len + 1]), ip);
 			if (result != -1)
-				return result; // Failed to make account. [Skotlex].
+				return result;  // Failed to make account. [Skotlex].
 		}
 	}
 
@@ -394,8 +384,8 @@ int login_mmo_auth(struct s_login_session_data *sd, bool isServer)
 	}
 
 	if (login_config.client_hash_check && !isServer) {
-		struct s_client_hash_node *node = NULL;
-		bool                      match = false;
+		struct s_client_hash_node* node  = NULL;
+		bool                       match = false;
 
 		for (node = login_config.client_hash_nodes; node; node = node->next)
 		{
@@ -452,7 +442,6 @@ int login_mmo_auth(struct s_login_session_data *sd, bool isServer)
 	return -1;      // account OK
 } // login_mmo_auth
 
-
 /**
  * Sub function of login_check_password.
  *  Checking if password matches the one in db hashed with client md5key.
@@ -462,7 +451,7 @@ int login_mmo_auth(struct s_login_session_data *sd, bool isServer)
  * @param passwd: pass to check
  * @return true if matching else false
  */
-bool login_check_encrypted(const char *str1, const char *str2, const char *passwd)
+bool login_check_encrypted(const char* str1, const char* str2, const char* passwd)
 {
 	char tmpstr[64 + 1], md5str[32 + 1];
 
@@ -472,7 +461,6 @@ bool login_check_encrypted(const char *str1, const char *str2, const char *passw
 	return(0 == strcmp(passwd, md5str));
 }
 
-
 /**
  * Verify if a password is correct.
  * @param md5key: md5key of client
@@ -481,7 +469,7 @@ bool login_check_encrypted(const char *str1, const char *str2, const char *passw
  * @param refpass: pass register in db
  * @return true if matching else false
  */
-bool login_check_password(const char *md5key, int passwdenc, const char *passwd, const char *refpass)
+bool login_check_password(const char* md5key, int passwdenc, const char* passwd, const char* refpass)
 {
 	if (passwdenc == 0) {
 		return(0 == strcmp(passwd, refpass));
@@ -492,7 +480,6 @@ bool login_check_password(const char *md5key, int passwdenc, const char *passwd,
 		       || ((passwdenc & 0x02) && login_check_encrypted(refpass, md5key, passwd));
 	}
 }
-
 
 /**
  * Test to determine if an IP come from LAN or WAN.
@@ -510,17 +497,15 @@ int lan_subnetcheck(uint32 ip)
 
 /// Msg_conf tayloring
 
-int login_msg_config_read(char *cfgName)
+int login_msg_config_read(char* cfgName)
 {
 	return _msg_config_read(cfgName, LOGIN_MAX_MSG, msg_table);
 }
 
-
-const char *login_msg_txt(int msg_number)
+const char* login_msg_txt(int msg_number)
 {
 	return _msg_txt(msg_number, LOGIN_MAX_MSG, msg_table);
 }
-
 
 void login_do_final_msg(void)
 {
@@ -530,17 +515,16 @@ void login_do_final_msg(void)
 
 /// Set and read Configurations
 
-
 /**
  * Reading Lan Support configuration.
  * @param lancfgName: Name of the lan configuration (could be fullpath)
  * @return 0:success, 1:failure (file not found|readable)
  */
-int login_lan_config_read(const char *lancfgName)
+int login_lan_config_read(const char* lancfgName)
 {
-	FILE *fp;
-	int  line_num = 0, s_subnet = ARRAYLENGTH(subnet);
-	char line[1024], w1[64], w2[64], w3[64], w4[64];
+	FILE* fp;
+	int   line_num = 0, s_subnet = ARRAYLENGTH(subnet);
+	char  line[1024], w1[64], w2[64], w3[64], w4[64];
 
 	if ((fp = fopen(lancfgName, "r")) == NULL) {
 		ShowWarning("LAN Support configuration file is not found: %s\n", lancfgName);
@@ -583,17 +567,16 @@ int login_lan_config_read(const char *lancfgName)
 	return 0;
 } // login_lan_config_read
 
-
 /**
  * Reading main configuration file.
  * @param cfgName: Name of the configuration (could be fullpath)
  * @param normal: Config read normally when server started
  * @return True:success, Fals:failure (file not found|readable)
  */
-bool login_config_read(const char *cfgName, bool normal)
+bool login_config_read(const char* cfgName, bool normal)
 {
-	char line[1024], w1[32], w2[1024];
-	FILE *fp = fopen(cfgName, "r");
+	char  line[1024], w1[32], w2[1024];
+	FILE* fp = fopen(cfgName, "r");
 
 	if (fp == NULL) {
 		ShowError("Configuration file (%s) not found.\n", cfgName);
@@ -662,7 +645,7 @@ bool login_config_read(const char *cfgName, bool normal)
 		else if (!strcmpi(w1, "ipban_cleanup_interval"))
 			login_config.ipban_cleanup_interval = (unsigned int)atoi(w2);
 		else if (!strcmpi(w1, "ip_sync_interval"))
-			login_config.ip_sync_interval = (unsigned int)1000 * 60 * atoi(w2);//w2 comes in minutes.
+			login_config.ip_sync_interval = (unsigned int)1000 * 60 * atoi(w2);  //w2 comes in minutes.
 		else if (!strcmpi(w1, "client_hash_check"))
 			login_config.client_hash_check = config_switch(w2);
 		else if (!strcmpi(w1, "client_hash")) {
@@ -670,7 +653,7 @@ bool login_config_read(const char *cfgName, bool normal)
 			char md5[33];
 
 			if (sscanf(w2, "%3d, %32s", &group, md5) == 2) {
-				struct s_client_hash_node *nnode;
+				struct s_client_hash_node* nnode;
 				CREATE(nnode, struct s_client_hash_node, 1);
 				if (strcmpi(md5, "disabled") == 0) {
 					nnode->hash[0] = '\0';
@@ -734,7 +717,6 @@ bool login_config_read(const char *cfgName, bool normal)
 	return true;
 } // login_config_read
 
-
 /**
  * Init login-serv default configuration.
  */
@@ -782,19 +764,18 @@ void login_set_defaults()
 /// Constructor destructor and signal handlers
 using namespace ra::login;
 
-
 /**
  * Login-serv destructor
  *  dealloc..., function called at exit of the login-serv
  */
 void do_final(void)
 {
-	struct s_client_hash_node *hn = login_config.client_hash_nodes;
-	s_AccountDB               *db = accounts;
+	struct s_client_hash_node* hn = login_config.client_hash_nodes;
+	s_AccountDB*               db = accounts;
 
 	while (hn)
 	{
-		struct s_client_hash_node *tmp = hn;
+		struct s_client_hash_node* tmp = hn;
 		hn = hn->next;
 		aFree(tmp);
 	}
@@ -829,7 +810,6 @@ void do_final(void)
 	ShowStatus("Finished.\n");
 }
 
-
 /**
  * Signal handler
  *  This function attempts to properly close the server when an interrupt signal is received.
@@ -847,7 +827,6 @@ void do_shutdown(void)
 	}
 }
 
-
 /**
  * Signal handler
  *  Function called when the server has received a crash signal.
@@ -857,14 +836,12 @@ void do_abort(void)
 {
 }
 
-
 // Is this still used ??
 
 void set_server_type(void)
 {
 	SERVER_TYPE = ATHENA_SERVER_LOGIN;
 }
-
 
 /**
  * Login serv constructor
@@ -873,7 +850,7 @@ void set_server_type(void)
  * @param argv : arguments values from main()
  * @return 0 everything ok else stopping programme execution.
  */
-int do_init(int argc, char **argv)
+int do_init(int argc, char** argv)
 {
 	runflag = LOGINSERVER_ST_STARTING;
 
@@ -949,11 +926,9 @@ int do_init(int argc, char **argv)
 } // do_init
 
 // Console Command Parser [Wizputer]
-
-
 //FIXME to be remove (moved to cnslif / will be done once map/char/login, all have their cnslif interface ready)
 
-int parse_console(const char *buf)
+int parse_console(const char* buf)
 {
 	return cnslif_parse(buf);
 }

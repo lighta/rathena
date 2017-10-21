@@ -6,43 +6,43 @@
 
 #include "cbasetypes.h"
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 struct netbuf {
-	sysint	pool;				// The pool ID this buffer belongs to,
-								// is set to -1 if its an emergency allocated buffer 
-	
-	struct netbuf *next;		// Used by Network system.
+	sysint         pool;                    // The pool ID this buffer belongs to,
+	// is set to -1 if its an emergency allocated buffer
 
-	volatile int32 refcnt;		// Internal Refcount, it gets lowered every call to netbuffer_put, 
-								// if its getting zero, the buffer will returned back to the pool
-								// and can be reused.
+	struct netbuf* next;            // Used by Network system.
 
-	int32	dataPos;	// Current Offset
-						// Used only for Reading (recv job)
-						// write cases are using the sessions local datapos member due to
-						// shared write buffer support.
-	
-	int32	dataLen;	// read buffer case:
-						//	The length expected to read to.
-						//	when this->dataPos == dateLen, read job has been completed.
-						// write buffer case:
-						//	The lngth of data in te buffer
-						//	when s->dataPos == dataLen, write job has been completed
-						//
-						// Note:
-						//	leftBytes = (dateLen - dataPos)
-						//
-						//	Due to shared buffer support
-						//	dataPos gets not used in write case (each connection has its local offset)
-						//
+	volatile int32 refcnt;          // Internal Refcount, it gets lowered every call to netbuffer_put,
+	// if its getting zero, the buffer will returned back to the pool
+	// and can be reused.
+
+	int32 dataPos;          // Current Offset
+	// Used only for Reading (recv job)
+	// write cases are using the sessions local datapos member due to
+	// shared write buffer support.
+
+	int32 dataLen;          // read buffer case:
+	//	The length expected to read to.
+	//	when this->dataPos == dateLen, read job has been completed.
+	// write buffer case:
+	//	The lngth of data in te buffer
+	//	when s->dataPos == dataLen, write job has been completed
+	//
+	// Note:
+	//	leftBytes = (dateLen - dataPos)
+	//
+	//	Due to shared buffer support
+	//	dataPos gets not used in write case (each connection has its local offset)
+	//
 
 	// The Bufferspace itself.
 	char buf[32];
 };
-typedef struct netbuf* netbuf_t;
+typedef struct netbuf   * netbuf_t;
 
 
 void netbuffer_init();
@@ -58,32 +58,32 @@ void netbuffer_final();
  *
  * @return pointer to netbuf struct
  */
-netbuf_t netbuffer_get( sysint sz );
+netbuf_t netbuffer_get(sysint sz);
 
 
-/** 
+/**
  * Returns the given netbuffer (decreases refcount, if its 0 - the buffer will get returned to the pool)
  *
- * @param buf - the buffer to return 
+ * @param buf - the buffer to return
  */
-void netbuffer_put( netbuf_t buf );
+void netbuffer_put(netbuf_t buf);
 
 
-/** 
- * Increases the Refcount on the given buffer 
+/**
+ * Increases the Refcount on the given buffer
  * (used for areasends .. etc)
  *
  */
-void netbuffer_incref( netbuf_t buf );
+void netbuffer_incref(netbuf_t buf);
 
 
 // Some Useful macros
-#define NBUFP(netbuf,pos) (((uint8*)(netbuf->buf)) + (pos))
-#define NBUFB(netbuf,pos) (*(uint8*)((netbuf->buf) + (pos)))
-#define NBUFW(netbuf,pos) (*(uint16*)((netbuf->buf) + (pos)))
-#define NBUFL(netbuf,pos) (*(uint32*)((netbuf->buf) + (pos)))
+#define NBUFP(netbuf, pos)    (((uint8*)(netbuf->buf)) + (pos))
+#define NBUFB(netbuf, pos)    (*(uint8*)((netbuf->buf) + (pos)))
+#define NBUFW(netbuf, pos)    (*(uint16*)((netbuf->buf) + (pos)))
+#define NBUFL(netbuf, pos)    (*(uint32*)((netbuf->buf) + (pos)))
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 

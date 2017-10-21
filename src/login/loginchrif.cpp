@@ -30,7 +30,6 @@ int logchrif_parse(int fd)
 	return c_ModuleChrif::smGetInstance().logchrif_parse(fd);
 }
 
-
 /**
  * Entry point from char-server to log-server.
  * Function that checks incoming command, then splits it to the correct handler.
@@ -44,7 +43,7 @@ int c_ModuleChrif::logchrif_parse(int fd)
 	char   ip[16];
 
 	ARR_FIND(0, ARRAYLENGTH(ch_server), cid, ch_server[cid].fd == fd);
-	if (cid == ARRAYLENGTH(ch_server)) {// not a char server
+	if (cid == ARRAYLENGTH(ch_server)) { // not a char server
 		ShowDebug("logchrif_parse: Disconnecting invalid session #%d (is not a char-server)\n", fd);
 		set_eof(fd);
 		do_close(fd);
@@ -157,7 +156,7 @@ int c_ModuleChrif::logchrif_parse(int fd)
 			return 0;
 	}               // while
 	return 1; //or 0
-} // c_ModuleChrif::logchrif_parse
+} // logchrif_parse
 
 struct c_ModuleChrif::pImpl {
 	pImpl()
@@ -165,19 +164,17 @@ struct c_ModuleChrif::pImpl {
 	}
 };
 
-
 c_ModuleChrif::c_ModuleChrif()
 	: aPimpl(new c_ModuleChrif::pImpl)
 {
 }
 
-c_ModuleChrif &c_ModuleChrif::smGetInstance()
+c_ModuleChrif& c_ModuleChrif::smGetInstance()
 {
 	static c_ModuleChrif lInstance;
 
 	return lInstance;
 }
-
 
 /**
  * Packet send to all char-servers, except one. (wos: without our self)
@@ -186,7 +183,7 @@ c_ModuleChrif &c_ModuleChrif::smGetInstance()
  * @param len: size of packet
  * @return : the number of char-serv the packet was sent to
  */
-int c_ModuleChrif::logchrif_sendallwos(int sfd, uint8 *buf, size_t len)
+int c_ModuleChrif::logchrif_sendallwos(int sfd, uint8* buf, size_t len)
 {
 	int i, c;
 
@@ -202,7 +199,6 @@ int c_ModuleChrif::logchrif_sendallwos(int sfd, uint8 *buf, size_t len)
 	}
 	return c;
 }
-
 
 /**
  * Timered function to synchronize ip addresses.
@@ -227,7 +223,6 @@ int c_ModuleChrif::logchrif_sync_ip_addresses(int tid, unsigned int tick, int id
 
 /// Parsing handlers
 
-
 /**
  * Request from char-server to authenticate an account.
  * @param fd: fd to parse from (char-serv)
@@ -235,28 +230,28 @@ int c_ModuleChrif::logchrif_sync_ip_addresses(int tid, unsigned int tick, int id
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int c_ModuleChrif::logchrif_parse_reqauth(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_reqauth(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 23)
 		return 0;
 	else {
-		struct s_auth_node *node;
-		uint32             account_id = RFIFOL(fd, 2);
-		uint32             login_id1  = RFIFOL(fd, 6);
-		uint32             login_id2  = RFIFOL(fd, 10);
-		uint8              sex        = RFIFOB(fd, 14);
+		struct s_auth_node* node;
+		uint32              account_id = RFIFOL(fd, 2);
+		uint32              login_id1  = RFIFOL(fd, 6);
+		uint32              login_id2  = RFIFOL(fd, 10);
+		uint8               sex        = RFIFOB(fd, 14);
 		//uint32 ip_ = ntohl(RFIFOL(fd,15));
-		int                request_id = RFIFOL(fd, 19);
+		int                 request_id = RFIFOL(fd, 19);
 		RFIFOSKIP(fd, 23);
 
-		node = (struct s_auth_node *)idb_get(auth_db, account_id);
+		node = (struct s_auth_node*)idb_get(auth_db, account_id);
 		if (runflag == LOGINSERVER_ST_RUNNING
 		    && node != NULL
 		    && node->account_id == account_id
 		    && node->login_id1 == login_id1
 		    && node->login_id2 == login_id2
 		    && node->sex == sex_num2str(sex) /*&&
-				                      * node->ip         == ip_*/) {// found
+				                      * node->ip         == ip_*/) { // found
 			//ShowStatus("Char-server '%s': authentication of the account %d accepted (ip: %s).\n", server[id].name, account_id, ip);
 
 			// send ack
@@ -289,8 +284,7 @@ int c_ModuleChrif::logchrif_parse_reqauth(int fd, int id, char *ip)
 		}
 	}
 	return 1;
-} // c_ModuleChrif::logchrif_parse_reqauth
-
+} // logchrif_parse_reqauth
 
 /**
  * Receive a request to update user count for char-server identified by id.
@@ -314,7 +308,6 @@ int c_ModuleChrif::logchrif_parse_ackusercount(int fd, int id)
 	return 1;
 }
 
-
 /**
  * Transmit account data to char_server
  * S 2717 aid.W email.40B exp_time.L group_id.B char_slot.B birthdate.11B pincode.5B pincode_change.L
@@ -325,14 +318,13 @@ int c_ModuleChrif::logchrif_send_accdata(int fd, uint32 aid)
 {
 	struct s_mmo_account acc;
 	time_t               expiration_time = 0;
-
 	std::string          email;
 	int                  group_id = 0;
 	std::string          birthdate;
-	std::string          pincode = "";
-	char                 isvip = false;
+	std::string          pincode    = "";
+	char                 isvip      = false;
 	uint8                char_slots = MIN_CHARS, char_vip = 0, char_billing = 0;
-	s_AccountDB          *accounts = login_get_accounts_db();
+	s_AccountDB*         accounts   = login_get_accounts_db();
 
 	if (!accounts->load_num(accounts, &acc, aid))
 		return -1;
@@ -368,8 +360,7 @@ int c_ModuleChrif::logchrif_send_accdata(int fd, uint32 aid)
 	WFIFOB(fd, 74) = char_billing;
 	WFIFOSET(fd, 75);
 	return 1;
-} // c_ModuleChrif::logchrif_send_accdata
-
+} // logchrif_send_accdata
 
 /**
  * Transmit vip specific data to char-serv (will be transfered to mapserv)
@@ -394,7 +385,6 @@ int c_ModuleChrif::logchrif_sendvipdata(int fd, struct s_mmo_account acc, unsign
 	return 1;
 }
 
-
 /**
  * Receive a request for account data reply by sending all mmo_account information.
  * @param fd: fd to parse from (char-serv)
@@ -402,7 +392,7 @@ int c_ModuleChrif::logchrif_sendvipdata(int fd, struct s_mmo_account acc, unsign
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int c_ModuleChrif::logchrif_parse_reqaccdata(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_reqaccdata(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 6)
 		return 0;
@@ -414,7 +404,6 @@ int c_ModuleChrif::logchrif_parse_reqaccdata(int fd, int id, char *ip)
 	}
 	return 1;
 }
-
 
 /**
  * Ping request from char-server to send a reply.
@@ -430,7 +419,6 @@ int c_ModuleChrif::logchrif_parse_keepalive(int fd)
 	return 1;
 }
 
-
 /**
  * Map server send information to change an email of an account via char-server.
  * 0x2722 <account_id>.L <actual_e-mail>.40B <new_e-mail>.40B
@@ -439,13 +427,13 @@ int c_ModuleChrif::logchrif_parse_keepalive(int fd)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int c_ModuleChrif::logchrif_parse_reqchangemail(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_reqchangemail(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 86)
 		return 0;
 	else {
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts = login_get_accounts_db();
+		s_AccountDB*         accounts = login_get_accounts_db();
 		std::string          actual_email; //use istring instead ?
 		std::string          new_email;
 
@@ -474,7 +462,6 @@ int c_ModuleChrif::logchrif_parse_reqchangemail(int fd, int id, char *ip)
 	return 1;
 }
 
-
 /**
  * Receiving an account state update request from a map-server (relayed via char-server).
  * @param fd: fd to parse from (char-serv)
@@ -483,7 +470,7 @@ int c_ModuleChrif::logchrif_parse_reqchangemail(int fd, int id, char *ip)
  * @return 0 not enough info transmitted, 1 success
  * TODO seems pretty damn close to logchrif_parse_reqbanacc
  */
-int c_ModuleChrif::logchrif_parse_requpdaccstate(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_requpdaccstate(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 10)
 		return 0;
@@ -492,7 +479,7 @@ int c_ModuleChrif::logchrif_parse_requpdaccstate(int fd, int id, char *ip)
 
 		uint32               account_id = RFIFOL(fd, 2);
 		unsigned int         state      = RFIFOL(fd, 6);
-		s_AccountDB          *accounts  = login_get_accounts_db();
+		s_AccountDB*         accounts   = login_get_accounts_db();
 
 		RFIFOSKIP(fd, 10);
 
@@ -521,7 +508,6 @@ int c_ModuleChrif::logchrif_parse_requpdaccstate(int fd, int id, char *ip)
 	return 1;
 }
 
-
 /**
  * Receiving a ban request from map-server via char-server.
  * @param fd: fd to parse from (char-serv)
@@ -530,13 +516,13 @@ int c_ModuleChrif::logchrif_parse_requpdaccstate(int fd, int id, char *ip)
  * @return 0 not enough info transmitted, 1 success
  * TODO check logchrif_parse_requpdaccstate for possible merge
  */
-int c_ModuleChrif::logchrif_parse_reqbanacc(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_reqbanacc(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 10)
 		return 0;
 	else {
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts = login_get_accounts_db();
+		s_AccountDB*         accounts = login_get_accounts_db();
 
 		uint32               account_id = RFIFOL(fd, 2);
 		int                  timediff   = RFIFOL(fd, 6);
@@ -575,8 +561,7 @@ int c_ModuleChrif::logchrif_parse_reqbanacc(int fd, int id, char *ip)
 		}
 	}
 	return 1;
-} // c_ModuleChrif::logchrif_parse_reqbanacc
-
+} // logchrif_parse_reqbanacc
 
 /**
  * Receiving a sex change request (sex is reversed).
@@ -585,13 +570,13 @@ int c_ModuleChrif::logchrif_parse_reqbanacc(int fd, int id, char *ip)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int c_ModuleChrif::logchrif_parse_reqchgsex(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_reqchgsex(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 6)
 		return 0;
 	else {
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts = login_get_accounts_db();
+		s_AccountDB*         accounts = login_get_accounts_db();
 
 		uint32               account_id = RFIFOL(fd, 2);
 		RFIFOSKIP(fd, 6);
@@ -620,7 +605,6 @@ int c_ModuleChrif::logchrif_parse_reqchgsex(int fd, int id, char *ip)
 	return 1;
 }
 
-
 /**
  * We receive account_reg2 from a char-server, and we send them to other char-servers.
  * @param fd: fd to parse from (char-serv)
@@ -628,13 +612,13 @@ int c_ModuleChrif::logchrif_parse_reqchgsex(int fd, int id, char *ip)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int c_ModuleChrif::logchrif_parse_upd_global_accreg(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_upd_global_accreg(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 4 || RFIFOREST(fd) < RFIFOW(fd, 2))
 		return 0;
 	else {
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts  = login_get_accounts_db();
+		s_AccountDB*         accounts   = login_get_accounts_db();
 		uint32               account_id = RFIFOL(fd, 4);
 
 		if (!accounts->load_num(accounts, &acc, account_id))
@@ -646,7 +630,6 @@ int c_ModuleChrif::logchrif_parse_upd_global_accreg(int fd, int id, char *ip)
 	return 1;
 }
 
-
 /**
  * Receiving an unban request from map-server via char-server.
  * @param fd: fd to parse from (char-serv)
@@ -654,13 +637,13 @@ int c_ModuleChrif::logchrif_parse_upd_global_accreg(int fd, int id, char *ip)
  * @param ip: char-serv ip (used for info)
  * @return 0 not enough info transmitted, 1 success
  */
-int c_ModuleChrif::logchrif_parse_requnbanacc(int fd, int id, char *ip)
+int c_ModuleChrif::logchrif_parse_requnbanacc(int fd, int id, char* ip)
 {
 	if (RFIFOREST(fd) < 6)
 		return 0;
 	else {
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts = login_get_accounts_db();
+		s_AccountDB*         accounts = login_get_accounts_db();
 
 		uint32               account_id = RFIFOL(fd, 2);
 		RFIFOSKIP(fd, 6);
@@ -677,7 +660,6 @@ int c_ModuleChrif::logchrif_parse_requnbanacc(int fd, int id, char *ip)
 	}
 	return 1;
 }
-
 
 /**
  * Set account_id to online.
@@ -696,7 +678,6 @@ int c_ModuleChrif::logchrif_parse_setacconline(int fd, int id)
 	return 1;
 }
 
-
 /**
  * Set account_id to offline.
  * @author  [Wizputer]
@@ -712,7 +693,6 @@ int c_ModuleChrif::logchrif_parse_setaccoffline(int fd)
 	RFIFOSKIP(fd, 6);
 	return 1;
 }
-
 
 /**
  * Receive list of all online accounts.
@@ -731,8 +711,8 @@ int c_ModuleChrif::logchrif_parse_updonlinedb(int fd, int id)
 		users = RFIFOW(fd, 4);
 		for (i = 0; i < users; i++)
 		{
-			int                        aid = RFIFOL(fd, 6 + i * 4);
-			struct s_online_login_data *p  = (struct s_online_login_data *)idb_ensure(online_db, aid, login_create_online_user);
+			int                         aid = RFIFOL(fd, 6 + i * 4);
+			struct s_online_login_data* p   = (struct s_online_login_data*)idb_ensure(online_db, aid, login_create_online_user);
 			p->char_server = id;
 			if (p->waiting_disconnect != INVALID_TIMER) {
 				delete_timer(p->waiting_disconnect, login_waiting_disconnect_timer);
@@ -744,7 +724,6 @@ int c_ModuleChrif::logchrif_parse_updonlinedb(int fd, int id)
 	return 1;
 }
 
-
 /**
  * Request account_reg2 for a character.
  * @param fd: fd to parse from (char-serv)
@@ -755,16 +734,15 @@ int c_ModuleChrif::logchrif_parse_req_global_accreg(int fd)
 	if (RFIFOREST(fd) < 10)
 		return 0;
 	else {
-		s_AccountDB *accounts  = login_get_accounts_db();
-		uint32      account_id = RFIFOL(fd, 2);
-		uint32      char_id    = RFIFOL(fd, 6);
+		s_AccountDB* accounts   = login_get_accounts_db();
+		uint32       account_id = RFIFOL(fd, 2);
+		uint32       char_id    = RFIFOL(fd, 6);
 		RFIFOSKIP(fd, 10);
 
 		c_ModuleAccount::smGetIntance().mmo_send_global_accreg(accounts, fd, account_id, char_id);
 	}
 	return 1;
 }
-
 
 /**
  * Received new charip from char-serv, update information.
@@ -782,7 +760,6 @@ int c_ModuleChrif::logchrif_parse_updcharip(int fd, int id)
 	RFIFOSKIP(fd, 6);
 	return 1;
 }
-
 
 /**
  * Request to set all accounts offline.
@@ -810,7 +787,7 @@ int c_ModuleChrif::logchrif_parse_updpincode(int fd)
 		return 0;
 	else {
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts = login_get_accounts_db();
+		s_AccountDB*         accounts = login_get_accounts_db();
 
 		if (accounts->load_num(accounts, &acc, RFIFOL(fd, 4))) {
 			acc.pincode        = std::string(RFIFOCP(fd, 8), PINCODE_LENGTH + 1);
@@ -821,7 +798,6 @@ int c_ModuleChrif::logchrif_parse_updpincode(int fd)
 	}
 	return 1;
 }
-
 
 /**
  * PIN Code was incorrectly entered too many times.
@@ -834,11 +810,11 @@ int c_ModuleChrif::logchrif_parse_pincode_authfail(int fd)
 		return 0;
 	else {
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts = login_get_accounts_db();
+		s_AccountDB*         accounts = login_get_accounts_db();
 		if (accounts->load_num(accounts, &acc, RFIFOL(fd, 2))) {
-			struct s_online_login_data *ld;
+			struct s_online_login_data* ld;
 
-			ld = (struct s_online_login_data *)idb_get(online_db, acc.account_id);
+			ld = (struct s_online_login_data*)idb_get(online_db, acc.account_id);
 
 			if (ld == NULL)
 				return 0;
@@ -851,7 +827,6 @@ int c_ModuleChrif::logchrif_parse_pincode_authfail(int fd)
 	return 1;
 }
 #endif
-
 
 /**
  * Received a vip data reqest from char
@@ -869,11 +844,11 @@ int c_ModuleChrif::logchrif_parse_reqvipdata(int fd)
 		return 0;
 	else {                  //request vip info
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts = login_get_accounts_db();
-		int                  aid       = RFIFOL(fd, 2);
-		int8                 flag      = RFIFOB(fd, 6);
-		int32                timediff  = RFIFOL(fd, 7);
-		int                  mapfd     = RFIFOL(fd, 11);
+		s_AccountDB*         accounts = login_get_accounts_db();
+		int                  aid      = RFIFOL(fd, 2);
+		int8                 flag     = RFIFOB(fd, 6);
+		int32                timediff = RFIFOL(fd, 7);
+		int                  mapfd    = RFIFOL(fd, 11);
 		RFIFOSKIP(fd, 15);
 
 		if (accounts->load_num(accounts, &acc, aid)) {
@@ -911,8 +886,7 @@ int c_ModuleChrif::logchrif_parse_reqvipdata(int fd)
 	}
 #endif
 	return 1;
-} // c_ModuleChrif::logchrif_parse_reqvipdata
-
+} // logchrif_parse_reqvipdata
 
 /**
  * IA 0x2720
@@ -923,9 +897,9 @@ int c_ModuleChrif::logchrif_parse_accinfo(int fd)
 	if (RFIFOREST(fd) < 23)
 		return 0;
 	else {
-		int                  map_fd = RFIFOL(fd, 2), u_fd = RFIFOL(fd, 6), u_aid = RFIFOL(fd, 10), u_group = RFIFOL(fd, 14), account_id = RFIFOL(fd, 18);
-		int8                 type      = RFIFOB(fd, 22);
-		s_AccountDB          *accounts = login_get_accounts_db();
+		int                  map_fd   = RFIFOL(fd, 2), u_fd = RFIFOL(fd, 6), u_aid = RFIFOL(fd, 10), u_group = RFIFOL(fd, 14), account_id = RFIFOL(fd, 18);
+		int8                 type     = RFIFOB(fd, 22);
+		s_AccountDB*         accounts = login_get_accounts_db();
 		struct s_mmo_account acc;
 		RFIFOSKIP(fd, 23);
 
@@ -969,11 +943,10 @@ int c_ModuleChrif::logchrif_parse_accinfo(int fd)
 		}
 	}
 	return 1;
-} // c_ModuleChrif::logchrif_parse_accinfo
+} // logchrif_parse_accinfo
 
 
 /// Constructor destructor and signal handlers
-
 
 /**
  * Initializes a server structure.
@@ -984,7 +957,6 @@ void c_ModuleChrif::logchrif_server_init(int id)
 	memset(&ch_server[id], 0, sizeof(ch_server[id]));
 	ch_server[id].fd = -1;
 }
-
 
 /**
  * Destroys a server structure.
@@ -998,7 +970,6 @@ void c_ModuleChrif::logchrif_server_destroy(int id)
 	}
 }
 
-
 /**
  * Resets all the data related to a server.
  *  Actually destroys then recreates the struct.
@@ -1011,7 +982,6 @@ void c_ModuleChrif::logchrif_server_reset(int id)
 	logchrif_server_init(id);
 }
 
-
 /**
  * Called when the connection to Char Server is disconnected.
  * @param id: id of char-serv (should be >0, FIXME)
@@ -1021,7 +991,6 @@ void c_ModuleChrif::logchrif_on_disconnect(int id)
 	ShowStatus("Char-server '%s' has disconnected.\n", ch_server[id].name);
 	logchrif_server_reset(id);
 }
-
 
 /**
  * loginchrif constructor
@@ -1041,7 +1010,6 @@ void c_ModuleChrif::do_init_loginchrif(void)
 	}
 }
 
-
 /**
  * Signal handler
  *  This function attempts to properly close the server when an interrupt signal is received.
@@ -1054,7 +1022,6 @@ void c_ModuleChrif::do_shutdown_loginchrif(void)
 	for (id = 0; id < ARRAYLENGTH(ch_server); ++id)
 		logchrif_server_reset(id);
 }
-
 
 /**
  * loginchrif destructor

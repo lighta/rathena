@@ -24,13 +24,8 @@ namespace ra {
 namespace login {
 // globals //tbd move this
 struct sRAII_sql_handle {
-	Sql *sql_handle;
-
-
-	sRAII_sql_handle()
-		: sql_handle(nullptr){}
-
-
+	Sql* sql_handle;
+	sRAII_sql_handle() : sql_handle(nullptr){}
 	//auto close connections when no one need modue anymore
 	~sRAII_sql_handle() { Sql_Free(sql_handle); }
 };
@@ -48,7 +43,6 @@ struct                                   c_ModuleIpBan::pImpl {
 	std::string ipban_codepage;
 	std::string ipban_table;
 
-
 	pImpl()
 		: cleanup_timer_id(INVALID_TIMER)
 		, ipban_inited(false)
@@ -60,19 +54,17 @@ struct                                   c_ModuleIpBan::pImpl {
 	{}
 };
 
-
 c_ModuleIpBan::c_ModuleIpBan()
 	: aPimpl(new c_ModuleIpBan::pImpl)
 {
 }
 
-c_ModuleIpBan &c_ModuleIpBan::smGetInstance()
+c_ModuleIpBan& c_ModuleIpBan::smGetInstance()
 {
 	static c_ModuleIpBan lInstance;
 
 	return lInstance;
 }
-
 
 /**
  * Check if ip is in the active bans list.
@@ -81,12 +73,12 @@ c_ModuleIpBan &c_ModuleIpBan::smGetInstance()
  */
 bool c_ModuleIpBan::ipban_check(uint32 ip)
 {
-	uint8 *p    = (uint8 *)&ip;
-	char  *data = NULL;
-	int   matches;
+	uint8* p    = (uint8*)&ip;
+	char*  data = NULL;
+	int    matches;
 
 	if (!login_config.ipban)
-		return false; // ipban disabled
+		return false;  // ipban disabled
 
 	//tmp .get issue will be fixed with common_new sql wrapper
 	if (SQL_ERROR == Sql_Query(sa_SQL_Handle->sql_handle, "SELECT count(*) FROM `%s` WHERE `rtime` > NOW() AND (`list` = '%u.*.*.*' OR `list` = '%u.%u.*.*' OR `list` = '%u.%u.%u.*' OR `list` = '%u.%u.%u.%u')",
@@ -97,7 +89,7 @@ bool c_ModuleIpBan::ipban_check(uint32 ip)
 	}
 
 	if (SQL_ERROR == Sql_NextRow(sa_SQL_Handle->sql_handle))
-		return true; // Shouldn't happen, but just in case...
+		return true;  // Shouldn't happen, but just in case...
 
 	Sql_GetData(sa_SQL_Handle->sql_handle, 0, &data, NULL);
 	matches = atoi(data);
@@ -105,7 +97,6 @@ bool c_ModuleIpBan::ipban_check(uint32 ip)
 
 	return(matches > 0);
 }
-
 
 /**
  * Log a failed attempt.
@@ -123,13 +114,12 @@ void c_ModuleIpBan::ipban_log(uint32 ip)
 
 	// if over the limit, add a temporary ban entry
 	if (failures >= login_config.dynamic_pass_failure_ban_limit) {
-		uint8 *p = (uint8 *)&ip;
+		uint8* p = (uint8*)&ip;
 		if (SQL_ERROR == Sql_Query(sa_SQL_Handle->sql_handle, "INSERT INTO `%s`(`list`,`btime`,`rtime`,`reason`) VALUES ('%u.%u.%u.*', NOW() , NOW() +  INTERVAL %d MINUTE ,'Password error ban')",
 		                           aPimpl->ipban_table.c_str(), p[3], p[2], p[1], login_config.dynamic_pass_failure_ban_duration))
 			Sql_ShowDebug(sa_SQL_Handle->sql_handle);
 	}
 }
-
 
 /**
  * Timered function to remove expired bans.
@@ -144,7 +134,7 @@ void c_ModuleIpBan::ipban_log(uint32 ip)
 int c_ModuleIpBan::ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data)
 {
 	if (!login_config.ipban)
-		return 0; // ipban disabled
+		return 0;  // ipban disabled
 
 	if (SQL_ERROR == Sql_Query(sa_SQL_Handle->sql_handle, "DELETE FROM `ipbanlist` WHERE `rtime` <= NOW()"))
 		Sql_ShowDebug(sa_SQL_Handle->sql_handle);
@@ -152,19 +142,18 @@ int c_ModuleIpBan::ipban_cleanup(int tid, unsigned int tick, int id, intptr_t da
 	return 0;
 }
 
-
 /**
  * Read configuration options.
  * @param key: config keyword
  * @param value: config value for keyword
  * @return true if successful, false if config not complete or server already running
  */
-bool c_ModuleIpBan::ipban_config_read(const char *key, const char *value)
+bool c_ModuleIpBan::ipban_config_read(const char* key, const char* value)
 {
-	const char *signature;
+	const char* signature;
 
 	if (aPimpl->ipban_inited)
-		return false; // settings can only be changed before init
+		return false;  // settings can only be changed before init
 
 	signature = "ipban_db_";
 	if (strncmpi(key, signature, strlen(signature)) == 0) {
@@ -184,7 +173,7 @@ bool c_ModuleIpBan::ipban_config_read(const char *key, const char *value)
 		if (strcmpi(key, "db") == 0)
 			aPimpl->ipban_db_database = value;
 		else
-			return false; // not found
+			return false;  // not found
 
 		return true;
 	}
@@ -213,16 +202,15 @@ bool c_ModuleIpBan::ipban_config_read(const char *key, const char *value)
 		if (strcmpi(key, "dynamic_pass_failure_ban_duration") == 0)
 			login_config.dynamic_pass_failure_ban_duration = atoi(value);
 		else
-			return false; // not found
+			return false;  // not found
 
 		return true;
 	}
 
 	return false;   // not found
-} // c_ModuleIpBan::ipban_config_read
+} // ipban_config_read
 
 /// Constructor destructor
-
 
 /**
  * Initialize the module.
@@ -230,12 +218,12 @@ bool c_ModuleIpBan::ipban_config_read(const char *key, const char *value)
  */
 void c_ModuleIpBan::ipban_init(void)
 {
-	const char *username = aPimpl->ipban_db_username.c_str();
-	const char *password = aPimpl->ipban_db_password.c_str();
-	const char *hostname = aPimpl->ipban_db_hostname.c_str();
-	uint16     port      = aPimpl->ipban_db_port;
-	const char *database = aPimpl->ipban_db_database.c_str();
-	const char *codepage = aPimpl->ipban_codepage.c_str();
+	const char* username = aPimpl->ipban_db_username.c_str();
+	const char* password = aPimpl->ipban_db_password.c_str();
+	const char* hostname = aPimpl->ipban_db_hostname.c_str();
+	uint16      port     = aPimpl->ipban_db_port;
+	const char* database = aPimpl->ipban_db_database.c_str();
+	const char* codepage = aPimpl->ipban_codepage.c_str();
 
 	aPimpl->ipban_inited = true;
 
@@ -272,8 +260,7 @@ void c_ModuleIpBan::ipban_init(void)
 		aPimpl->cleanup_timer_id = add_timer_interval(gettick() + 10, ipban_cleanup, 0, 0, login_config.ipban_cleanup_interval * 1000);
 	} else                  // make sure it gets cleaned up on login-server start regardless of interval-based cleanups
 		ipban_cleanup(0, 0, 0, 0);
-} // c_ModuleIpBan::ipban_init
-
+} // ipban_init
 
 /**
  * Destroy the module.
@@ -282,7 +269,7 @@ void c_ModuleIpBan::ipban_init(void)
 void c_ModuleIpBan::ipban_final(void)
 {
 	if (!login_config.ipban)
-		return; // ipban disabled
+		return;  // ipban disabled
 
 	if (login_config.ipban_cleanup_interval > 0)
 		// release data

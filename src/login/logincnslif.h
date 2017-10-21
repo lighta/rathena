@@ -28,7 +28,7 @@ private:
 	std::unique_ptr<pImpl> aPimpl;
 	c_ModuleCnslif();
 public:
-	static c_ModuleCnslif &smGetInstance();
+	static c_ModuleCnslif& smGetInstance();
 };
 
 /**
@@ -39,7 +39,7 @@ public:
  * @param buf: buffer to parse, (from console)
  * @return 1=success
  */
-int cnslif_parse(const char *buf);
+int cnslif_parse(const char* buf);
 
 /**
  * Read the option specified in command line
@@ -48,7 +48,7 @@ int cnslif_parse(const char *buf);
  * @param argv:
  * @return true or Exit on failure.
  */
-int logcnslif_get_options(int argc, char **argv);
+int logcnslif_get_options(int argc, char** argv);
 
 /**
  * Initialize the module.

@@ -27,7 +27,7 @@ private:
 	static int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data);
 
 public:
-	static c_ModuleIpBan &smGetInstance();
+	static c_ModuleIpBan& smGetInstance();
 
 	/**
 	 * Check if ip is in the active bans list.
@@ -49,7 +49,7 @@ public:
 	 * @param value: config value for keyword
 	 * @return true if successful, false if config not complete or server already running
 	 */
-	bool ipban_config_read(const char *key, const char *value);
+	bool ipban_config_read(const char* key, const char* value);
 
 	/**
 	 * Initialize the module.

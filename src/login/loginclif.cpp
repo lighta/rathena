@@ -31,19 +31,17 @@ struct c_ModuleClif::pImpl {
 	pImpl(){}
 };
 
-
 c_ModuleClif::c_ModuleClif()
 	: aPimpl(new c_ModuleClif::pImpl)
 {
 }
 
-c_ModuleClif &c_ModuleClif::smGetInstance()
+c_ModuleClif& c_ModuleClif::smGetInstance()
 {
 	static c_ModuleClif lInstance;
 
 	return lInstance;
 }
-
 
 /**
  * Transmit auth result to client.
@@ -62,20 +60,19 @@ static void logclif_sent_auth_result(int fd, char result)
 	WFIFOSET(fd, 3);
 }
 
-
 /**
  * Auth successful, inform client and create a temp auth_node.
  * @param sd: player session
  */
-static void logclif_auth_ok(struct s_login_session_data *sd)
+static void logclif_auth_ok(struct s_login_session_data* sd)
 {
-	int                fd = sd->fd;
-	uint32             ip = session[fd]->client_addr;
+	int                 fd = sd->fd;
+	uint32              ip = session[fd]->client_addr;
 
-	uint8              server_num, n;
-	uint32             subnet_char_ip;
-	struct s_auth_node *node;
-	int                i;
+	uint8               server_num, n;
+	uint32              subnet_char_ip;
+	struct s_auth_node* node;
+	int                 i;
 
     #if PACKETVER < 20170315
 	int cmd    = 0x69; // AC_ACCEPT_LOGIN
@@ -115,7 +112,7 @@ static void logclif_auth_ok(struct s_login_session_data *sd)
 	}
 
 	{
-		struct s_online_login_data *data = (struct s_online_login_data *)idb_get(online_db, sd->account_id);
+		struct s_online_login_data* data = (struct s_online_login_data*)idb_get(online_db, sd->account_id);
 		if (data) {                           // account is already marked as online!
 			if (data->char_server > -1) { // Request char servers to kick this account out. [Skotlex]
 				uint8 buf[6];
@@ -128,7 +125,7 @@ static void logclif_auth_ok(struct s_login_session_data *sd)
 				logclif_sent_auth_result(fd, 8); // 08 = Server still recognizes your last login
 				return;
 			} else
-			if (data->char_server == -1) {// client has authed but did not access char-server yet
+			if (data->char_server == -1) { // client has authed but did not access char-server yet
 				// wipe previous session
 				idb_remove(auth_db, sd->account_id);
 				login_remove_online_user(sd->account_id);
@@ -182,14 +179,13 @@ static void logclif_auth_ok(struct s_login_session_data *sd)
 	node->clienttype = sd->clienttype;
 	idb_put(auth_db, sd->account_id, node);
 	{
-		struct s_online_login_data *data;
+		struct s_online_login_data* data;
 		// mark client as 'online'
 		data = login_add_online_user(-1, sd->account_id);
 		// schedule deletion of this node
 		data->waiting_disconnect = add_timer(gettick() + AUTH_TIMEOUT, login_waiting_disconnect_timer, sd->account_id, 0);
 	}
 } // logclif_auth_ok
-
 
 /**
  * Inform client that auth has failed.
@@ -219,7 +215,7 @@ static void logclif_auth_ok(struct s_login_session_data *sd)
  *  104 = This character is being deleted. Login is temporarily unavailable for the time being
  *   default = Unknown Error.
  */
-static void logclif_auth_failed(struct s_login_session_data *sd, int result)
+static void logclif_auth_failed(struct s_login_session_data* sd, int result)
 {
 	int    fd = sd->fd;
 	uint32 ip = session[fd]->client_addr;
@@ -234,7 +230,7 @@ static void logclif_auth_failed(struct s_login_session_data *sd, int result)
 	}
 
 	if ((result == 0 || result == 1) && login_config.dynamic_pass_failure_ban)
-		c_ModuleIpBan::smGetInstance().ipban_log(ip); // log failed password attempt
+		c_ModuleIpBan::smGetInstance().ipban_log(ip);  // log failed password attempt
 
 
 #if PACKETVER >= 20120000 /* not sure when this started */
@@ -245,7 +241,7 @@ static void logclif_auth_failed(struct s_login_session_data *sd, int result)
 		memset(WFIFOP(fd, 6), '\0', 20);
 	else {                  // 6 = Your are Prohibited to log in until %s
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts  = login_get_accounts_db();
+		s_AccountDB*         accounts   = login_get_accounts_db();
 		time_t               unban_time = (accounts->load_str(accounts, &acc, sd->userid)) ? acc.unban_time : 0;
 		timestamp2string(WFIFOCP(fd, 6), 20, unban_time, login_config.date_format);
 	}
@@ -258,14 +254,13 @@ static void logclif_auth_failed(struct s_login_session_data *sd, int result)
 		memset(WFIFOP(fd, 3), '\0', 20);
 	else {                  // 6 = Your are Prohibited to log in until %s
 		struct s_mmo_account acc;
-		s_AccountDB          *accounts  = login_get_accounts_db();
+		s_AccountDB*         accounts   = login_get_accounts_db();
 		time_t               unban_time = (accounts->load_str(accounts, &acc, sd->userid)) ? acc.unban_time : 0;
 		timestamp2string(WFIFOCP(fd, 3), 20, unban_time, login_config.date_format);
 	}
 	WFIFOSET(fd, 23);
 #endif
 } // logclif_auth_failed
-
 
 /**
  * Received a keepalive packet to maintain connection.
@@ -282,14 +277,13 @@ static int logclif_parse_keepalive(int fd)
 	return 1;
 }
 
-
 /**
  * Received a keepalive packet to maintain connection.
  * S 0204 <md5 hash>.16B (kRO 2004-05-31aSakexe langtype 0 and 6)
  * @param fd: fd to parse from (client fd)
  * @return 0 not enough info transmitted, 1 success
  */
-static int logclif_parse_updclhash(int fd, struct s_login_session_data *sd)
+static int logclif_parse_updclhash(int fd, struct s_login_session_data* sd)
 {
 	if (RFIFOREST(fd) < 18)
 		return 0;
@@ -299,7 +293,6 @@ static int logclif_parse_updclhash(int fd, struct s_login_session_data *sd)
 	RFIFOSKIP(fd, 18);
 	return 1;
 }
-
 
 /**
  * Received a connection request.
@@ -317,7 +310,7 @@ static int logclif_parse_updclhash(int fd, struct s_login_session_data *sd)
  * @param fd: fd to parse from (client fd)
  * @return 0 failure, 1 success
  */
-static int logclif_parse_reqauth(int fd, struct s_login_session_data *sd, int command, char *ip)
+static int logclif_parse_reqauth(int fd, struct s_login_session_data* sd, int command, char* ip)
 {
 	size_t packet_len = RFIFOREST(fd);
 
@@ -339,8 +332,8 @@ static int logclif_parse_reqauth(int fd, struct s_login_session_data *sd, int co
 
 		// Shinryo: For the time being, just use token as password.
 		if (command == 0x0825) {
-			char   *accname  = RFIFOCP(fd, 9);
-			char   *token    = RFIFOCP(fd, 0x5C);
+			char*  accname   = RFIFOCP(fd, 9);
+			char*  token     = RFIFOCP(fd, 0x5C);
 			size_t uAccLen   = strlen(accname);
 			size_t uTokenLen = RFIFOREST(fd) - 0x5C;
 
@@ -393,14 +386,13 @@ static int logclif_parse_reqauth(int fd, struct s_login_session_data *sd, int co
 	return 1;
 } // logclif_parse_reqauth
 
-
 /**
  * Client requests an md5key for his session: keys will be generated and sent back.
  * @param fd: file descriptor to parse from (client)
  * @param sd: client session
  * @return 1 success
  */
-static int logclif_parse_reqkey(int fd, struct s_login_session_data *sd)
+static int logclif_parse_reqkey(int fd, struct s_login_session_data* sd)
 {
 	RFIFOSKIP(fd, 2);
 	{
@@ -417,7 +409,6 @@ static int logclif_parse_reqkey(int fd, struct s_login_session_data *sd)
 	return 1;
 }
 
-
 /**
  * Char-server request to connect to the login-server.
  * This is needed to exchange packets.
@@ -426,7 +417,7 @@ static int logclif_parse_reqkey(int fd, struct s_login_session_data *sd)
  * @param ip: ipv4 address (client)
  * @return 0 packet received too shirt, 1 success
  */
-static int logclif_parse_reqcharconnec(int fd, struct s_login_session_data *sd, char *ip)
+static int logclif_parse_reqcharconnec(int fd, struct s_login_session_data* sd, char* ip)
 {
 	if (RFIFOREST(fd) < 86)
 		return 0;
@@ -490,7 +481,6 @@ static int logclif_parse_reqcharconnec(int fd, struct s_login_session_data *sd, 
 	return 1;
 } // logclif_parse_reqcharconnec
 
-
 /**
  * Entry point from client to log-server.
  * Function that checks incoming command, then splits it to the correct handler.
@@ -499,10 +489,10 @@ static int logclif_parse_reqcharconnec(int fd, struct s_login_session_data *sd, 
  */
 int logclif_parse(int fd)
 {
-	struct s_login_session_data *sd = (struct s_login_session_data *)session[fd]->session_data;
+	struct s_login_session_data* sd = (struct s_login_session_data*)session[fd]->session_data;
 
-	char                        ip[16];
-	uint32                      ipl = session[fd]->client_addr;
+	char                         ip[16];
+	uint32                       ipl = session[fd]->client_addr;
 
 	ip2str(ipl, ip);
 
@@ -526,7 +516,7 @@ int logclif_parse(int fd)
 		}
 		// create a session for this new connection
 		CREATE(session[fd]->session_data, struct s_login_session_data, 1);
-		sd     = (struct s_login_session_data *)session[fd]->session_data;
+		sd     = (struct s_login_session_data*)session[fd]->session_data;
 		sd->fd = fd;
 	}
 
@@ -575,7 +565,7 @@ int logclif_parse(int fd)
 			return 0;
 		}
 		if (next == 0)
-			return 0; // avoid processing of followup packets (prev was probably incomplete)
+			return 0;  // avoid processing of followup packets (prev was probably incomplete)
 	}
 
 	return 0;
@@ -584,7 +574,6 @@ int logclif_parse(int fd)
 
 /// Constructor destructor
 
-
 /**
  * Initialize the module.
  * Launched at login-serv start, create db or other long scope variable here.
@@ -592,7 +581,6 @@ int logclif_parse(int fd)
 void do_init_loginclif(void)
 {
 }
-
 
 /**
  * loginclif destructor

@@ -14,18 +14,15 @@ c_timer::c_timer()
 {
 }
 
-
-c_timer::c_timer(const c_timer &orig)
+c_timer::c_timer(const c_timer& orig)
 {
 }
-
 
 c_timer::~c_timer()
 {
 }
 
-
-std::string c_timer::timestamp2string(time_t timestamp, const char *format)
+std::string c_timer::timestamp2string(time_t timestamp, const char* format)
 {
 	char str[24];
 

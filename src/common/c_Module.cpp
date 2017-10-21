@@ -16,29 +16,23 @@
 namespace ra {
 namespace common_new {
 struct c_Module::pImpl {
-	std::mutex                   aListenerMutex; //protec the listener map
-	std::map<size_t, c_Module *> aListener;
-
+	std::mutex                  aListenerMutex; //protec the listener map
+	std::map<size_t, c_Module*> aListener;
 
 	pImpl(){}
 };
 
-
-c_Module::c_Module()
-	: aPimpl(new c_Module::pImpl)
+c_Module::c_Module() : aPimpl(new c_Module::pImpl)
 {
 }
 
-
-c_Module::c_Module(const c_Module &orig)
+c_Module::c_Module(const c_Module& orig)
 {
 }
-
 
 c_Module::~c_Module()
 {
 }
-
 
 void c_Module::notifyAll(size_t pKeyEvent)
 {
@@ -60,15 +54,13 @@ void c_Module::notifyAll(size_t pKeyEvent)
 	}
 }
 
-
-size_t c_Module::mAttach(c_Module *pModule)
+size_t c_Module::mAttach(c_Module* pModule)
 {
 	std::lock_guard<std::mutex> _(aPimpl->aListenerMutex);
 	size_t                      lKey = aPimpl->aListener.size();
 	aPimpl->aListener[lKey] = pModule;
 	return lKey;
 }
-
 
 void c_Module::mDettach(size_t pKey)
 {

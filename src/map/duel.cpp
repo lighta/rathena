@@ -5,9 +5,9 @@
 #include <cstdio>
 #include <cstring>
 
-#include "../common_old/timer.h"  // gettick
+#include "../common_old/timer.h" // gettick
 
-#include "atcommand.h"  // msg_txt
+#include "atcommand.h"           // msg_txt
 #include "clif.h"
 #include "duel.h"
 #include "pc.h"
@@ -15,7 +15,7 @@
 
 //global var (extern)
 struct s_duel duel_list[MAX_DUEL]; //list of current duel
-int duel_count = 0; //number of duel active
+int           duel_count = 0;      //number of duel active
 
 static void duel_set(const unsigned int did, s_map_session_data* sd);
 
@@ -24,13 +24,13 @@ static void duel_set(const unsigned int did, s_map_session_data* sd);
  */
 void duel_savetime(s_map_session_data* sd)
 {
-	time_t timer;
-	struct tm *t;
+	time_t     timer;
+	struct tm* t;
 
 	time(&timer);
 	t = localtime(&timer);
 
-	pc_setglobalreg(sd, add_str("PC_LAST_DUEL_TIME"), t->tm_mday*24*60 + t->tm_hour*60 + t->tm_min);
+	pc_setglobalreg(sd, add_str("PC_LAST_DUEL_TIME"), t->tm_mday * 24 * 60 + t->tm_hour * 60 + t->tm_min);
 }
 
 /*
@@ -38,14 +38,14 @@ void duel_savetime(s_map_session_data* sd)
  */
 int duel_checktime(s_map_session_data* sd)
 {
-	int diff;
-	time_t timer;
-	struct tm *t;
+	int        diff;
+	time_t     timer;
+	struct tm* t;
 
 	time(&timer);
 	t = localtime(&timer);
 
-	diff = t->tm_mday*24*60 + t->tm_hour*60 + t->tm_min - pc_readglobalreg(sd, add_str("PC_LAST_DUEL_TIME"));
+	diff = t->tm_mday * 24 * 60 + t->tm_hour * 60 + t->tm_min - pc_readglobalreg(sd, add_str("PC_LAST_DUEL_TIME"));
 
 	return !(diff >= 0 && diff < battle_config.duel_time_interval);
 }
@@ -55,11 +55,12 @@ int duel_checktime(s_map_session_data* sd)
  */
 static int duel_showinfo_sub(s_map_session_data* sd, va_list va)
 {
-	s_map_session_data *ssd = va_arg(va, s_map_session_data*);
-	int *p = va_arg(va, int*);
-	char output[256];
+	s_map_session_data* ssd = va_arg(va, s_map_session_data*);
+	int*                p   = va_arg(va, int*);
+	char                output[256];
 
-	if (sd->duel_group != ssd->duel_group) return 0;
+	if (sd->duel_group != ssd->duel_group)
+		return 0;
 
 	sprintf(output, "      %d. %s", ++(*p), sd->status.name);
 	clif_messagecolor(&ssd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
@@ -72,31 +73,32 @@ static int duel_showinfo_sub(s_map_session_data* sd, va_list va)
  */
 void duel_showinfo(const unsigned int did, s_map_session_data* sd)
 {
-	int p=0;
+	int  p = 0;
 	char output[256];
 
-	if(duel_list[did].max_players_limit > 0)
-		sprintf(output, msg_txt(sd,370), //" -- Duels: %d/%d, Members: %d/%d, Max players: %d --"
-			did, duel_count,
-			duel_list[did].members_count,
-			duel_list[did].members_count + duel_list[did].invites_count,
-			duel_list[did].max_players_limit);
+	if (duel_list[did].max_players_limit > 0)
+		sprintf(output, msg_txt(sd, 370), //" -- Duels: %d/%d, Members: %d/%d, Max players: %d --"
+		        did, duel_count,
+		        duel_list[did].members_count,
+		        duel_list[did].members_count + duel_list[did].invites_count,
+		        duel_list[did].max_players_limit);
 	else
-		sprintf(output, msg_txt(sd,371), //" -- Duels: %d/%d, Members: %d/%d --"
-			did, duel_count,
-			duel_list[did].members_count,
-			duel_list[did].members_count + duel_list[did].invites_count);
+		sprintf(output, msg_txt(sd, 371), //" -- Duels: %d/%d, Members: %d/%d --"
+		        did, duel_count,
+		        duel_list[did].members_count,
+		        duel_list[did].members_count + duel_list[did].invites_count);
 
 	clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 	map_foreachpc(duel_showinfo_sub, sd, &p);
 }
 
 /*
-* Moves sd to duel
-*/
-static void duel_set(const unsigned int did, s_map_session_data* sd) {
+ * Moves sd to duel
+ */
+static void duel_set(const unsigned int did, s_map_session_data* sd)
+{
 	sd->state.changemap = 1;
-	sd->state.warping = 1;
+	sd->state.warping   = 1;
 
 	// As you move to a different plane, ground effects need to be cleared
 	skill_clear_unitgroup(&sd->bl);
@@ -108,7 +110,7 @@ static void duel_set(const unsigned int did, s_map_session_data* sd) {
 	skill_unit_move(&sd->bl, gettick(), 3);
 
 	sd->state.changemap = 0;
-	sd->state.warping = 0;
+	sd->state.warping   = 0;
 }
 
 /*
@@ -117,19 +119,21 @@ static void duel_set(const unsigned int did, s_map_session_data* sd) {
  */
 unsigned int duel_create(s_map_session_data* sd, const unsigned int maxpl)
 {
-	int i=1;
+	int  i = 1;
 	char output[256];
 
-	while(duel_list[i].members_count > 0 && i < MAX_DUEL) i++;
-	if(i == MAX_DUEL) return 0;
+	while (duel_list[i].members_count > 0 && i < MAX_DUEL)
+		i++;
+	if (i == MAX_DUEL)
+		return 0;
 
 	duel_count++;
 	duel_set(i, sd);
 	duel_list[i].members_count++;
-	duel_list[i].invites_count = 0;
+	duel_list[i].invites_count     = 0;
 	duel_list[i].max_players_limit = maxpl;
 
-	strcpy(output, msg_txt(sd,372)); // " -- Duel has been created (@invite/@leave) --"
+	strcpy(output, msg_txt(sd, 372)); // " -- Duel has been created (@invite/@leave) --"
 	clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 
 	clif_map_property(&sd->bl, MAPPROPERTY_FREEPVPZONE, SELF);
@@ -148,15 +152,15 @@ void duel_invite(const unsigned int did, s_map_session_data* sd, s_map_session_d
 	char output[256];
 
 	// " -- Player %s invites %s to duel --"
-	sprintf(output, msg_txt(sd,373), sd->status.name, target_sd->status.name);
+	sprintf(output, msg_txt(sd, 373), sd->status.name, target_sd->status.name);
 	clif_disp_message(&sd->bl, output, strlen(output), DUEL_WOS);
 
 	target_sd->duel_invite = did;
 	duel_list[did].invites_count++;
 
 	// "Blue -- Player %s invites you to PVP duel (@accept/@reject) --"
-	sprintf(output, msg_txt(sd,374), sd->status.name);
-	clif_broadcast((struct s_block_list *)target_sd, output, strlen(output)+1, BC_BLUE, SELF);
+	sprintf(output, msg_txt(sd, 374), sd->status.name);
+	clif_broadcast((struct s_block_list*)target_sd, output, strlen(output) + 1, BC_BLUE, SELF);
 }
 
 /*
@@ -167,6 +171,7 @@ void duel_invite(const unsigned int did, s_map_session_data* sd, s_map_session_d
 static int duel_leave_sub(s_map_session_data* sd, va_list va)
 {
 	int did = va_arg(va, int);
+
 	if (sd->duel_invite == did)
 		sd->duel_invite = 0;
 	return 0;
@@ -182,12 +187,12 @@ void duel_leave(const unsigned int did, s_map_session_data* sd)
 	char output[256];
 
 	// " <- Player %s has left duel --"
-	sprintf(output, msg_txt(sd,375), sd->status.name);
+	sprintf(output, msg_txt(sd, 375), sd->status.name);
 	clif_disp_message(&sd->bl, output, strlen(output), DUEL_WOS);
 
 	duel_list[did].members_count--;
 
-	if(duel_list[did].members_count == 0) {
+	if (duel_list[did].members_count == 0) {
 		map_foreachpc(duel_leave_sub, did);
 		duel_count--;
 	}
@@ -212,7 +217,7 @@ void duel_accept(const unsigned int did, s_map_session_data* sd)
 	sd->duel_invite = 0;
 
 	// " -> Player %s has accepted duel --"
-	sprintf(output, msg_txt(sd,376), sd->status.name);
+	sprintf(output, msg_txt(sd, 376), sd->status.name);
 	clif_disp_message(&sd->bl, output, strlen(output), DUEL_WOS);
 
 	clif_map_property(&sd->bl, MAPPROPERTY_FREEPVPZONE, SELF);
@@ -229,7 +234,7 @@ void duel_reject(const unsigned int did, s_map_session_data* sd)
 	char output[256];
 
 	// " -- Player %s has rejected duel --"
-	sprintf(output, msg_txt(sd,377), sd->status.name);
+	sprintf(output, msg_txt(sd, 377), sd->status.name);
 	clif_disp_message(&sd->bl, output, strlen(output), DUEL_WOS);
 
 	duel_list[did].invites_count--;
@@ -247,6 +252,7 @@ void do_final_duel(void)
 /*
  * Initialisator of duel module
  */
-void do_init_duel(void) {
+void do_init_duel(void)
+{
 	memset(&duel_list[0], 0, sizeof(duel_list));
 }

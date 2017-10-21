@@ -13,8 +13,8 @@ void inter_mercenary_sql_final(void);
 int inter_mercenary_parse_frommap(int fd);
 
 // Mercenary Owner Database
-bool mercenary_owner_fromsql(uint32 char_id, struct s_mmo_charstatus *status);
-bool mercenary_owner_tosql(uint32 char_id, struct s_mmo_charstatus *status);
+bool mercenary_owner_fromsql(uint32 char_id, struct s_mmo_charstatus* status);
+bool mercenary_owner_tosql(uint32 char_id, struct s_mmo_charstatus* status);
 bool mercenary_owner_delete(uint32 char_id);
 
 bool mapif_mercenary_delete(int merc_id);

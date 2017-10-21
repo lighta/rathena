@@ -9,5 +9,4 @@
  **/
 
 
-
 #endif // _CONFIG_CUSTOM_DEFINES_POST_H_

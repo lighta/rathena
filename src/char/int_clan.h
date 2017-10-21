@@ -4,7 +4,7 @@
 #ifndef _INT_CLAN_H_
 #define _INT_CLAN_H_
 
-int inter_clan_parse_frommap( int fd );
+int inter_clan_parse_frommap(int fd);
 int inter_clan_init(void);
 void inter_clan_final(void);
 

@@ -55,23 +55,23 @@ char console_log_filepath[32] = "./log/unknown.log";
 
 #define SBUF_SIZE    2054 // never put less that what's required for the debug message
 
-#define NEWBUF(buf)                      \
-	struct {                         \
-		char      s_[SBUF_SIZE]; \
-		StringBuf *d_;           \
-		char      *v_;           \
-		int       l_;            \
-	}                                \
-	buf = { "", NULL, NULL, 0 };     \
+#define NEWBUF(buf)                       \
+        struct {                          \
+		char       s_[SBUF_SIZE]; \
+		StringBuf* d_;            \
+		char*      v_;            \
+		int        l_;            \
+	}                                 \
+        buf = { "", NULL, NULL, 0 };      \
 //define NEWBUF
 
 #define BUFVPRINTF(buf, fmt, args)                                                                                       \
-	buf.l_ = vsnprintf(buf.s_, SBUF_SIZE, fmt, args);                                                                \
-	if (buf.l_ >= 0 && buf.l_ < SBUF_SIZE)                                                                           \
+        buf.l_ = vsnprintf(buf.s_, SBUF_SIZE, fmt, args);                                                                \
+        if (buf.l_ >= 0 && buf.l_ < SBUF_SIZE)                                                                           \
 	{       /* static buffer */                                                                                      \
 		buf.v_ = buf.s_;                                                                                         \
 	}                                                                                                                \
-	else                                                                                                             \
+        else                                                                                                             \
 	{       /* dynamic buffer */                                                                                     \
 		buf.d_ = StringBuf_Malloc();                                                                             \
 		buf.l_ = StringBuf_Vprintf(buf.d_, fmt, args);                                                           \
@@ -84,12 +84,12 @@ char console_log_filepath[32] = "./log/unknown.log";
 #define BUFLEN(buf)    buf.l_
 
 #define FREEBUF(buf)                    \
-	if (buf.d_)                     \
+        if (buf.d_)                     \
 	{                               \
 		StringBuf_Free(buf.d_); \
 		buf.d_ = NULL;          \
 	}                               \
-	buf.v_ = NULL;                  \
+        buf.v_ = NULL;                  \
 //define FREEBUF
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,13 +175,13 @@ char console_log_filepath[32] = "./log/unknown.log";
 /*
  * not implemented
  *
- \033[#L
+ * \033[#L
  * IL: Insert Lines: The cursor line and all lines below it move down # lines, leaving blank space. The cursor position is unchanged. The bottommost # lines are lost. \e[L is equivalent to \e[1L.
- \033[#M
+ * \033[#M
  * DL: Delete Line: The block of # lines at and below the cursor are deleted; all lines below them move up # lines to fill in the gap, leaving # blank lines at the bottom of the screen. The cursor position is unchanged. \e[M is equivalent to \e[1M.
- \033[#\@
+ * \033[#\@
  * ICH: Insert CHaracter: The cursor character and all characters to the right of it move right # columns, leaving behind blank space. The cursor position is unchanged. The rightmost # characters on the line are lost. \e[\@ is equivalent to \e[1\@.
- \033[#P
+ * \033[#P
  * DCH: Delete CHaracter: The block of # characters at and to the right of the cursor are deleted; all characters to the right of it move left # columns, leaving behind blank space. The cursor position is unchanged. \e[P is equivalent to \e[1P.
  *
  * Escape sequences for Select Character Set
@@ -189,9 +189,8 @@ char console_log_filepath[32] = "./log/unknown.log";
 
 #define is_console(handle)    (FILE_TYPE_CHAR == GetFileType(handle))
 
-
 ///////////////////////////////////////////////////////////////////////////////
-int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
+int     VFPRINTF(HANDLE handle, const char* fmt, va_list argptr)
 {
 	/////////////////////////////////////////////////////////////////
 	/* XXX Two streams are being used. Disabled to avoid inconsistency [flaviojs]
@@ -200,7 +199,7 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 
 	/////////////////////////////////////////////////////////////////
 	DWORD written;
-	char  *p, *q;
+	char* p, * q;
 
 	NEWBUF(tempbuf); // temporary buffer
 
@@ -227,8 +226,8 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 				WriteFile(handle, q, 1, &written, 0);
 			p = q + 1; //and start searching again
 		} else {           // from here, we will skip the '\033['
-			 // we break at the first unprocessible position
-			 // assuming regular text is starting there
+			// we break at the first unprocessible position
+			// assuming regular text is starting there
 			uint8                      numbers[16], numpoint = 0;
 			CONSOLE_SCREEN_BUFFER_INFO info;
 
@@ -241,7 +240,7 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 			for ( ; ; )
 			{
 				if (ISDIGIT(*q)) { // add number to number array, only accept 2digits, shift out the rest
-					           // so // \033[123456789m will become \033[89m
+					          // so // \033[123456789m will become \033[89m
 					numbers[numpoint] = (numbers[numpoint] << 4) | (*q - '0');
 					++q;
 					// and next character
@@ -317,9 +316,9 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 					// set the attributes
 					SetConsoleTextAttribute(handle, info.wAttributes);
 				} else if (*q == 'J') { // \033[#J - Erase Display (ED)
-					                //    \033[0J - Clears the screen from cursor to end of display. The cursor position is unchanged.
-					                //    \033[1J - Clears the screen from start to cursor. The cursor position is unchanged.
-					                //    \033[2J - Clears the screen and moves the cursor to the home position (line 1, column 1).
+					               //    \033[0J - Clears the screen from cursor to end of display. The cursor position is unchanged.
+					               //    \033[1J - Clears the screen from start to cursor. The cursor position is unchanged.
+					               //    \033[2J - Clears the screen and moves the cursor to the home position (line 1, column 1).
 					uint8 num = (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F);
 					int   cnt;
 					DWORD tmp;
@@ -329,7 +328,7 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 					} else if (num == 2) { // Number of chars on screen.
 						cnt = info.dwSize.X * info.dwSize.Y;
 						SetConsoleCursorPosition(handle, origin);
-					} else {// 0 and default
+					} else { // 0 and default
 						// number of chars from cursor to end
 						origin = info.dwCursorPosition;
 						cnt    = info.dwSize.X * (info.dwSize.Y - info.dwCursorPosition.Y) - info.dwCursorPosition.X;
@@ -337,9 +336,9 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 					FillConsoleOutputAttribute(handle, info.wAttributes, cnt, origin, &tmp);
 					FillConsoleOutputCharacter(handle, ' ', cnt, origin, &tmp);
 				} else if (*q == 'K') { // \033[K  : clear line from actual position to end of the line
-					                //    \033[0K - Clears all characters from the cursor position to the end of the line.
-					                //    \033[1K - Clears all characters from start of line to the cursor position.
-					                //    \033[2K - Clears all characters of the whole line.
+					               //    \033[0K - Clears all characters from the cursor position to the end of the line.
+					               //    \033[1K - Clears all characters from start of line to the cursor position.
+					               //    \033[2K - Clears all characters of the whole line.
 
 					uint8 num    = (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F);
 					COORD origin = { 0, info.dwCursorPosition.Y }; //warning C4204
@@ -349,16 +348,16 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 						cnt = info.dwCursorPosition.X + 1;
 					} else if (num == 2) {
 						cnt = info.dwSize.X;
-					} else {// 0 and default
+					} else { // 0 and default
 						origin = info.dwCursorPosition;
 						cnt    = info.dwSize.X - info.dwCursorPosition.X; // how many spaces until line is full
 					}
 					FillConsoleOutputAttribute(handle, info.wAttributes, cnt, origin, &tmp);
 					FillConsoleOutputCharacter(handle, ' ', cnt, origin, &tmp);
 				} else if (*q == 'H' || *q == 'f') { // \033[#;#H - Cursor Position (CUP)
-					                             // \033[#;#f - Horizontal & Vertical Position
-					                             // The first # specifies the line number, the second # specifies the column.
-					                             // The default for both is 1
+					                            // \033[#;#f - Horizontal & Vertical Position
+					                            // The first # specifies the line number, the second # specifies the column.
+					                            // The default for both is 1
 					info.dwCursorPosition.X = (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + ((numbers[numpoint] & 0x0F) - 1) : 0;
 					info.dwCursorPosition.Y = (numpoint && numbers[numpoint - 1]) ? (numbers[numpoint - 1] >> 4) * 10 + ((numbers[numpoint - 1] & 0x0F) - 1) : 0;
 
@@ -368,45 +367,45 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 						info.dwCursorPosition.Y = info.dwSize.Y - 1;
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 's') { // \033[s - Save Cursor Position (SCP)
-					                /* XXX Two streams are being used. Disabled to avoid inconsistency [flaviojs]
-					                 * CONSOLE_SCREEN_BUFFER_INFO info;
-					                 * GetConsoleScreenBufferInfo(handle, &info);
-					                 * saveposition = info.dwCursorPosition;
-					                 */
+					               /* XXX Two streams are being used. Disabled to avoid inconsistency [flaviojs]
+					                * CONSOLE_SCREEN_BUFFER_INFO info;
+					                * GetConsoleScreenBufferInfo(handle, &info);
+					                * saveposition = info.dwCursorPosition;
+					                */
 				} else if (*q == 'u') { // \033[u - Restore cursor position (RCP)
-					                /* XXX Two streams are being used. Disabled to avoid inconsistency [flaviojs]
-					                 * SetConsoleCursorPosition(handle, saveposition);
-					                 */
+					               /* XXX Two streams are being used. Disabled to avoid inconsistency [flaviojs]
+					                * SetConsoleCursorPosition(handle, saveposition);
+					                */
 				} else if (*q == 'A') { // \033[#A - Cursor Up (CUU)
-					                // Moves the cursor UP # number of lines
+					               // Moves the cursor UP # number of lines
 					info.dwCursorPosition.Y -= (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F) : 1;
 
 					if (info.dwCursorPosition.Y < 0)
 						info.dwCursorPosition.Y = 0;
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 'B') { // \033[#B - Cursor Down (CUD)
-					                // Moves the cursor DOWN # number of lines
+					               // Moves the cursor DOWN # number of lines
 					info.dwCursorPosition.Y += (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F) : 1;
 
 					if (info.dwCursorPosition.Y >= info.dwSize.Y)
 						info.dwCursorPosition.Y = info.dwSize.Y - 1;
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 'C') { // \033[#C - Cursor Forward (CUF)
-					                // Moves the cursor RIGHT # number of columns
+					               // Moves the cursor RIGHT # number of columns
 					info.dwCursorPosition.X += (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F) : 1;
 
 					if (info.dwCursorPosition.X >= info.dwSize.X)
 						info.dwCursorPosition.X = info.dwSize.X - 1;
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 'D') { // \033[#D - Cursor Backward (CUB)
-					                // Moves the cursor LEFT # number of columns
+					               // Moves the cursor LEFT # number of columns
 					info.dwCursorPosition.X -= (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F) : 1;
 
 					if (info.dwCursorPosition.X < 0)
 						info.dwCursorPosition.X = 0;
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 'E') { // \033[#E - Cursor Next Line (CNL)
-					                // Moves the cursor down the indicated # of rows, to column 1
+					               // Moves the cursor down the indicated # of rows, to column 1
 					info.dwCursorPosition.Y += (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F) : 1;
 					info.dwCursorPosition.X  = 0;
 
@@ -414,7 +413,7 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 						info.dwCursorPosition.Y = info.dwSize.Y - 1;
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 'F') { // \033[#F - Cursor Preceding Line (CPL)
-					                // Moves the cursor up the indicated # of rows, to column 1.
+					               // Moves the cursor up the indicated # of rows, to column 1.
 					info.dwCursorPosition.Y -= (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + (numbers[numpoint] & 0x0F) : 1;
 					info.dwCursorPosition.X  = 0;
 
@@ -422,7 +421,7 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 						info.dwCursorPosition.Y = 0;
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 'G') { // \033[#G - Cursor Horizontal Absolute (CHA)
-					                // Moves the cursor to indicated column in current row.
+					               // Moves the cursor to indicated column in current row.
 					info.dwCursorPosition.X = (numbers[numpoint]) ? (numbers[numpoint] >> 4) * 10 + ((numbers[numpoint] & 0x0F) - 1) : 0;
 
 					if (info.dwCursorPosition.X >= info.dwSize.X)
@@ -430,13 +429,13 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 					SetConsoleCursorPosition(handle, info.dwCursorPosition);
 				} else if (*q == 'L' || *q == 'M' || *q == '@' || *q == 'P') { // not implemented, just skip
 				} else { // no number nor valid sequencer
-					 // something is fishy, we break and give the current char free
+					// something is fishy, we break and give the current char free
 					--q;
 				}
 				// skip the sequencer and search again
 				p = q + 1;
 				break;
-			}// end while
+			} // end while
 		}
 	}
 	if (*p) // write the rest of the buffer
@@ -446,8 +445,7 @@ int     VFPRINTF(HANDLE handle, const char *fmt, va_list argptr)
 	return 0;
 } // VFPRINTF
 
-
-int     FPRINTF(HANDLE handle, const char *fmt, ...)
+int     FPRINTF(HANDLE handle, const char* fmt, ...)
 {
 	int     ret;
 	va_list argptr;
@@ -468,11 +466,10 @@ int     FPRINTF(HANDLE handle, const char *fmt, ...)
 
 #define is_console(file)    (0 != isatty(fileno(file)))
 
-
 //vprintf_without_ansiformats
-int     VFPRINTF(FILE *file, const char *fmt, va_list argptr)
+int     VFPRINTF(FILE* file, const char* fmt, va_list argptr)
 {
-	char *p, *q;
+	char* p, * q;
 
 	NEWBUF(tempbuf); // temporary buffer
 
@@ -496,8 +493,8 @@ int     VFPRINTF(FILE *file, const char *fmt, va_list argptr)
 			fprintf(file, "%.*s", 1, q);
 			p = q + 1; //and start searching again
 		} else {           // from here, we will skip the '\033['
-			 // we break at the first unprocessible position
-			 // assuming regular text is starting there
+			// we break at the first unprocessible position
+			// assuming regular text is starting there
 
 			// skip escape and bracket
 			q = q + 2;
@@ -512,11 +509,11 @@ int     VFPRINTF(FILE *file, const char *fmt, va_list argptr)
 					// and next number
 					continue;
 				} else if (*q == 'm') { // \033[#;...;#m - Set Graphics Rendition (SGR)
-					                // set the attributes
+					               // set the attributes
 				} else if (*q == 'J') { // \033[#J - Erase Display (ED)
 				} else if (*q == 'K') { // \033[K  : clear line from actual position to end of the line
 				} else if (*q == 'H' || *q == 'f') { // \033[#;#H - Cursor Position (CUP)
-					                             // \033[#;#f - Horizontal & Vertical Position
+					                            // \033[#;#f - Horizontal & Vertical Position
 				} else if (*q == 's') { // \033[s - Save Cursor Position (SCP)
 				} else if (*q == 'u') { // \033[u - Restore cursor position (RCP)
 				} else if (*q == 'A') { // \033[#A - Cursor Up (CUU)
@@ -535,13 +532,13 @@ int     VFPRINTF(FILE *file, const char *fmt, va_list argptr)
 					 // Moves the cursor to indicated column in current row.
 				} else if (*q == 'L' || *q == 'M' || *q == '@' || *q == 'P') { // not implemented, just skip
 				} else { // no number nor valid sequencer
-					 // something is fishy, we break and give the current char free
+					// something is fishy, we break and give the current char free
 					--q;
 				}
 				// skip the sequencer and search again
 				p = q + 1;
 				break;
-			}// end while
+			} // end while
 		}
 	}
 	if (*p) // write the rest of the buffer
@@ -549,9 +546,7 @@ int     VFPRINTF(FILE *file, const char *fmt, va_list argptr)
 	FREEBUF(tempbuf);
 	return 0;
 } // VFPRINTF
-
-
-int     FPRINTF(FILE *file, const char *fmt, ...)
+int     FPRINTF(FILE* file, const char* fmt, ...)
 {
 	int     ret;
 	va_list argptr;
@@ -567,18 +562,17 @@ int     FPRINTF(FILE *file, const char *fmt, ...)
 #define STDOUT    stdout
 #define STDERR    stderr
 
-#endif// not _WIN32
+#endif // not _WIN32
 
 char timestamp_format[20] = ""; //For displaying Timestamps
 
-
-int _vShowMessage(enum msg_type flag, const char *string, va_list ap)
+int _vShowMessage(enum msg_type flag, const char* string, va_list ap)
 {
 	va_list apcopy;
 	char    prefix[100];
 
 #if defined (DEBUGLOGMAP) || defined (DEBUGLOGCHAR) || defined (DEBUGLOGLOGIN)
-	FILE *fp;
+	FILE* fp;
 #endif
 
 	if (!string || *string == '\0') {
@@ -596,10 +590,10 @@ int _vShowMessage(enum msg_type flag, const char *string, va_list ap)
 	}
 #endif
 	if (
-		(flag == MSG_WARNING && console_msg_log & 1)
-		|| ((flag == MSG_ERROR || flag == MSG_SQL) && console_msg_log & 2)
-		|| (flag == MSG_DEBUG && console_msg_log & 4)) {//[Ind]
-		FILE *log = NULL;
+	        (flag == MSG_WARNING && console_msg_log & 1)
+	        || ((flag == MSG_ERROR || flag == MSG_SQL) && console_msg_log & 2)
+	        || (flag == MSG_DEBUG && console_msg_log & 4)) { //[Ind]
+		FILE* log = NULL;
 		if ((log = fopen(console_log_filepath, "a+"))) {
 			char   timestring[255];
 			time_t curtime;
@@ -619,15 +613,15 @@ int _vShowMessage(enum msg_type flag, const char *string, va_list ap)
 		}
 	}
 	if (
-		(flag == MSG_INFORMATION && msg_silent & 1)
-		|| (flag == MSG_STATUS && msg_silent & 2)
-		|| (flag == MSG_NOTICE && msg_silent & 4)
-		|| (flag == MSG_WARNING && msg_silent & 8)
-		|| (flag == MSG_ERROR && msg_silent & 16)
-		|| (flag == MSG_SQL && msg_silent & 16)
-		|| (flag == MSG_DEBUG && msg_silent & 32)
-		)
-		return 0; //Do not print it.
+	        (flag == MSG_INFORMATION && msg_silent & 1)
+	        || (flag == MSG_STATUS && msg_silent & 2)
+	        || (flag == MSG_NOTICE && msg_silent & 4)
+	        || (flag == MSG_WARNING && msg_silent & 8)
+	        || (flag == MSG_ERROR && msg_silent & 16)
+	        || (flag == MSG_SQL && msg_silent & 16)
+	        || (flag == MSG_DEBUG && msg_silent & 32)
+	        )
+		return 0;  //Do not print it.
 
 	if (timestamp_format[0] && flag != MSG_NONE) { //Display time format. [Skotlex]
 		time_t t = time(NULL);
@@ -714,16 +708,13 @@ int _vShowMessage(enum msg_type flag, const char *string, va_list ap)
 	return 0;
 } // _vShowMessage
 
-
 void ClearScreen(void)
 {
 #ifndef _WIN32
 	ShowMessage(CL_CLS);    // to prevent empty string passed messages
 #endif
 }
-
-
-int _ShowMessage(enum msg_type flag, const char *string, ...)
+int _ShowMessage(enum msg_type flag, const char* string, ...)
 {
 	int     ret;
 	va_list ap;
@@ -734,9 +725,8 @@ int _ShowMessage(enum msg_type flag, const char *string, ...)
 	return ret;
 }
 
-
 // direct printf replacement
-void ShowMessage(const char *string, ...)
+void ShowMessage(const char* string, ...)
 {
 	va_list ap;
 
@@ -744,9 +734,7 @@ void ShowMessage(const char *string, ...)
 	_vShowMessage(MSG_NONE, string, ap);
 	va_end(ap);
 }
-
-
-void ShowStatus(const char *string, ...)
+void ShowStatus(const char* string, ...)
 {
 	va_list ap;
 
@@ -754,9 +742,7 @@ void ShowStatus(const char *string, ...)
 	_vShowMessage(MSG_STATUS, string, ap);
 	va_end(ap);
 }
-
-
-void ShowSQL(const char *string, ...)
+void ShowSQL(const char* string, ...)
 {
 	va_list ap;
 
@@ -764,9 +750,7 @@ void ShowSQL(const char *string, ...)
 	_vShowMessage(MSG_SQL, string, ap);
 	va_end(ap);
 }
-
-
-void ShowInfo(const char *string, ...)
+void ShowInfo(const char* string, ...)
 {
 	va_list ap;
 
@@ -774,9 +758,7 @@ void ShowInfo(const char *string, ...)
 	_vShowMessage(MSG_INFORMATION, string, ap);
 	va_end(ap);
 }
-
-
-void ShowNotice(const char *string, ...)
+void ShowNotice(const char* string, ...)
 {
 	va_list ap;
 
@@ -784,9 +766,7 @@ void ShowNotice(const char *string, ...)
 	_vShowMessage(MSG_NOTICE, string, ap);
 	va_end(ap);
 }
-
-
-void ShowWarning(const char *string, ...)
+void ShowWarning(const char* string, ...)
 {
 	va_list ap;
 
@@ -794,9 +774,7 @@ void ShowWarning(const char *string, ...)
 	_vShowMessage(MSG_WARNING, string, ap);
 	va_end(ap);
 }
-
-
-void ShowConfigWarning(config_setting_t *config, const char *string, ...)
+void ShowConfigWarning(config_setting_t* config, const char* string, ...)
 {
 	StringBuf buf;
 	va_list   ap;
@@ -809,9 +787,7 @@ void ShowConfigWarning(config_setting_t *config, const char *string, ...)
 	va_end(ap);
 	StringBuf_Destroy(&buf);
 }
-
-
-void ShowDebug(const char *string, ...)
+void ShowDebug(const char* string, ...)
 {
 	va_list ap;
 
@@ -819,9 +795,7 @@ void ShowDebug(const char *string, ...)
 	_vShowMessage(MSG_DEBUG, string, ap);
 	va_end(ap);
 }
-
-
-void ShowError(const char *string, ...)
+void ShowError(const char* string, ...)
 {
 	va_list ap;
 
@@ -829,9 +803,7 @@ void ShowError(const char *string, ...)
 	_vShowMessage(MSG_ERROR, string, ap);
 	va_end(ap);
 }
-
-
-void ShowFatalError(const char *string, ...)
+void ShowFatalError(const char* string, ...)
 {
 	va_list ap;
 

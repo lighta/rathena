@@ -14,19 +14,16 @@ c_rAString::c_rAString()
 {
 }
 
-
-c_rAString::c_rAString(const c_rAString &orig)
+c_rAString::c_rAString(const c_rAString& orig)
 {
 }
-
 
 c_rAString::~c_rAString()
 {
 }
 
-
 //meant to replace e_mail_check, (I didn't check RFC but did a little regex)
-bool c_rAString::is_valid_email(const std::string &email)
+bool c_rAString::is_valid_email(const std::string& email)
 {
 	static const std::regex pattern("((\\w+)(\\.|_))*(\\w*)@(\\w+)(\\.(\\w+))+");
 

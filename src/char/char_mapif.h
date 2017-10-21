@@ -8,13 +8,13 @@
  */
 
 #ifndef CHAR_MAPIF_H
-#define	CHAR_MAPIF_H
+#define CHAR_MAPIF_H
 
 #include "../common_old/cbasetypes.h"
 
-int chmapif_sendall(unsigned char *buf, unsigned int len);
-int chmapif_sendallwos(int sfd, unsigned char *buf, unsigned int len);
-int chmapif_send(int fd, unsigned char *buf, unsigned int len);
+int chmapif_sendall(unsigned char* buf, unsigned int len);
+int chmapif_sendallwos(int sfd, unsigned char* buf, unsigned int len);
+int chmapif_send(int fd, unsigned char* buf, unsigned int len);
 int chmapif_send_fame_list(int fd);
 void chmapif_update_fame_list(int type, int index, int fame);
 void chmapif_sendall_playercount(int users);
@@ -64,5 +64,5 @@ void chmapif_on_disconnect(int id);
 void do_final_chmapif(void);
 
 
-#endif	/* CHAR_MAPIF_H */
+#endif  /* CHAR_MAPIF_H */
 

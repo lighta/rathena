@@ -11,13 +11,12 @@
 
 #define J_MAX_MALLOC_SIZE    65535
 
-
 // escapes a string in-place (' -> \' , \ -> \\ , % -> _)
-char *jstrescape(char *pt)
+char* jstrescape(char* pt)
 {
 	//copy from here
-	char *ptr;
-	int  i = 0, j = 0;
+	char* ptr;
+	int   i = 0, j = 0;
 
 	//copy string to temporary
 	CREATE(ptr, char, J_MAX_MALLOC_SIZE);
@@ -51,9 +50,8 @@ char *jstrescape(char *pt)
 	return pt;
 }
 
-
 // escapes a string into a provided buffer
-char *jstrescapecpy(char *pt, const char *spt)
+char* jstrescapecpy(char* pt, const char* spt)
 {
 	//copy from here
 	//WARNING: Target string pt should be able to hold strlen(spt)*2, as each time
@@ -92,9 +90,8 @@ char *jstrescapecpy(char *pt, const char *spt)
 	return &pt[0];
 }
 
-
 // escapes exactly 'size' bytes of a string into a provided buffer
-int jmemescapecpy(char *pt, const char *spt, int size)
+int jmemescapecpy(char* pt, const char* spt, int size)
 {
 	//copy from here
 	int i = 0, j = 0;
@@ -126,9 +123,8 @@ int jmemescapecpy(char *pt, const char *spt, int size)
 	return j;
 }
 
-
 // Function to suppress control characters in a string.
-int remove_control_chars(char *str)
+int remove_control_chars(char* str)
 {
 	int i;
 	int change = 0;
@@ -145,10 +141,8 @@ int remove_control_chars(char *str)
 }
 
 // Removes characters identified by ISSPACE from the start and end of the string
-
-
 // NOTE: make sure the string is not const!!
-char *trim(char *str)
+char* trim(char* str)
 {
 	size_t start;
 	size_t end;
@@ -164,8 +158,8 @@ char *trim(char *str)
 		;
 	// trim
 	if (start == end)
-		*str = '\0'; // empty string
-	else {// move string with nul terminator
+		*str = '\0';  // empty string
+	else { // move string with nul terminator
 		str[end] = '\0';
 		memmove(str, str + start, end - start + 1);
 	}
@@ -176,10 +170,8 @@ char *trim(char *str)
 // If the given string was allocated dynamically, the caller must not overwrite
 // that pointer with the returned value, since the original pointer must be
 // deallocated using the same allocator with which it was allocated.  The return
-
-
 // value must NOT be deallocated using free() etc.
-char *trim2(char *str, char flag)
+char* trim2(char* str, char flag)
 {
 	if (flag & 1) { // Trim leading space
 		while (isspace(*str))
@@ -188,7 +180,7 @@ char *trim2(char *str, char flag)
 			return str;
 	}
 	if (flag & 2) { // Trim trailing space
-		char *end;
+		char* end;
 
 		end = str + strlen(str) - 1;
 		while (end > str && isspace(*end))
@@ -201,14 +193,12 @@ char *trim2(char *str, char flag)
 
 // Converts one or more consecutive occurences of the delimiters into a single space
 // and removes such occurences from the beginning and end of string
-
-
 // NOTE: make sure the string is not const!!
-char *normalize_name(char *str, const char *delims)
+char* normalize_name(char* str, const char* delims)
 {
-	char *in       = str;
-	char *out      = str;
-	int  put_space = 0;
+	char* in        = str;
+	char* out       = str;
+	int   put_space = 0;
 
 	if (str == NULL || delims == NULL)
 		return str;
@@ -218,7 +208,7 @@ char *normalize_name(char *str, const char *delims)
 		++in;
 	while (*in)
 	{
-		if (put_space) {// replace trim characters with a single space
+		if (put_space) { // replace trim characters with a single space
 			*out = ' ';
 			++out;
 		}
@@ -240,10 +230,8 @@ char *normalize_name(char *str, const char *delims)
 
 //stristr: Case insensitive version of strstr, code taken from
 //http://www.daniweb.com/code/snippet313.html, Dave Sinkula
-
-
 //
-const char *stristr(const char *haystack, const char *needle)
+const char* stristr(const char* haystack, const char* needle)
 {
 	if (!*needle) {
 		return haystack;
@@ -252,7 +240,7 @@ const char *stristr(const char *haystack, const char *needle)
 	{
 		if (TOUPPER(*haystack) == TOUPPER(*needle)) {
 			// matched starting char -- loop through remaining chars
-			const char *h, *n;
+			const char* h, * n;
 			for (h = haystack, n = needle; *h && *n; ++h, ++n)
 			{
 				if (TOUPPER(*h) != TOUPPER(*n)) {
@@ -268,11 +256,9 @@ const char *stristr(const char *haystack, const char *needle)
 }
 
 #ifdef __WIN32
-
-
-char *_strtok_r(char *s1, const char *s2, char **lasts)
+char* _strtok_r(char* s1, const char* s2, char** lasts)
 {
-	char *ret;
+	char* ret;
 
 	if (s1 == NULL)
 		s1 = *lasts;
@@ -297,20 +283,16 @@ char *_strtok_r(char *s1, const char *s2, char **lasts)
 
 //#ifndef strnlen
 #if !(defined (WIN32) && defined (_MSC_VER) && _MSC_VER >= 1400) && !defined (HAVE_STRNLEN)
-
-
-size_t strnlen(const char *string, size_t maxlen)  throw ()
+size_t strnlen(const char* string, size_t maxlen)  throw ()
 {
-	const char *end = (const char *)memchr(string, '\0', maxlen);
+	const char* end = (const char*)memchr(string, '\0', maxlen);
 
 	return end ? (size_t)(end - string) : maxlen;
 }
 #endif
 
 #if defined (WIN32) && defined (_MSC_VER) && _MSC_VER <= 1200
-
-
-uint64 strtoull(const char *str, char **endptr, int base)
+uint64 strtoull(const char* str, char** endptr, int base)
 {
 	uint64 result;
 	int    count;
@@ -335,7 +317,7 @@ uint64 strtoull(const char *str, char **endptr, int base)
 	if (base == 16)
 		count = sscanf(str, "%I64x%n", &result, &n);
 	else
-		count = 0; // fail
+		count = 0;  // fail
 
 	if (count < 1) {
 		errno  = EINVAL;
@@ -344,7 +326,7 @@ uint64 strtoull(const char *str, char **endptr, int base)
 	}
 
 	if (endptr)
-		*endptr = (char *)str + n;
+		*endptr = (char*)str + n;
 
 	return result;
 }
@@ -352,13 +334,11 @@ uint64 strtoull(const char *str, char **endptr, int base)
 
 //----------------------------------------------------
 // E-mail check: return 0 (not correct) or 1 (valid).
-
-
 //----------------------------------------------------
-int e_mail_check(char *email)
+int e_mail_check(char* email)
 {
 	char   ch;
-	char   *last_arobas;
+	char*  last_arobas;
 	size_t len = strlen(email);
 
 	// athena limits
@@ -391,10 +371,8 @@ int e_mail_check(char *email)
 //--------------------------------------------------
 // Return numerical value of a switch configuration
 // on/off, english, fran�ais, deutsch, espa�ol, portuguese
-
-
 //--------------------------------------------------
-int config_switch(const char *str)
+int config_switch(const char* str)
 {
 	if (strcmpi(str, "on") == 0 || strcmpi(str, "yes") == 0 || strcmpi(str, "oui") == 0 || strcmpi(str, "ja") == 0 || strcmpi(str, "si") == 0 || strcmpi(str, "sim") == 0)
 		return 1;
@@ -405,17 +383,16 @@ int config_switch(const char *str)
 	return (int)strtol(str, NULL, 0);
 }
 
-
 /// strncpy that always nul-terminates the string
-char *safestrncpy(char *dst, const char *src, size_t n)
+char* safestrncpy(char* dst, const char* src, size_t n)
 {
 	if (n > 0) {
-		char       *d = dst;
-		const char *s = src;
-		d[--n] = '\0';/* nul-terminate string */
+		char*       d = dst;
+		const char* s = src;
+		d[--n] = '\0'; /* nul-terminate string */
 		for ( ; n > 0; --n)
 		{
-			if ((*d++ = *s++) == '\0') {/* nul-pad remaining bytes */
+			if ((*d++ = *s++) == '\0') { /* nul-pad remaining bytes */
 				while (--n > 0)
 					*d++ = '\0';
 				break;
@@ -425,9 +402,8 @@ char *safestrncpy(char *dst, const char *src, size_t n)
 	return dst;
 }
 
-
 /// doesn't crash on null pointer
-size_t safestrnlen(const char *string, size_t maxlen)
+size_t safestrnlen(const char* string, size_t maxlen)
 {
 	return (string != NULL) ? strnlen(string, maxlen) : 0;
 }
@@ -440,10 +416,8 @@ size_t safestrnlen(const char *string, size_t maxlen)
 /// @param sz Size of the buffer (including nul-terminator)
 /// @param fmt Format string
 /// @param ... Format arguments
-
-
 /// @return The size of the string or -1 if the buffer is too small
-int safesnprintf(char *buf, size_t sz, const char *fmt, ...)
+int safesnprintf(char* buf, size_t sz, const char* fmt, ...)
 {
 	va_list ap;
 	int     ret;
@@ -451,21 +425,19 @@ int safesnprintf(char *buf, size_t sz, const char *fmt, ...)
 	va_start(ap, fmt);
 	ret = vsnprintf(buf, sz, fmt, ap);
 	va_end(ap);
-	if (ret < 0 || (size_t)ret >= sz) {// overflow
-		buf[sz - 1] = '\0';// always nul-terminate
+	if (ret < 0 || (size_t)ret >= sz) { // overflow
+		buf[sz - 1] = '\0'; // always nul-terminate
 		return -1;
 	}
 	return ret;
 }
 
 /// Returns the line of the target position in the string.
-
-
 /// Lines start at 1.
-int strline(const char *str, size_t pos)
+int strline(const char* str, size_t pos)
 {
-	const char *target;
-	int        line;
+	const char* target;
+	int         line;
 
 	if (str == NULL || pos == 0)
 		return 1;
@@ -487,10 +459,8 @@ int strline(const char *str, size_t pos)
 ///
 /// @param output Output string
 /// @param input Binary input buffer
-
-
 /// @param count Number of bytes to convert
-bool bin2hex(char *output, unsigned char *input, size_t count)
+bool bin2hex(char* output, unsigned char* input, size_t count)
 {
 	char   toHex[] = "0123456789abcdef";
 	size_t i;
@@ -511,10 +481,8 @@ bool bin2hex(char *output, unsigned char *input, size_t count)
 /// The delimiter after the field is skipped.
 ///
 /// @param sv Parse state
-
-
 /// @return 1 if a field was parsed, 0 if already done, -1 on error.
-int sv_parse_next(struct s_svstate *sv)
+int sv_parse_next(struct s_svstate* sv)
 {
 	enum {
 		START_OF_FIELD,
@@ -525,14 +493,14 @@ int sv_parse_next(struct s_svstate *sv)
 		END
 	}
 	             state;
-	const char   *str;
+	const char*  str;
 	int          len;
 	enum e_svopt opt;
 	char         delim;
 	int          i;
 
 	if (sv == NULL)
-		return -1; // error
+		return -1;  // error
 
 	str   = sv->str;
 	len   = sv->len;
@@ -542,24 +510,24 @@ int sv_parse_next(struct s_svstate *sv)
 	// check opt
 	if (delim == '\n' && (opt & (SV_TERMINATE_CRLF | SV_TERMINATE_LF))) {
 		ShowError("sv_parse_next: delimiter '\\n' is not compatible with options SV_TERMINATE_LF or SV_TERMINATE_CRLF.\n");
-		return -1;// error
+		return -1; // error
 	}
 	if (delim == '\r' && (opt & (SV_TERMINATE_CRLF | SV_TERMINATE_CR))) {
 		ShowError("sv_parse_next: delimiter '\\r' is not compatible with options SV_TERMINATE_CR or SV_TERMINATE_CRLF.\n");
-		return -1;// error
+		return -1; // error
 	}
 
 	if (sv->done || str == NULL) {
 		sv->done = true;
-		return 0;// nothing to parse
+		return 0; // nothing to parse
 	}
 
 #define IS_END()             (i >= len)
 #define IS_DELIM()           (str[i] == delim)
 #define IS_TERMINATOR()      (                                 \
-		((opt & SV_TERMINATE_LF) && str[i] == '\n')    \
-		|| ((opt & SV_TERMINATE_CR) && str[i] == '\r') \
-		|| ((opt & SV_TERMINATE_CRLF) && i + 1 < len && str[i] == '\r' && str[i + 1] == '\n'))
+	        ((opt & SV_TERMINATE_LF) && str[i] == '\n')    \
+	        || ((opt & SV_TERMINATE_CR) && str[i] == '\r') \
+	        || ((opt & SV_TERMINATE_CRLF) && i + 1 < len && str[i] == '\r' && str[i + 1] == '\n'))
 #define IS_C_ESCAPE()        ((opt & SV_ESCAPE_C) && str[i] == '\\')
 #define SET_FIELD_START()    sv->start = i
 #define SET_FIELD_END()      sv->end   = i
@@ -570,18 +538,18 @@ int sv_parse_next(struct s_svstate *sv)
 	{
 		switch (state)
 		{
-		case START_OF_FIELD:// record start of field and start parsing it
+		case START_OF_FIELD: // record start of field and start parsing it
 			SET_FIELD_START();
 			state = PARSING_FIELD;
 			break;
 
-		case PARSING_FIELD:// skip field character
+		case PARSING_FIELD: // skip field character
 			if (IS_END() || IS_DELIM() || IS_TERMINATOR())
 				state = END_OF_FIELD;
 			else if (IS_C_ESCAPE())
 				state = PARSING_C_ESCAPE;
 			else
-				++i; // normal character
+				++i;  // normal character
 			break;
 
 		case PARSING_C_ESCAPE: // skip escape sequence (validates it too)
@@ -591,7 +559,7 @@ int sv_parse_next(struct s_svstate *sv)
 				ShowError("sv_parse_next: empty escape sequence\n");
 				return -1;
 			}
-			if (str[i] == 'x') {// hex escape
+			if (str[i] == 'x') { // hex escape
 				++i;        // 'x'
 				if (IS_END() || !ISXDIGIT(str[i])) {
 					ShowError("sv_parse_next: \\x with no following hex digits\n");
@@ -601,13 +569,13 @@ int sv_parse_next(struct s_svstate *sv)
 				{
 					++i;        // hex digit
 				} while (!IS_END() && ISXDIGIT(str[i]));
-			} else if (str[i] == '0' || str[i] == '1' || str[i] == '2') {// octal escape
+			} else if (str[i] == '0' || str[i] == '1' || str[i] == '2') { // octal escape
 				++i;          // octal digit
 				if (!IS_END() && str[i] >= '0' && str[i] <= '7')
 					++i;  // octal digit
 				if (!IS_END() && str[i] >= '0' && str[i] <= '7')
 					++i;  // octal digit
-			} else if (strchr(SV_ESCAPE_C_SUPPORTED, str[i])) {// supported escape character
+			} else if (strchr(SV_ESCAPE_C_SUPPORTED, str[i])) { // supported escape character
 				++i;
 			} else {
 				ShowError("sv_parse_next: unknown escape sequence \\%c\n", str[i]);
@@ -617,7 +585,7 @@ int sv_parse_next(struct s_svstate *sv)
 			break;
 		}
 
-		case END_OF_FIELD:// record end of field and stop
+		case END_OF_FIELD: // record end of field and stop
 			SET_FIELD_END();
 			state = END;
 			if (IS_END())
@@ -675,10 +643,8 @@ int sv_parse_next(struct s_svstate *sv)
 /// @param out_pos Array of resulting positions
 /// @param npos Size of the pos array
 /// @param opt Options that determine the parsing behaviour
-
-
 /// @return Number of fields found in the string or -1 if an error occured
-int sv_parse(const char *str, int len, int startoff, char delim, int *out_pos, int npos, enum e_svopt opt)
+int sv_parse(const char* str, int len, int startoff, char delim, int* out_pos, int npos, enum e_svopt opt)
 {
 	struct s_svstate sv;
 	int              count;
@@ -703,7 +669,7 @@ int sv_parse(const char *str, int len, int startoff, char delim, int *out_pos, i
 	{
 		++count;
 		if (sv_parse_next(&sv) <= 0)
-			return -1; // error
+			return -1;  // error
 
 		if (npos > count * 2)
 			out_pos[count * 2] = sv.start;
@@ -733,19 +699,17 @@ int sv_parse(const char *str, int len, int startoff, char delim, int *out_pos, i
 /// @param out_fields Array of resulting fields
 /// @param nfields Size of the field array
 /// @param opt Options that determine the parsing behaviour
-
-
 /// @return Number of fields found in the string or -1 if an error occured
-int sv_split(char *str, int len, int startoff, char delim, char **out_fields, int nfields, enum e_svopt opt)
+int sv_split(char* str, int len, int startoff, char delim, char** out_fields, int nfields, enum e_svopt opt)
 {
-	int  pos[1024];
-	int  i;
-	int  done;
-	char *end;
-	int  ret = sv_parse(str, len, startoff, delim, pos, ARRAYLENGTH(pos), opt);
+	int   pos[1024];
+	int   i;
+	int   done;
+	char* end;
+	int   ret = sv_parse(str, len, startoff, delim, pos, ARRAYLENGTH(pos), opt);
 
 	if (ret == -1 || out_fields == NULL || nfields <= 0)
-		return ret; // nothing to do
+		return ret;  // nothing to do
 
 	// next line
 	end = str + pos[1];
@@ -765,7 +729,7 @@ int sv_split(char *str, int len, int startoff, char delim, char **out_fields, in
 		*out_fields = end + 1;
 	} else {
 		ShowError("sv_split: unknown line delimiter 0x02%x.\n", (unsigned char)end[0]);
-		return -1;// error
+		return -1; // error
 	}
 	++out_fields;
 	--nfields;
@@ -775,7 +739,7 @@ int sv_split(char *str, int len, int startoff, char delim, char **out_fields, in
 	done = 0;
 	while (done < ret && nfields > 0)
 	{
-		if (i < ARRAYLENGTH(pos)) {// split field
+		if (i < ARRAYLENGTH(pos)) { // split field
 			*out_fields = str + pos[i];
 			end         = str + pos[i + 1];
 			*end        = '\0';
@@ -784,7 +748,7 @@ int sv_split(char *str, int len, int startoff, char delim, char **out_fields, in
 			++done;
 			++out_fields;
 			--nfields;
-		} else {// get more fields
+		} else { // get more fields
 			sv_parse(str, len, pos[i - 1] + 1, delim, pos, ARRAYLENGTH(pos), opt);
 			i = 2;
 		}
@@ -803,18 +767,16 @@ int sv_split(char *str, int len, int startoff, char delim, char **out_fields, in
 /// @param src Source string
 /// @param len Length of the source string
 /// @param escapes Extra characters to be escaped
-
-
 /// @return Length of the escaped string
-size_t sv_escape_c(char *out_dest, const char *src, size_t len, const char *escapes)
+size_t sv_escape_c(char* out_dest, const char* src, size_t len, const char* escapes)
 {
 	size_t i;
 	size_t j;
 
 	if (out_dest == NULL)
-		return 0; // nothing to do
+		return 0;  // nothing to do
 
-	if (src == NULL) {// nothing to escape
+	if (src == NULL) { // nothing to escape
 		*out_dest = 0;
 		return 0;
 	}
@@ -825,30 +787,30 @@ size_t sv_escape_c(char *out_dest, const char *src, size_t len, const char *esca
 	{
 		switch (src[i])
 		{
-		case '\0':// octal 0
+		case '\0': // octal 0
 			out_dest[j++] = '\\';
 			out_dest[j++] = '0';
 			out_dest[j++] = '0';
 			out_dest[j++] = '0';
 			break;
 
-		case '\r':// carriage return
+		case '\r': // carriage return
 			out_dest[j++] = '\\';
 			out_dest[j++] = 'r';
 			break;
 
-		case '\n':// line feed
+		case '\n': // line feed
 			out_dest[j++] = '\\';
 			out_dest[j++] = 'n';
 			break;
 
-		case '\\':// escape character
+		case '\\': // escape character
 			out_dest[j++] = '\\';
 			out_dest[j++] = '\\';
 			break;
 
 		default:
-			if (strchr(escapes, src[i])) {// escape
+			if (strchr(escapes, src[i])) { // escape
 				out_dest[j++] = '\\';
 				switch (src[i])
 				{
@@ -876,7 +838,7 @@ size_t sv_escape_c(char *out_dest, const char *src, size_t len, const char *esca
 					out_dest[j++] = '?';
 					break;
 
-				default:// to octal
+				default: // to octal
 					out_dest[j++] = '0' + ((char)(((unsigned char)src[i] & 0700) >> 6));
 					out_dest[j++] = '0' + ((char)(((unsigned char)src[i] & 0070) >> 3));
 					out_dest[j++] = '0' + ((char)(((unsigned char)src[i] & 0007)));
@@ -898,10 +860,8 @@ size_t sv_escape_c(char *out_dest, const char *src, size_t len, const char *esca
 /// @param out_dest Destination buffer
 /// @param src Source string
 /// @param len Length of the source string
-
-
 /// @return Length of the escaped string
-size_t sv_unescape_c(char *out_dest, const char *src, size_t len)
+size_t sv_unescape_c(char* out_dest, const char* src, size_t len)
 {
 	static unsigned char low2hex[256] =
 	{
@@ -928,14 +888,14 @@ size_t sv_unescape_c(char *out_dest, const char *src, size_t len)
 	for (i = 0, j = 0; i < len; )
 	{
 		if (src[i] == '\\') {
-			++i;// '\\'
+			++i; // '\\'
 			if (i >= len)
 				ShowWarning("sv_unescape_c: empty escape sequence\n");
-			else if (src[i] == 'x') {// hex escape sequence
+			else if (src[i] == 'x') { // hex escape sequence
 				unsigned char c       = 0;
 				unsigned char inrange = 1;
 
-				++i;// 'x'
+				++i; // 'x'
 				if (i >= len || !ISXDIGIT(src[i])) {
 					ShowWarning("sv_unescape_c: \\x with no following hex digits\n");
 					continue;
@@ -946,23 +906,23 @@ size_t sv_unescape_c(char *out_dest, const char *src, size_t len)
 						ShowWarning("sv_unescape_c: hex escape sequence out of range\n");
 						inrange = 0;
 					}
-					c = (c << 4) | low2hex[(unsigned char)src[i]];// hex digit
+					c = (c << 4) | low2hex[(unsigned char)src[i]]; // hex digit
 					++i;
 				} while (i < len && ISXDIGIT(src[i]));
 				out_dest[j++] = (char)c;
-			} else if (src[i] == '0' || src[i] == '1' || src[i] == '2' || src[i] == '3') {// octal escape sequence (255=0377)
+			} else if (src[i] == '0' || src[i] == '1' || src[i] == '2' || src[i] == '3') { // octal escape sequence (255=0377)
 				unsigned char c = src[i] - '0';
-				++i;// '0', '1', '2' or '3'
+				++i; // '0', '1', '2' or '3'
 				if (i < len && src[i] >= '0' && src[i] <= '7') {
 					c = (c << 3) | (src[i] - '0');
-					++i;// octal digit
+					++i; // octal digit
 				}
 				if (i < len && src[i] >= '0' && src[i] <= '7') {
 					c = (c << 3) | (src[i] - '0');
-					++i;// octal digit
+					++i; // octal digit
 				}
 				out_dest[j++] = (char)c;
-			} else {// other escape sequence
+			} else { // other escape sequence
 				if (strchr(SV_ESCAPE_C_SUPPORTED, src[i]) == NULL)
 					ShowWarning("sv_unescape_c: unknown escape sequence \\%c\n", src[i]);
 				switch (src[i])
@@ -1003,24 +963,23 @@ size_t sv_unescape_c(char *out_dest, const char *src, size_t len)
 					out_dest[j++] = src[i];
 					break;
 				}
-				++i;// escaped character
+				++i; // escaped character
 			}
 		} else
-			out_dest[j++] = src[i++]; // normal character
+			out_dest[j++] = src[i++];  // normal character
 	}
 	out_dest[j] = 0;
 	return j;
 } // sv_unescape_c
 
-
 /// Skips a C escape sequence (starting with '\\').
-const char *skip_escaped_c(const char *p)
+const char* skip_escaped_c(const char* p)
 {
 	if (p && *p == '\\') {
 		++p;
 		switch (*p)
 		{
-		case 'x':// hexadecimal
+		case 'x': // hexadecimal
 			++p;
 			while (ISXDIGIT(*p))
 				++p;
@@ -1029,7 +988,7 @@ const char *skip_escaped_c(const char *p)
 		case '0':
 		case '1':
 		case '2':
-		case '3':// octal
+		case '3': // octal
 			++p;
 			if (*p >= '0' && *p <= '7')
 				++p;
@@ -1060,14 +1019,14 @@ const char *skip_escaped_c(const char *p)
  * @param silent : should we display error if file not found ?
  * @return true on success, false if file could not be opened
  */
-bool sv_readdb(const char *directory, const char *filename, char delim, int mincols, int maxcols, int maxrows, bool (*parseproc)(char *fields[], int columns, int current), bool silent)
+bool sv_readdb(const char* directory, const char* filename, char delim, int mincols, int maxcols, int maxrows, bool (* parseproc)(char* fields[], int columns, int current), bool silent)
 {
-	FILE        *fp;
+	FILE*       fp;
 	int         lines   = 0;
 	int         entries = 0;
-	char        **fields; // buffer for fields ([0] is reserved)
+	char**      fields; // buffer for fields ([0] is reserved)
 	int         columns, nb_cols;
-	char        path[1024], *line;
+	char        path[1024], * line;
 	const short colsize = 512;
 
 	snprintf(path, sizeof(path), "%s/%s", directory, filename);
@@ -1082,16 +1041,16 @@ bool sv_readdb(const char *directory, const char *filename, char delim, int minc
 
 	// allocate enough memory for the maximum requested amount of columns plus the reserved one
 	nb_cols = maxcols + 1;
-	fields  = (char **)aMalloc(nb_cols * sizeof(char *));
-	line    = (char *)aMalloc(nb_cols * colsize);
+	fields  = (char**)aMalloc(nb_cols * sizeof(char*));
+	line    = (char*)aMalloc(nb_cols * colsize);
 
 	// process rows one by one
 	while (fgets(line, maxcols * colsize, fp))
 	{
-		char *match;
+		char* match;
 		lines++;
 
-		if ((match = strstr(line, "//")) != NULL) {// strip comments
+		if ((match = strstr(line, "//")) != NULL) { // strip comments
 			match[0] = 0;
 		}
 
@@ -1141,28 +1100,25 @@ bool sv_readdb(const char *directory, const char *filename, char delim, int minc
 //
 // @author MouseJstr (original)
 
-
 /// Allocates a StringBuf
-StringBuf *StringBuf_Malloc()
+StringBuf* StringBuf_Malloc()
 {
-	StringBuf *self;
+	StringBuf* self;
 
 	CREATE(self, StringBuf, 1);
 	StringBuf_Init(self);
 	return self;
 }
 
-
 /// Initializes a previously allocated StringBuf
-void StringBuf_Init(StringBuf *self)
+void StringBuf_Init(StringBuf* self)
 {
 	self->max_ = 1024;
-	self->ptr_ = self->buf_ = (char *)aMalloc(self->max_ + 1);
+	self->ptr_ = self->buf_ = (char*)aMalloc(self->max_ + 1);
 }
 
-
 /// Appends the result of printf to the StringBuf
-int StringBuf_Printf(StringBuf *self, const char *fmt, ...)
+int StringBuf_Printf(StringBuf* self, const char* fmt, ...)
 {
 	int     len;
 	va_list ap;
@@ -1174,9 +1130,8 @@ int StringBuf_Printf(StringBuf *self, const char *fmt, ...)
 	return len;
 }
 
-
 /// Appends the result of vprintf to the StringBuf
-int StringBuf_Vprintf(StringBuf *self, const char *fmt, va_list ap)
+int StringBuf_Vprintf(StringBuf* self, const char* fmt, va_list ap)
 {
 	for ( ; ; )
 	{
@@ -1196,14 +1151,13 @@ int StringBuf_Vprintf(StringBuf *self, const char *fmt, va_list ap)
 		/* Else try again with more space. */
 		self->max_ *= 2; // twice the old size
 		off         = (int)(self->ptr_ - self->buf_);
-		self->buf_  = (char *)aRealloc(self->buf_, self->max_ + 1);
+		self->buf_  = (char*)aRealloc(self->buf_, self->max_ + 1);
 		self->ptr_  = self->buf_ + off;
 	}
 }
 
-
 /// Appends the contents of another StringBuf to the StringBuf
-int StringBuf_Append(StringBuf *self, const StringBuf *sbuf)
+int StringBuf_Append(StringBuf* self, const StringBuf* sbuf)
 {
 	int available = self->max_ - (self->ptr_ - self->buf_);
 	int needed    = (int)(sbuf->ptr_ - sbuf->buf_);
@@ -1211,7 +1165,7 @@ int StringBuf_Append(StringBuf *self, const StringBuf *sbuf)
 	if (needed >= available) {
 		int off = (int)(self->ptr_ - self->buf_);
 		self->max_ += needed;
-		self->buf_  = (char *)aRealloc(self->buf_, self->max_ + 1);
+		self->buf_  = (char*)aRealloc(self->buf_, self->max_ + 1);
 		self->ptr_  = self->buf_ + off;
 	}
 
@@ -1220,17 +1174,16 @@ int StringBuf_Append(StringBuf *self, const StringBuf *sbuf)
 	return (int)(self->ptr_ - self->buf_);
 }
 
-
 // Appends str to the StringBuf
-int StringBuf_AppendStr(StringBuf *self, const char *str)
+int StringBuf_AppendStr(StringBuf* self, const char* str)
 {
 	int available = self->max_ - (self->ptr_ - self->buf_);
 	int needed    = (int)strlen(str);
 
-	if (needed >= available) {// not enough space, expand the buffer (minimum expansion = 1024)
+	if (needed >= available) { // not enough space, expand the buffer (minimum expansion = 1024)
 		int off = (int)(self->ptr_ - self->buf_);
 		self->max_ += max(needed, 1024);
-		self->buf_  = (char *)aRealloc(self->buf_, self->max_ + 1);
+		self->buf_  = (char*)aRealloc(self->buf_, self->max_ + 1);
 		self->ptr_  = self->buf_ + off;
 	}
 
@@ -1239,40 +1192,35 @@ int StringBuf_AppendStr(StringBuf *self, const char *str)
 	return (int)(self->ptr_ - self->buf_);
 }
 
-
 // Returns the length of the data in the Stringbuf
-int StringBuf_Length(StringBuf *self)
+int StringBuf_Length(StringBuf* self)
 {
 	return (int)(self->ptr_ - self->buf_);
 }
 
-
 /// Returns the data in the StringBuf
-char *StringBuf_Value(StringBuf *self)
+char* StringBuf_Value(StringBuf* self)
 {
 	*self->ptr_ = '\0';
 	return self->buf_;
 }
 
-
 /// Clears the contents of the StringBuf
-void StringBuf_Clear(StringBuf *self)
+void StringBuf_Clear(StringBuf* self)
 {
 	self->ptr_ = self->buf_;
 }
 
-
 /// Destroys the StringBuf
-void StringBuf_Destroy(StringBuf *self)
+void StringBuf_Destroy(StringBuf* self)
 {
 	aFree(self->buf_);
 	self->ptr_ = self->buf_ = 0;
 	self->max_ = 0;
 }
 
-
 // Frees a StringBuf returned by StringBuf_Malloc
-void StringBuf_Free(StringBuf *self)
+void StringBuf_Free(StringBuf* self)
 {
 	StringBuf_Destroy(self);
 	aFree(self);

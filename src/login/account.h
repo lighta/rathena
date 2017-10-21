@@ -23,14 +23,14 @@ struct s_AccountDBIterator {
 	/// Destroys this iterator, releasing all allocated memory (including itself).
 	///
 	/// @param self Iterator
-	void (*destroy)(s_AccountDBIterator *self);
+	void (* destroy)(s_AccountDBIterator* self);
 
 	/// Fetches the next account in the database.
 	/// Fills acc with the account data.
 	/// @param self Iterator
 	/// @param acc Account data
 	/// @return true if successful
-	bool (*next)(s_AccountDBIterator *self, struct s_mmo_account *acc);
+	bool (* next)(s_AccountDBIterator* self, struct s_mmo_account* acc);
 };
 
 struct s_AccountDB {
@@ -39,12 +39,12 @@ struct s_AccountDB {
 	///
 	/// @param self Database
 	/// @return true if successful
-	bool (*init)(s_AccountDB *self);
+	bool (* init)(s_AccountDB* self);
 
 	/// Destroys this database, releasing all allocated memory (including itself).
 	///
 	/// @param self Database
-	void (*destroy)(s_AccountDB *self);
+	void (* destroy)(s_AccountDB* self);
 
 	/// Gets a property from this database.
 	/// These read-only properties must be implemented:
@@ -54,7 +54,7 @@ struct s_AccountDB {
 	/// @param buf Buffer for the value
 	/// @param buflen Buffer length
 	/// @return true if successful
-	bool (*get_property)(s_AccountDB *self, const char *key, char *buf, size_t buflen);
+	bool (* get_property)(s_AccountDB* self, const char* key, char* buf, size_t buflen);
 
 	/// Sets a property in this database.
 	///
@@ -62,7 +62,7 @@ struct s_AccountDB {
 	/// @param key Property name
 	/// @param value Property value
 	/// @return true if successful
-	bool (*set_property)(s_AccountDB *self, const char *key, const char *value);
+	bool (* set_property)(s_AccountDB* self, const char* key, const char* value);
 
 	/// Creates a new account in this database.
 	/// If acc->account_id is not -1, the provided value will be used.
@@ -71,14 +71,14 @@ struct s_AccountDB {
 	/// @param self Database
 	/// @param acc Account data
 	/// @return true if successful
-	bool (*create)(s_AccountDB *self, struct s_mmo_account *acc);
+	bool (* create)(s_AccountDB* self, struct s_mmo_account* acc);
 
 	/// Removes an account from this database.
 	///
 	/// @param self Database
 	/// @param account_id Account id
 	/// @return true if successful
-	bool (*remove)(s_AccountDB *self, const uint32 account_id);
+	bool (* remove)(s_AccountDB* self, const uint32 account_id);
 
 	/// Modifies the data of an existing account.
 	/// Uses acc->account_id to identify the account.
@@ -86,7 +86,7 @@ struct s_AccountDB {
 	/// @param self Database
 	/// @param acc Account data
 	/// @return true if successful
-	bool (*save)(s_AccountDB *self, const struct s_mmo_account *acc);
+	bool (* save)(s_AccountDB* self, const struct s_mmo_account* acc);
 
 	/// Finds an account with account_id and copies it to acc.
 	///
@@ -94,7 +94,7 @@ struct s_AccountDB {
 	/// @param acc Pointer that receives the account data
 	/// @param account_id Target account id
 	/// @return true if successful
-	bool (*load_num)(s_AccountDB *self, struct s_mmo_account *acc, const uint32 account_id);
+	bool (* load_num)(s_AccountDB* self, struct s_mmo_account* acc, const uint32 account_id);
 
 	/// Finds an account with userid and copies it to acc.
 	///
@@ -102,13 +102,13 @@ struct s_AccountDB {
 	/// @param acc Pointer that receives the account data
 	/// @param userid Target username
 	/// @return true if successful
-	bool (*load_str)(s_AccountDB *self, struct s_mmo_account *acc, const char *userid);
+	bool (* load_str)(s_AccountDB* self, struct s_mmo_account* acc, const char* userid);
 
 	/// Returns a new forward iterator.
 	///
 	/// @param self Database
 	/// @return Iterator
-	s_AccountDBIterator * (*iterator)(s_AccountDB *self);
+	s_AccountDBIterator* (*iterator)(s_AccountDB * self);
 };
 
 struct s_mmo_account {
@@ -138,12 +138,12 @@ class c_ModuleAccount {
 private:
 	c_ModuleAccount();
 public:
-	s_AccountDB *account_db_sql(void);     // standard engines
-	void mmo_send_global_accreg(s_AccountDB *self, int fd, int account_id, int char_id);
-	void mmo_save_global_accreg(s_AccountDB *self, int fd, int account_id, int char_id);
+	s_AccountDB* account_db_sql(void);     // standard engines
+	void mmo_send_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id);
+	void mmo_save_global_accreg(s_AccountDB* self, int fd, int account_id, int char_id);
 
 public:
-	static c_ModuleAccount &smGetIntance();
+	static c_ModuleAccount& smGetIntance();
 };
 }
 }

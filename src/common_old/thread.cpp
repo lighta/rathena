@@ -36,7 +36,7 @@ struct rAthread {
 
 	RATHREAD_PRIO prio;
 	rAthreadProc  proc;
-	void          *param;
+	void*         param;
 
 	#ifdef WIN32
 	HANDLE        hThread;
@@ -56,7 +56,6 @@ __thread int g_rathread_ID = -1;
 ///
 static struct rAthread l_threads[RA_THREADS_MAX];
 
-
 void rathread_init()
 {
 	register unsigned int i;
@@ -74,7 +73,7 @@ void rathread_init()
 #endif
 	l_threads[0].prio = RAT_PRIO_NORMAL;
 	l_threads[0].proc = (rAthreadProc)0xDEADCAFE;
-}//end: rathread_init()
+} //end: rathread_init()
 
 
 void rathread_final()
@@ -92,7 +91,7 @@ void rathread_final()
 			rathread_destroy(&l_threads[i]);
 		}
 	}
-}//end: rathread_final()
+} //end: rathread_final()
 
 
 // gets called whenever a thread terminated ..
@@ -104,21 +103,17 @@ static void rat_thread_terminated(prAthread handle)
 	memset(handle, 0x00, sizeof(struct rAthread));
 
 	handle->myID = id_backup; // done ;)
-}//end: rat_thread_terminated()
+} //end: rat_thread_terminated()
 
 #ifdef WIN32
-
-
 DWORD WINAPI _raThreadMainRedirector(LPVOID p)
 {
 #else
-
-
-static void *_raThreadMainRedirector(void *p)
+static void* _raThreadMainRedirector(void* p)
 {
 	sigset_t set; // on Posix Thread platforms
 #endif
-	void     *ret;
+	void*    ret;
 
 	// Update myID @ TLS to right id.
 #ifdef HAS_TLS
@@ -148,24 +143,23 @@ static void *_raThreadMainRedirector(void *p)
 	rat_thread_terminated((prAthread)p);
 #ifdef WIN32
 	return (DWORD)ret;
+
 #else
 	return ret;
 #endif
-}//end: _raThreadMainRedirector()
+} //end: _raThreadMainRedirector()
 
 
 ///
 /// API Level
-
-
 ///
-prAthread rathread_create(rAthreadProc entryPoint, void *param)
+prAthread rathread_create(rAthreadProc entryPoint, void* param)
 {
 	return rathread_createEx(entryPoint, param, (1 << 23) /*8MB*/, RAT_PRIO_NORMAL);
-}//end: rathread_create()
+} //end: rathread_create()
 
 
-prAthread rathread_createEx(rAthreadProc entryPoint, void *param, size_t szStack, RATHREAD_PRIO prio)
+prAthread rathread_createEx(rAthreadProc entryPoint, void* param, size_t szStack, RATHREAD_PRIO prio)
 {
 #ifndef WIN32
 	pthread_attr_t attr;
@@ -200,12 +194,12 @@ prAthread rathread_createEx(rAthreadProc entryPoint, void *param, size_t szStack
 	handle->param = param;
 
 #ifdef WIN32
-	handle->hThread = CreateThread(NULL, szStack, _raThreadMainRedirector, (void *)handle, 0, NULL);
+	handle->hThread = CreateThread(NULL, szStack, _raThreadMainRedirector, (void*)handle, 0, NULL);
 #else
 	pthread_attr_init(&attr);
 	pthread_attr_setstacksize(&attr, szStack);
 
-	if (pthread_create(&handle->hThread, &attr, _raThreadMainRedirector, (void *)handle) != 0) {
+	if (pthread_create(&handle->hThread, &attr, _raThreadMainRedirector, (void*)handle) != 0) {
 		handle->proc  = NULL;
 		handle->param = NULL;
 		return NULL;
@@ -216,7 +210,7 @@ prAthread rathread_createEx(rAthreadProc entryPoint, void *param, size_t szStack
 	rathread_prio_set(handle, prio);
 
 	return handle;
-}//end: rathread_createEx
+} //end: rathread_createEx
 
 
 void rathread_destroy(prAthread handle)
@@ -236,8 +230,7 @@ void rathread_destroy(prAthread handle)
 		rat_thread_terminated(handle);
 	}
 #endif
-}//end: rathread_destroy()
-
+} //end: rathread_destroy()
 
 prAthread rathread_self( )
 {
@@ -246,6 +239,7 @@ prAthread rathread_self( )
 
 	if (handle->proc != NULL) // entry point set, so its used!
 		return handle;
+
 #else
 	// .. so no tls means we have to search the thread by its api-handle ..
 	int i;
@@ -266,25 +260,27 @@ prAthread rathread_self( )
 #endif
 
 	return NULL;
-}//end: rathread_self()
+} //end: rathread_self()
 
 
 int rathread_get_tid()
 {
 #ifdef HAS_TLS
 	return g_rathread_ID;
+
 #else
 	// todo
 	#ifdef WIN32
 	return (int)GetCurrentThreadId();
+
 	#else
 	return (intptr_t)pthread_self();
 	#endif
 #endif
-}//end: rathread_get_tid()
+} //end: rathread_get_tid()
 
 
-bool rathread_wait(prAthread handle, void **out_exitCode)
+bool rathread_wait(prAthread handle, void** out_exitCode)
 {
 	// Hint:
 	// no thread data cleanup routine call here!
@@ -293,26 +289,27 @@ bool rathread_wait(prAthread handle, void **out_exitCode)
 #ifdef WIN32
 	WaitForSingleObject(handle->hThread, INFINITE);
 	return true;
+
 #else
 	if (pthread_join(handle->hThread, out_exitCode) == 0)
 		return true;
 
 	return false;
 #endif
-}//end: rathread_wait()
+} //end: rathread_wait()
 
 
 void rathread_prio_set(prAthread handle, RATHREAD_PRIO prio)
 {
 	handle->prio = RAT_PRIO_NORMAL;
 	//@TODO
-}//end: rathread_prio_set()
+} //end: rathread_prio_set()
 
 
 RATHREAD_PRIO rathread_prio_get(prAthread handle)
 {
 	return handle->prio;
-}//end: rathread_prio_get()
+} //end: rathread_prio_get()
 
 
 void rathread_yield()
@@ -322,4 +319,4 @@ void rathread_yield()
 #else
 	sched_yield();
 #endif
-}//end: rathread_yield()
+} //end: rathread_yield()
