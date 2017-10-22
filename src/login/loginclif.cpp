@@ -74,15 +74,15 @@ static void logclif_auth_ok(struct s_login_session_data* sd)
 	struct s_auth_node* node;
 	int                 i;
 
-    #if PACKETVER < 20170315
+#if PACKETVER < 20170315
 	int cmd    = 0x69; // AC_ACCEPT_LOGIN
 	int header = 47;
 	int size   = 32;
-    #else
+#else
 	int cmd    = 0xac4; // AC_ACCEPT_LOGIN3
 	int header = 64;
 	int size   = 160;
-    #endif
+#endif
 
 	if (runflag != LOGINSERVER_ST_RUNNING) {
 		// players can only login while running
@@ -148,9 +148,9 @@ static void logclif_auth_ok(struct s_login_session_data* sd)
 	memset(WFIFOP(fd, 20), 0, 24);
 	WFIFOW(fd, 44) = 0; // unknown
 	WFIFOB(fd, 46) = sex_str2num(sd->sex);
-  #if PACKETVER >= 20170315
+#if PACKETVER >= 20170315
 	memset(WFIFOP(fd, 47), 0, 17); // Unknown
-  #endif
+#endif
 	for (i = 0, n = 0; i < ARRAYLENGTH(ch_server); ++i)
 	{
 		if (!session_isValid(ch_server[i].fd))
@@ -162,9 +162,9 @@ static void logclif_auth_ok(struct s_login_session_data* sd)
 		WFIFOW(fd, header + n * size + 26) = ch_server[i].users;
 		WFIFOW(fd, header + n * size + 28) = ch_server[i].type;
 		WFIFOW(fd, header + n * size + 30) = ch_server[i].new_;
-  #if PACKETVER >= 20170315
+#if PACKETVER >= 20170315
 		memset(WFIFOP(fd, header + n * size + 32), 0, 128); // Unknown
-  #endif
+#endif
 		n++;
 	}
 	WFIFOSET(fd, header + size * server_num);
@@ -197,7 +197,7 @@ static void logclif_auth_ok(struct s_login_session_data* sd)
  *  3 = Rejected from Server
  *  4 = You have been blocked by the GM Team
  *  5 = Your Game's EXE file is not the latest version
- *  6 = Your are Prohibited to log in until %s
+ *  6 = You are prohibited to log in until %s
  *  7 = Server is jammed due to over populated
  *  8 = No more accounts may be connected from this company
  *  9 = MSI_REFUSE_BAN_BY_DBA
@@ -239,7 +239,7 @@ static void logclif_auth_failed(struct s_login_session_data* sd, int result)
 	WFIFOL(fd, 2) = result;
 	if (result != 6)
 		memset(WFIFOP(fd, 6), '\0', 20);
-	else {                  // 6 = Your are Prohibited to log in until %s
+	else {  // 6 = You are prohibited to log in until %s
 		struct s_mmo_account acc;
 		s_AccountDB*         accounts   = login_get_accounts_db();
 		time_t               unban_time = (accounts->load_str(accounts, &acc, sd->userid)) ? acc.unban_time : 0;
@@ -252,7 +252,7 @@ static void logclif_auth_failed(struct s_login_session_data* sd, int result)
 	WFIFOB(fd, 2) = (uint8)result;
 	if (result != 6)
 		memset(WFIFOP(fd, 3), '\0', 20);
-	else {                  // 6 = Your are Prohibited to log in until %s
+	else {  // 6 = You are prohibited to log in until %s
 		struct s_mmo_account acc;
 		s_AccountDB*         accounts   = login_get_accounts_db();
 		time_t               unban_time = (accounts->load_str(accounts, &acc, sd->userid)) ? acc.unban_time : 0;

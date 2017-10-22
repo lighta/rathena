@@ -270,7 +270,7 @@ int c_ModuleChrif::logchrif_parse_reqauth(int fd, int id, char* ip)
 			idb_remove(auth_db, account_id);
 		} else {                // authentication not found
 			ShowStatus("Char-server '%s': authentication of the account %d REFUSED (ip: %s).\n", ch_server[id].name, account_id, ip);
-			WFIFOHEAD(fd, 25);
+			WFIFOHEAD(fd, 21);
 			WFIFOW(fd, 0)  = 0x2713;
 			WFIFOL(fd, 2)  = account_id;
 			WFIFOL(fd, 6)  = login_id1;
@@ -278,9 +278,8 @@ int c_ModuleChrif::logchrif_parse_reqauth(int fd, int id, char* ip)
 			WFIFOB(fd, 14) = sex;
 			WFIFOB(fd, 15) = 1; // auth failed
 			WFIFOL(fd, 16) = request_id;
-			WFIFOL(fd, 20) = 0;
-			WFIFOB(fd, 24) = 0;
-			WFIFOSET(fd, 25);
+			WFIFOB(fd, 20) = 0;
+			WFIFOSET(fd, 21);
 		}
 	}
 	return 1;

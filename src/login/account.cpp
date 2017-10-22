@@ -708,12 +708,13 @@ void c_ModuleAccount::mmo_save_global_accreg(s_AccountDB* self, int fd, int acco
 
 	if (count) {
 		int  cursor = 14, i;
-		char key[32], sval[254];
+		char key[32], sval[254], esc_key[32 * 2 + 1], esc_sval[254 * 2 + 1];
 
 		for (i = 0; i < count; i++)
 		{
 			unsigned int index;
 			safestrncpy(key, RFIFOCP(fd, cursor + 1), RFIFOB(fd, cursor));
+			Sql_EscapeString(sql_handle, esc_key, key);
 			cursor += RFIFOB(fd, cursor) + 1;
 
 			index   = RFIFOL(fd, cursor);
@@ -723,13 +724,13 @@ void c_ModuleAccount::mmo_save_global_accreg(s_AccountDB* self, int fd, int acco
 			{
 			// int
 			case 0:
-				if (SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`account_id`,`key`,`index`,`value`) VALUES ('%d','%s','%u','%d')", db->global_acc_reg_num_table.c_str(), account_id, key, index, RFIFOL(fd, cursor)))
+				if (SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`account_id`,`key`,`index`,`value`) VALUES ('%d','%s','%u','%d')", db->global_acc_reg_num_table.c_str(), account_id, esc_key, index, RFIFOL(fd, cursor)))
 					Sql_ShowDebug(sql_handle);
 				cursor += 4;
 				break;
 
 			case 1:
-				if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `account_id` = '%d' AND `key` = '%s' AND `index` = '%u' LIMIT 1", db->global_acc_reg_num_table.c_str(), account_id, key, index))
+				if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `account_id` = '%d' AND `key` = '%s' AND `index` = '%u' LIMIT 1", db->global_acc_reg_num_table.c_str(), account_id, esc_key, index))
 					Sql_ShowDebug(sql_handle);
 				break;
 
@@ -737,12 +738,13 @@ void c_ModuleAccount::mmo_save_global_accreg(s_AccountDB* self, int fd, int acco
 			case 2:
 				safestrncpy(sval, RFIFOCP(fd, cursor + 1), RFIFOB(fd, cursor));
 				cursor += RFIFOB(fd, cursor) + 1;
-				if (SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`account_id`,`key`,`index`,`value`) VALUES ('%d','%s','%u','%s')", db->global_acc_reg_str_table.c_str(), account_id, key, index, sval))
+				Sql_EscapeString(sql_handle, esc_sval, sval);
+				if (SQL_ERROR == Sql_Query(sql_handle, "REPLACE INTO `%s` (`account_id`,`key`,`index`,`value`) VALUES ('%d','%s','%u','%s')", db->global_acc_reg_str_table.c_str(), account_id, esc_key, index, esc_sval))
 					Sql_ShowDebug(sql_handle);
 				break;
 
 			case 3:
-				if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `account_id` = '%d' AND `key` = '%s' AND `index` = '%u' LIMIT 1", db->global_acc_reg_str_table.c_str(), account_id, key, index))
+				if (SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `account_id` = '%d' AND `key` = '%s' AND `index` = '%u' LIMIT 1", db->global_acc_reg_str_table.c_str(), account_id, esc_key, index))
 					Sql_ShowDebug(sql_handle);
 				break;
 
