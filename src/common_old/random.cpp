@@ -3,9 +3,9 @@
 
 #include "random.h"
 
-#if defined(WIN32)
+#if defined (WIN32)
 	#include "winapi.h"
-#elif defined(HAVE_GETPID) || defined(HAVE_GETTID)
+#elif defined (HAVE_GETPID) || defined (HAVE_GETTID)
 	#include <sys/types.h>
 	#include <unistd.h>
 #endif
@@ -18,17 +18,18 @@
 void rnd_init(void)
 {
 	uint32 seed = gettick();
+
 	seed += (uint32)time(NULL);
-#if defined(WIN32)
+#if defined (WIN32)
 	seed += GetCurrentProcessId();
 	seed += GetCurrentThreadId();
 #else
-#if defined(HAVE_GETPID)
+#if defined (HAVE_GETPID)
 	seed += (uint32)getpid();
-#endif // HAVE_GETPID
-#if defined(HAVE_GETTID)
+#endif  // HAVE_GETPID
+#if defined (HAVE_GETTID)
 	seed += (uint32)gettid();
-#endif // HAVE_GETTID
+#endif  // HAVE_GETTID
 #endif
 	init_genrand(seed);
 }
@@ -52,7 +53,7 @@ int32 rnd(void)
 /// NOTE: interval is open ended, so dice_faces is excluded (unless it's 0)
 uint32 rnd_roll(uint32 dice_faces)
 {
-	return (uint32)(rnd_uniform()*dice_faces);
+	return (uint32)(rnd_uniform() * dice_faces);
 }
 
 
@@ -60,9 +61,10 @@ uint32 rnd_roll(uint32 dice_faces)
 /// Returns min if range is invalid.
 int32 rnd_value(int32 min, int32 max)
 {
-	if( min >= max )
+	if (min >= max)
 		return min;
-	return min + (int32)(rnd_uniform()*(max-min+1));
+
+	return min + (int32)(rnd_uniform() * (max - min + 1));
 }
 
 
@@ -70,7 +72,7 @@ int32 rnd_value(int32 min, int32 max)
 /// NOTE: interval is open ended, so 1.0 is excluded
 double rnd_uniform(void)
 {
-	return ((uint32)genrand_int32())*(1.0/4294967296.0);// divided by 2^32
+	return ((uint32)genrand_int32()) * (1.0 / 4294967296.0); // divided by 2^32
 }
 
 

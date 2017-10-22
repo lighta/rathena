@@ -1,12 +1,14 @@
 // Copyright (c) Athena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
-#ifndef	_DES_H_
-#define	_DES_H_
+#ifndef _DES_H_
+#define _DES_H_
 
 #include "cbasetypes.h"
 
 /// One 64-bit block.
-struct s_BIT64 { uint8_t b[8]; };
+struct s_BIT64 {
+	uint8_t b[8];
+};
 
 
 void des_decrypt_block(s_BIT64* block);

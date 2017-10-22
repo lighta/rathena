@@ -6,10 +6,10 @@
 
 #include "../common_old/cbasetypes.h"
 #include "status.h" // struct s_status_data, struct s_status_change
-#include "unit.h" // struct s_unit_data
+#include "unit.h"   // struct s_unit_data
 
 // number of cells that a mercenary can walk to from it's master before being warped
-#define MAX_MER_DISTANCE 15
+#define MAX_MER_DISTANCE    15
 
 enum e_MercGuildType {
 	ARCH_MERC_GUILD,
@@ -18,60 +18,61 @@ enum e_MercGuildType {
 };
 
 struct s_mercenary_db {
-	int class_;
-	char sprite[NAME_LENGTH], name[NAME_LENGTH];
-	unsigned short lv;
-	short range2, range3;
+	int                  class_;
+	char                 sprite[NAME_LENGTH], name[NAME_LENGTH];
+	unsigned short       lv;
+	short                range2, range3;
 	struct s_status_data status;
-	struct s_view_data vd;
+	struct s_view_data   vd;
 	struct {
 		unsigned short id, lv;
-	} skill[MAX_MERCSKILL];
+	}
+	skill[MAX_MERCSKILL];
 };
 
 extern struct s_mercenary_db mercenary_db[MAX_MERCENARY_CLASS];
 
 struct s_mercenary_data {
-	struct s_block_list bl;
-	struct s_unit_data ud;
-	struct s_view_data *vd;
-	struct s_status_data base_status, battle_status;
+	struct s_block_list    bl;
+	struct s_unit_data     ud;
+	struct s_view_data*    vd;
+	struct s_status_data   base_status, battle_status;
 	struct s_status_change sc;
-	struct regen_data regen;
+	struct regen_data      regen;
 
-	struct s_mercenary_db *db;
-	struct s_mercenary mercenary;
-	char blockskill[MAX_SKILL];
+	struct s_mercenary_db* db;
+	struct s_mercenary     mercenary;
+	char                   blockskill[MAX_SKILL];
 
-	int masterteleport_timer;
-	s_map_session_data *master;
-	int contract_timer;
+	int                    masterteleport_timer;
+	s_map_session_data*    master;
+	int                    contract_timer;
 
-	unsigned devotion_flag : 1;
+	unsigned               devotion_flag : 1;
 };
 
 bool mercenary_class(int class_);
-struct s_view_data * mercenary_get_viewdata(int class_);
+struct s_view_data* mercenary_get_viewdata(int class_);
 
-bool mercenary_create(s_map_session_data *sd, int class_, unsigned int lifetime);
-bool mercenary_recv_data(struct s_mercenary *merc, bool flag);
-void mercenary_save(struct s_mercenary_data *md);
+bool mercenary_create(s_map_session_data* sd, int class_, unsigned int lifetime);
+bool mercenary_recv_data(struct s_mercenary* merc, bool flag);
+void mercenary_save(struct s_mercenary_data* md);
 
-void mercenary_heal(struct s_mercenary_data *md, int hp, int sp);
-bool mercenary_dead(struct s_mercenary_data *md);
+void mercenary_heal(struct s_mercenary_data* md, int hp, int sp);
+bool mercenary_dead(struct s_mercenary_data* md);
 
-int mercenary_delete(struct s_mercenary_data *md, int reply);
-void mercenary_contract_stop(struct s_mercenary_data *md);
+int mercenary_delete(struct s_mercenary_data* md, int reply);
+void mercenary_contract_stop(struct s_mercenary_data* md);
 
-int mercenary_get_lifetime(struct s_mercenary_data *md);
-int mercenary_get_guild(struct s_mercenary_data *md);
-int mercenary_get_faith(struct s_mercenary_data *md);
-void mercenary_set_faith(struct s_mercenary_data *md, int value);
-int mercenary_get_calls(struct s_mercenary_data *md);
-void mercenary_set_calls(struct s_mercenary_data *md, int value);
-void mercenary_kills(struct s_mercenary_data *md);
+int mercenary_get_lifetime(struct s_mercenary_data* md);
+int mercenary_get_guild(struct s_mercenary_data* md);
+int mercenary_get_faith(struct s_mercenary_data* md);
+void mercenary_set_faith(struct s_mercenary_data* md, int value);
+int mercenary_get_calls(struct s_mercenary_data* md);
+void mercenary_set_calls(struct s_mercenary_data* md, int value);
+void mercenary_kills(struct s_mercenary_data* md);
 
-int mercenary_checkskill(struct s_mercenary_data *md, uint16 skill_id);
+int mercenary_checkskill(struct s_mercenary_data* md, uint16 skill_id);
 short mercenary_skill_get_index(uint16 skill_id);
 
 /**

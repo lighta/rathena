@@ -12,9 +12,9 @@ struct s_duel {
 	int max_players_limit;
 };
 
-#define MAX_DUEL 1024 //max number of duels on server
+#define MAX_DUEL    1024                  //max number of duels on server
 extern struct s_duel duel_list[MAX_DUEL]; //list of current duel
-extern int duel_count; //current number of duel on server
+extern int           duel_count;          //current number of duel on server
 
 //Duel functions // [LuzZza]
 unsigned int duel_create(s_map_session_data* sd, const unsigned int maxpl);

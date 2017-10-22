@@ -30,46 +30,47 @@
 #endif
 
 /// Called when a terminate signal is received.
-void (*shutdown_callback)(void) = NULL;
+void (* shutdown_callback)(void) = NULL;
 
-#if defined(BUILDBOT)
-	int buildbotflag = 0;
+#if defined (BUILDBOT)
+int buildbotflag = 0;
 #endif
 
-int runflag = CORE_ST_RUN;
-char db_path[12] = "db"; /// relative path for db from server
+int   runflag     = CORE_ST_RUN;
+char  db_path[12] = "db"; /// relative path for db from server
 
-char *SERVER_NAME = NULL;
-char SERVER_TYPE = ATHENA_SERVER_NONE;
+char* SERVER_NAME = NULL;
+char  SERVER_TYPE = ATHENA_SERVER_NONE;
 
-#ifndef MINICORE	// minimalist Core
+#ifndef MINICORE        // minimalist Core
 // Added by Gabuzomeu
 //
 // This is an implementation of signal() using sigaction() for portability.
 // (sigaction() is POSIX; signal() is not.)  Taken from Stevens' _Advanced
 // Programming in the UNIX Environment_.
 //
-#ifdef WIN32	// windows don't have SIGPIPE
-#define SIGPIPE SIGINT
+#ifdef WIN32    // windows don't have SIGPIPE
+#define SIGPIPE    SIGINT
 #endif
 
 #ifndef POSIX
-#define compat_signal(signo, func) signal(signo, func)
+#define compat_signal(signo, func)    signal(signo, func)
 #else
-sigfunc *compat_signal(int signo, sigfunc *func) {
+sigfunc* compat_signal(int signo, sigfunc* func)
+{
 	struct sigaction sact, oact;
 
 	sact.sa_handler = func;
 	sigemptyset(&sact.sa_mask);
 	sact.sa_flags = 0;
 #ifdef SA_INTERRUPT
-	sact.sa_flags |= SA_INTERRUPT;	/* SunOS */
+	sact.sa_flags |= SA_INTERRUPT;  /* SunOS */
 #endif
 
 	if (sigaction(signo, &sact, &oact) < 0)
-		return (SIG_ERR);
+		return(SIG_ERR);
 
-	return (oact.sa_handler);
+	return(oact.sa_handler);
 }
 #endif
 
@@ -77,44 +78,51 @@ sigfunc *compat_signal(int signo, sigfunc *func) {
  *	CORE : Console events for Windows
  *--------------------------------------*/
 #ifdef _WIN32
-static BOOL WINAPI console_handler(DWORD c_event) {
-    switch(c_event) {
-    case CTRL_CLOSE_EVENT:
-    case CTRL_LOGOFF_EVENT:
-    case CTRL_SHUTDOWN_EVENT:
-		if( shutdown_callback != NULL )
+static BOOL WINAPI console_handler(DWORD c_event)
+{
+	switch (c_event)
+	{
+	case CTRL_CLOSE_EVENT:
+	case CTRL_LOGOFF_EVENT:
+	case CTRL_SHUTDOWN_EVENT:
+		if (shutdown_callback != NULL)
 			shutdown_callback();
 		else
-			runflag = CORE_ST_STOP;// auto-shutdown
-        break;
+			runflag = CORE_ST_STOP;  // auto-shutdown
+		break;
+
 	default:
 		return FALSE;
-    }
-    return TRUE;
+	}
+	return TRUE;
 }
 
-static void cevents_init() {
-	if (SetConsoleCtrlHandler(console_handler,TRUE)==FALSE)
-		ShowWarning ("Unable to install the console handler!\n");
+static void cevents_init()
+{
+	if (SetConsoleCtrlHandler(console_handler, TRUE) == FALSE)
+		ShowWarning("Unable to install the console handler!\n");
 }
 #endif
 
 /*======================================
  *	CORE : Signal Sub Function
  *--------------------------------------*/
-static void sig_proc(int sn) {
+static void sig_proc(int sn)
+{
 	static int is_called = 0;
 
-	switch (sn) {
+	switch (sn)
+	{
 	case SIGINT:
 	case SIGTERM:
 		if (++is_called > 3)
 			exit(EXIT_SUCCESS);
-		if( shutdown_callback != NULL )
+		if (shutdown_callback != NULL)
 			shutdown_callback();
 		else
-			runflag = CORE_ST_STOP;// auto-shutdown
+			runflag = CORE_ST_STOP;  // auto-shutdown
 		break;
+
 	case SIGSEGV:
 	case SIGFPE:
 		do_abort();
@@ -122,20 +130,23 @@ static void sig_proc(int sn) {
 		compat_signal(sn, SIG_DFL);
 		raise(sn);
 		break;
+
 #ifndef _WIN32
 	case SIGXFSZ:
 		// ignore and allow it to set errno to EFBIG
-		ShowWarning ("Max file size reached!\n");
+		ShowWarning("Max file size reached!\n");
 		//run_flag = 0;	// should we quit?
 		break;
+
 	case SIGPIPE:
 		//ShowInfo ("Broken pipe found... closing socket\n");	// set to eof in socket.c
-		break;	// does nothing here
+		break;  // does nothing here
 #endif
 	}
 }
 
-void signals_init (void) {
+void signals_init(void)
+{
 	compat_signal(SIGTERM, sig_proc);
 	compat_signal(SIGINT, sig_proc);
 #ifndef _DEBUG // need unhandled exceptions to debug on Windows
@@ -153,21 +164,21 @@ void signals_init (void) {
 #endif
 
 // GIT path
-#define GIT_ORIGIN "refs/remotes/origin/master"
+#define GIT_ORIGIN    "refs/remotes/origin/master"
 
 // Grabs the hash from the last time the user updated their working copy (last pull)
-const char *get_git_hash (void) {
+const char* get_git_hash(void)
+{
 	static std::string GitHash;
 
 	if (!GitHash.empty())
 		return GitHash.c_str();
 
-	std::ifstream file (".git/" GIT_ORIGIN);
+	std::ifstream file(".git/" GIT_ORIGIN);
 
 	if (file.is_open()) {
 		std::getline(file, GitHash);
-	}
-	else {
+	} else {
 		GitHash = UNKNOWN_VERSION;
 	}
 	file.close();
@@ -179,7 +190,8 @@ const char *get_git_hash (void) {
  *	CORE : Display title
  *  ASCII By CalciumKid 1/12/2011
  *--------------------------------------*/
-static void display_title(void) {
+static void display_title(void)
+{
 	const char* git = get_git_hash();
 
 	ShowMessage("\n");
@@ -195,7 +207,7 @@ static void display_title(void) {
 	ShowMessage("" CL_PASS "       " CL_GREEN "                  Project rAthena++                           " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
 	ShowMessage("" CL_PASS "     " CL_BOLD "                                                                 " CL_PASS "" CL_CLL "" CL_NORMAL "\n");
 
-	if( git[0] != UNKNOWN_VERSION )
+	if (git[0] != UNKNOWN_VERSION)
 		ShowInfo("Git Hash: '" CL_WHITE "%s" CL_RESET "'\n", git);
 	ShowInfo("Server compiled for packet version %d.\n", PACKETVER);
 }
@@ -204,42 +216,42 @@ static void display_title(void) {
 void usercheck(void)
 {
 #ifndef _WIN32
-    if (geteuid() == 0) {
-		ShowWarning ("You are running rAthena with root privileges, it is not necessary.\n");
-    }
+	if (geteuid() == 0) {
+		ShowWarning("You are running rAthena with root privileges, it is not necessary.\n");
+	}
 #endif
 }
 
 /*======================================
  *	CORE : MAINROUTINE
  *--------------------------------------*/
-int main (int argc, char **argv)
+int main(int argc, char** argv)
 {
-	{// initialize program arguments
-		char *p1;
-		if((p1 = strrchr(argv[0], '/')) != NULL ||  (p1 = strrchr(argv[0], '\\')) != NULL ){
-			char *pwd = NULL; //path working directory
-			size_t n=0;
+	{       // initialize program arguments
+		char* p1;
+		if ((p1 = strrchr(argv[0], '/')) != NULL || (p1 = strrchr(argv[0], '\\')) != NULL) {
+			char*  pwd = NULL; //path working directory
+			size_t n   = 0;
 			SERVER_NAME = ++p1;
-			n = p1-argv[0]; //calc dir name len
-			pwd = safestrncpy((char*)malloc(n + 1), argv[0], n);
-			if(chdir(pwd) != 0)
-				ShowError("Couldn't change working directory to %s for %s, runtime will probably fail",pwd,SERVER_NAME);
+			n           = p1 - argv[0]; //calc dir name len
+			pwd         = safestrncpy((char*)malloc(n + 1), argv[0], n);
+			if (chdir(pwd) != 0)
+				ShowError("Couldn't change working directory to %s for %s, runtime will probably fail", pwd, SERVER_NAME);
 			free(pwd);
-		}else{
+		} else {
 			// On Windows the .bat files have the executeable names as parameters without any path seperator [Lemongrass]
 			SERVER_NAME = argv[0];
 		}
 	}
 
-	malloc_init();// needed for Show* in display_title() [FlavioJS]
+	malloc_init(); // needed for Show* in display_title() [FlavioJS]
 
-#ifdef MINICORE // minimalist Core
+#ifdef MINICORE        // minimalist Core
 	display_title();
 	usercheck();
-	do_init(argc,argv);
+	do_init(argc, argv);
 	do_final();
-#else// not MINICORE
+#else   // not MINICORE
 	set_server_type();
 	display_title();
 	usercheck();
@@ -257,10 +269,11 @@ int main (int argc, char **argv)
 	timer_init();
 	socket_init();
 
-	do_init(argc,argv);
+	do_init(argc, argv);
 
 	// Main runtime cycle
-	while (runflag != CORE_ST_STOP) { 
+	while (runflag != CORE_ST_STOP)
+	{
 		int next = do_timer(gettick_nocache());
 		do_sockets(next);
 	}
@@ -277,11 +290,11 @@ int main (int argc, char **argv)
 
 	malloc_final();
 
-#if defined(BUILDBOT)
-	if( buildbotflag ){
+#if defined (BUILDBOT)
+	if (buildbotflag) {
 		exit(EXIT_FAILURE);
 	}
 #endif
 
 	return 0;
-}
+} // main

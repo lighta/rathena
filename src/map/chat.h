@@ -9,23 +9,23 @@
 struct s_map_session_data;
 struct s_chat_data;
 
-#define MAX_CHAT_USERS 20
+#define MAX_CHAT_USERS    20
 
 struct s_chat_data {
-	struct s_block_list bl;            // data for this map object
-	char title[CHATROOM_TITLE_SIZE]; // room title 
-	char pass[CHATROOM_PASS_SIZE];   // password
-	bool pub;                        // private/public flag
-	uint8 users;                     // current user count
-	uint8 limit;                     // join limit
-	uint8 trigger;                   // number of users needed to trigger event
-	uint32 zeny;						 // required zeny to join
-	uint32 minLvl;					 // minimum base level to join
-	uint32 maxLvl;					 // maximum base level allowed to join
-	s_map_session_data* usersd[MAX_CHAT_USERS];
+	struct s_block_list  bl;                         // data for this map object
+	char                 title[CHATROOM_TITLE_SIZE]; // room title
+	char                 pass[CHATROOM_PASS_SIZE];   // password
+	bool                 pub;                        // private/public flag
+	uint8                users;                      // current user count
+	uint8                limit;                      // join limit
+	uint8                trigger;                    // number of users needed to trigger event
+	uint32               zeny;                       // required zeny to join
+	uint32               minLvl;                     // minimum base level to join
+	uint32               maxLvl;                     // maximum base level allowed to join
+	s_map_session_data*  usersd[MAX_CHAT_USERS];
 	struct s_block_list* owner;
-	char npc_event[EVENT_NAME_LENGTH];
-	s_DBMap* kick_list;				//DBMap of users who were kicked from this chat
+	char                 npc_event[EVENT_NAME_LENGTH];
+	s_DBMap*             kick_list;                 //DBMap of users who were kicked from this chat
 };
 
 int chat_createpcchat(s_map_session_data* sd, const char* title, const char* pass, int limit, bool pub);
