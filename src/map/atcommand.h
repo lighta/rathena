@@ -18,10 +18,10 @@ struct s_map_session_data;
 //global var
 extern char atcommand_symbol;
 extern char charcommand_symbol;
-extern int atcmd_binding_count;
+extern int  atcmd_binding_count;
 
 enum e_atCommandType : uint8 {
-	COMMAND_ATCOMMAND = 1,
+	COMMAND_ATCOMMAND   = 1,
 	COMMAND_CHARCOMMAND = 2,
 };
 
@@ -39,10 +39,10 @@ bool atcommand_exists(const char* name);
 struct s_atcmd_binding_data {
 	char command[50];
 	char npc_event[EVENT_NAME_LENGTH];
-	int level;
-	int level2;
+	int  level;
+	int  level2;
 };
 extern struct s_atcmd_binding_data** atcmd_binding;
-struct s_atcmd_binding_data* get_atcommandbind_byname(const char* name);
+struct s_atcmd_binding_data*         get_atcommandbind_byname(const char* name);
 
 #endif /* _ATCOMMAND_H_ */

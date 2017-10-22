@@ -9,43 +9,41 @@
 
 #pragma once
 #ifndef _LOGINCLIF_H
-#define	_LOGINCLIF_H
+#define _LOGINCLIF_H
 
 #include <memory>
 
 namespace ra {
-    namespace login {
+namespace login {
+class c_ModuleClif {
+private:
+	struct pImpl;
+	std::unique_ptr<pImpl> aPimpl;
+	c_ModuleClif();
+public:
+	static c_ModuleClif& smGetInstance();
+};
 
-        class c_ModuleClif {
-        private:
-            struct pImpl;
-            std::unique_ptr<pImpl> aPimpl;
-            c_ModuleClif();
-        public:
-            static c_ModuleClif& smGetInstance();
-        };
-        
-        /**
-         * Entry point from client to log-server.
-         * Function that checks incoming command, then splits it to the correct handler.
-         * @param fd: file descriptor to parse, (link to client)
-         * @return 0=invalid session,marked for disconnection,unknow packet, banned..; 1=success
-         */
-        int logclif_parse(int fd);
+/**
+ * Entry point from client to log-server.
+ * Function that checks incoming command, then splits it to the correct handler.
+ * @param fd: file descriptor to parse, (link to client)
+ * @return 0=invalid session,marked for disconnection,unknow packet, banned..; 1=success
+ */
+int logclif_parse(int fd);
 
-        /**
-         * Initialize the module.
-         * Launched at login-serv start, create db or other long scope variable here.
-         */
-        void do_init_loginclif(void);
+/**
+ * Initialize the module.
+ * Launched at login-serv start, create db or other long scope variable here.
+ */
+void do_init_loginclif(void);
 
-        /**
-         * loginclif destructor
-         *  dealloc..., function called at exit of the login-serv
-         */
-        void do_final_loginclif(void);
-
-    }
+/**
+ * loginclif destructor
+ *  dealloc..., function called at exit of the login-serv
+ */
+void do_final_loginclif(void);
 }
-#endif	/* _LOGINCLIF_H */
+}
+#endif  /* _LOGINCLIF_H */
 

@@ -6,33 +6,36 @@
 
 #include <stdarg.h>
 #ifndef __USE_GNU
-    #define __USE_GNU  // required to enable strnlen on some platforms
+    #define __USE_GNU    // required to enable strnlen on some platforms
     #include <string.h>
     #undef __USE_GNU
 #endif
 #include "cbasetypes.h"
 
-char* jstrescape (char* pt);
-char* jstrescapecpy (char* pt, const char* spt);
-int jmemescapecpy (char* pt, const char* spt, int size);
+char* jstrescape(char* pt);
+char* jstrescapecpy(char* pt, const char* spt);
+int jmemescapecpy(char* pt, const char* spt, int size);
 
 int remove_control_chars(char* str);
 char* trim(char* str);
-char* normalize_name(char* str,const char* delims);
-const char *stristr(const char *haystack, const char *needle);
+char* normalize_name(char* str, const char* delims);
+const char* stristr(const char* haystack, const char* needle);
 
 #ifdef WIN32
 #define HAVE_STRTOK_R
-#define strtok_r(s,delim,save_ptr) _strtok_r((s),(delim),(save_ptr))
+#define strtok_r(s, delim, save_ptr)    _strtok_r((s), (delim), (save_ptr))
 char* _strtok_r(char* s1, const char* s2, char** lasts);
+
 #endif
 
-#if !(defined(WIN32) && defined(_MSC_VER) && _MSC_VER >= 1400) && !defined(HAVE_STRNLEN)
-size_t strnlen (const char* string, size_t maxlen);
+#if !(defined (WIN32) && defined (_MSC_VER) && _MSC_VER >= 1400) && !defined (HAVE_STRNLEN)
+size_t strnlen(const char* string, size_t maxlen);
+
 #endif
 
-#if defined(WIN32) && defined(_MSC_VER) && _MSC_VER <= 1200
+#if defined (WIN32) && defined (_MSC_VER) && _MSC_VER <= 1200
 uint64 strtoull(const char* str, char** endptr, int base);
+
 #endif
 
 int e_mail_check(char* email);
@@ -59,35 +62,33 @@ int strline(const char* str, size_t pos);
 bool bin2hex(char* output, unsigned char* input, size_t count);
 
 /// Bitfield determining the behaviour of sv_parse and sv_split.
-typedef enum e_svopt
-{
+typedef enum e_svopt {
 	// default: no escapes and no line terminator
 	SV_NOESCAPE_NOTERMINATE = 0,
 	// Escapes according to the C compiler.
 	SV_ESCAPE_C = 1,
 	// Line terminators
-	SV_TERMINATE_LF = 2,
-	SV_TERMINATE_CRLF = 4,
-	SV_TERMINATE_CR = 8,
+	SV_TERMINATE_LF         = 2,
+	SV_TERMINATE_CRLF       = 4,
+	SV_TERMINATE_CR         = 8,
 	// If sv_split keeps the end of line terminator, instead of replacing with '\0'
-	SV_KEEP_TERMINATOR = 16
+	SV_KEEP_TERMINATOR      = 16
 } e_svopt;
 
 /// Other escape sequences supported by the C compiler.
-#define SV_ESCAPE_C_SUPPORTED "abtnvfr\?\"'\\"
+#define SV_ESCAPE_C_SUPPORTED    "abtnvfr\?\"'\\"
 
 /// Parse state.
 /// The field is [start,end[
-struct s_svstate
-{
-	const char* str; //< string to parse
-	int len; //< string length
-	int off; //< current offset in the string
-	int start; //< where the field starts
-	int end; //< where the field ends
-	enum e_svopt opt; //< parse options
-	char delim; //< field delimiter
-	bool done; //< if all the text has been parsed
+struct s_svstate {
+	const char*  str;   //< string to parse
+	int          len;   //< string length
+	int          off;   //< current offset in the string
+	int          start; //< where the field starts
+	int          end;   //< where the field ends
+	enum e_svopt opt;   //< parse options
+	char         delim; //< field delimiter
+	bool         done;  //< if all the text has been parsed
 };
 
 /// Parses a single field in a delim-separated string.
@@ -128,14 +129,13 @@ const char* skip_escaped_c(const char* p);
 /// Opens and parses a file containing delim-separated columns, feeding them to the specified callback function row by row.
 /// Tracks the progress of the operation (current line number, number of successfully processed rows).
 /// Returns 'true' if it was able to process the specified file, or 'false' if it could not be read.
-bool sv_readdb(const char* directory, const char* filename, char delim, int mincols, int maxcols, int maxrows, bool (*parseproc)(char* fields[], int columns, int current), bool silent);
+bool sv_readdb(const char* directory, const char* filename, char delim, int mincols, int maxcols, int maxrows, bool (* parseproc)(char* fields[], int columns, int current), bool silent);
 
 
 /// StringBuf - dynamic string
-struct StringBuf
-{
-	char *buf_;
-	char *ptr_;
+struct StringBuf {
+	char*        buf_;
+	char*        ptr_;
 	unsigned int max_;
 };
 
@@ -143,7 +143,7 @@ StringBuf* StringBuf_Malloc(void);
 void StringBuf_Init(StringBuf* self);
 int StringBuf_Printf(StringBuf* self, const char* fmt, ...);
 int StringBuf_Vprintf(StringBuf* self, const char* fmt, va_list args);
-int StringBuf_Append(StringBuf* self, const StringBuf *sbuf);
+int StringBuf_Append(StringBuf* self, const StringBuf* sbuf);
 int StringBuf_AppendStr(StringBuf* self, const char* str);
 int StringBuf_Length(StringBuf* self);
 char* StringBuf_Value(StringBuf* self);

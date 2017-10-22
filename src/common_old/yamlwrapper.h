@@ -1,24 +1,24 @@
 /**
-*		This file is a part of rAthena++.
-*		Copyright(C) 2017 rAthena Development Team
-*		https://rathena.org - https://github.com/rathena
-*
-*	This program is free software: you can redistribute it and/or modify
-*	it under the terms of the GNU General Public License as published by
-*	the Free Software Foundation, either version 3 of the License, or
-*	(at your option) any later version.
-*
-*	This program is distributed in the hope that it will be useful,
-*	but WITHOUT ANY WARRANTY; without even the implied warranty of
-*	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*	GNU General Public License for more details.
-*
-*	You should have received a copy of the GNU General Public License
-*	along with this program. If not, see <http://www.gnu.org/licenses/>.
-*
-*	Author(s)
-*		Jittapan Pluemsumran <secret@rathena.org>
-*/
+ *		This file is a part of rAthena++.
+ *		Copyright(C) 2017 rAthena Development Team
+ *		https://rathena.org - https://github.com/rathena
+ *
+ *	This program is free software: you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation, either version 3 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ *	Author(s)
+ *		Jittapan Pluemsumran <secret@rathena.org>
+ */
 
 #pragma once
 #ifdef WIN32
@@ -40,7 +40,7 @@ extern "C" {
 #ifdef __cplusplus
 class yamliterator {
 public:
-	YAML::Node sequence;
+	YAML::Node   sequence;
 	unsigned int index;
 	yamliterator(YAML::Node sequence_);
 };
@@ -53,8 +53,8 @@ public:
 	yamliterator* iterator();
 };
 #else
-typedef struct yamlwrapper yamlwrapper;
-typedef struct yamliterator yamliterator;
+typedef struct yamlwrapper    yamlwrapper;
+typedef struct yamliterator   yamliterator;
 #endif
 
 yamlwrapper* yaml_load_file(const char* file_name);
