@@ -24,6 +24,15 @@
 #include <direct.h> // _chdir
 #endif
 
+#include "boost/signals2.hpp"
+#include <iostream>
+#include <string>
+
+
+// Signal with no arguments and a void return value
+boost::signals2::signal<void ()> InitSig;
+boost::signals2::signal<void ()> FinalSig;
+boost::signals2::signal<int (int argc, char **argv)> InitSigExt;
 
 /// Called when a terminate signal is received.
 void (*shutdown_callback)(void) = NULL;
@@ -316,72 +325,91 @@ void usercheck(void)
 #endif
 }
 
+int print_args(int argc, char **argv)
+{
+  std::cout << "Nb of arguments are " << argc << " { " << std::endl;
+	for ( size_t n = 0; n < argc; ++n )
+	{
+		std::cout << argv[n];
+	}
+	std::cout << "}" << std::endl;
+	return 0;
+}
+
+int SetServNameAndPaths( int argc, char **argv )
+{
+	std::string lCallPath( argv[0] );
+	size_t lDirEnd = lCallPath.rfind('/');
+	if (lDirEnd==std::string::npos)
+		lDirEnd =lCallPath.rfind('\\');
+	if ( lDirEnd != std::string::npos )
+	{
+		SERVER_NAME = ((char*)argv[0] + lDirEnd+1);
+		std::string lDir = lCallPath.substr(0,lDirEnd+1 ); //path working directory
+		if(chdir(lDir.c_str()) != 0)
+			ShowError("Couldn't change working directory to %s for %s, runtime will probably fail",lDir.c_str(),SERVER_NAME);
+	} else{
+		// On Windows the .bat files have the executeable names as parameters without any path seperator [Lemongrass]
+		SERVER_NAME = argv[0];
+	}
+	return 0;
+}
+
+int SetRADefaultGraph()
+{
+	// Attach module (tbd should be move in a plugins wrapper class)
+	//InitSigExt.connect(0,&print_args );
+	InitSigExt.connect(1,&SetServNameAndPaths );
+
+	InitSig.connect(0, &malloc_init); // needed for Show* in display_title() [FlavioJS]
+	InitSig.connect(1, &display_title );
+	InitSig.connect(2, &usercheck );
+#ifndef MINICORE // not MINICORE
+	InitSig.connect(3, &set_server_type );
+	InitSig.connect(4, &Sql_Init );
+	InitSig.connect(5, &rathread_init );
+	InitSig.connect(6, &mempool_init );
+	InitSig.connect(7, &db_init );
+	InitSig.connect(8, &signals_init );
+#ifdef _WIN32
+	InitSig.connect(9, &cevents_init );
+#endif
+	InitSig.connect(10, &timer_init );
+	InitSig.connect(11, &socket_init );
+
+	FinalSig.connect(0, &do_final );
+	FinalSig.connect(1, &timer_final );
+	FinalSig.connect(2, &socket_final );
+	FinalSig.connect(3, &db_final );
+	FinalSig.connect(4, &mempool_final );
+	FinalSig.connect(5, &rathread_final );
+	FinalSig.connect(6, &ers_final );
+#endif
+	FinalSig.connect(7, &malloc_final );
+	return 0;
+}
+
 /*======================================
  *	CORE : MAINROUTINE
  *--------------------------------------*/
 int main (int argc, char **argv)
 {
-	{// initialize program arguments
-		char *p1;
-		if((p1 = strrchr(argv[0], '/')) != NULL ||  (p1 = strrchr(argv[0], '\\')) != NULL ){
-			char *pwd = NULL; //path working directory
-			int n=0;
-			SERVER_NAME = ++p1;
-			n = p1-argv[0]; //calc dir name len
-			pwd = safestrncpy((char*)malloc(n + 1), argv[0], n);
-			if(chdir(pwd) != 0)
-				ShowError("Couldn't change working directory to %s for %s, runtime will probably fail",pwd,SERVER_NAME);
-			free(pwd);
-		}else{
-			// On Windows the .bat files have the executeable names as parameters without any path seperator [Lemongrass]
-			SERVER_NAME = argv[0];
-		}
-	}
+	SetRADefaultGraph();
 
-	malloc_init();// needed for Show* in display_title() [FlavioJS]
-
-#ifdef MINICORE // minimalist Core
-	display_title();
-	usercheck();
-	do_init(argc,argv);
-	do_final();
-#else// not MINICORE
-	set_server_type();
-	display_title();
-	usercheck();
-
-	Sql_Init();
-	rathread_init();
-	mempool_init();
-	db_init();
-	signals_init();
-
-#ifdef _WIN32
-	cevents_init();
-#endif
-
-	timer_init();
-	socket_init();
-
+	//graph is finished, all hook are set, now run
+	InitSigExt(argc,argv);
+	InitSig();
 	do_init(argc,argv);
 
+#ifndef MINICORE
 	// Main runtime cycle
 	while (runflag != CORE_ST_STOP) { 
 		int next = do_timer(gettick_nocache());
-		do_sockets(next);
+		do_sockets(next); //allow some hook here ?
 	}
-
-	do_final();
-
-	timer_final();
-	socket_final();
-	db_final();
-	mempool_final();
-	rathread_final();
-	ers_final();
 #endif
 
-	malloc_final();
+	FinalSig();
 
 #if defined(BUILDBOT)
 	if( buildbotflag ){
