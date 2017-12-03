@@ -166,3 +166,5 @@ Thumbs.db
 /libmysql.dll
 /pcre8.dll
 /zlib.dll
+
+/packages
