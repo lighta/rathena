@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "boost/signals2.hpp"
 
 #include "../common/cbasetypes.h"
 #include "../common/showmsg.h"
@@ -38,18 +39,41 @@ static bool ipban_inited = false;
 //early declaration
 int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data);
 
+struct IpBanSignals {
+	boost::signals2::signal<bool (uint32)> Pre_Check;
+	boost::signals2::signal<bool (uint32)> Post_Check;
+	boost::signals2::signal<int (int, unsigned int, int, intptr_t)> Pre_CleanUp;
+	boost::signals2::signal<int (int, unsigned int, int, intptr_t)> Post_CleanUp;
+	boost::signals2::signal<void (const char*, const char*)> Pre_ConfigRead;
+	boost::signals2::signal<void (const char*, const char*)> Post_ConfigRead;
+	boost::signals2::signal<void (void)> Pre_Init;
+	boost::signals2::signal<void (void)> Post_Init;
+	boost::signals2::signal<void (void)> Pre_Final;
+	boost::signals2::signal<void (void)> Post_Final;
+	boost::signals2::signal<void (uint32)> Pre_Log;
+	boost::signals2::signal<void (uint32)> Post_Log;
+};
+IpBanSignals saIpBanSignals;
+
+void ipban_Attach_FinalPost(int pLvl, ipban_SFinal pFunc)
+{
+	saIpBanSignals.Pre_Final.connect( pLvl, pFunc );
+}
+
 /**
  * Check if ip is in the active bans list.
  * @param ip: ipv4 ip to check if ban
  * @return true if found or error, false if not in list
  */
 bool ipban_check(uint32 ip) {
+	if( !login_config.ipban )
+		return false;// ipban disabled
+
+	saIpBanSignals.Pre_Check(ip);
+
 	uint8* p = (uint8*)&ip;
 	char* data = NULL;
 	int matches;
-
-	if( !login_config.ipban )
-		return false;// ipban disabled
 
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT count(*) FROM `%s` WHERE `rtime` > NOW() AND (`list` = '%u.*.*.*' OR `list` = '%u.%u.*.*' OR `list` = '%u.%u.%u.*' OR `list` = '%u.%u.%u.%u')",
 		ipban_table, p[3], p[3], p[2], p[3], p[2], p[1], p[3], p[2], p[1], p[0]) )
@@ -66,6 +90,7 @@ bool ipban_check(uint32 ip) {
 	matches = atoi(data);
 	Sql_FreeResult(sql_handle);
 
+	saIpBanSignals.Post_Check(ip);
 	return( matches > 0 );
 }
 
@@ -75,12 +100,12 @@ bool ipban_check(uint32 ip) {
  * @param ip: ipv4 ip to record the failure
  */
 void ipban_log(uint32 ip) {
-	unsigned long failures;
-
 	if( !login_config.ipban )
 		return;// ipban disabled
 
-	failures = loginlog_failedattempts(ip, login_config.dynamic_pass_failure_ban_interval);// how many times failed account? in one ip.
+	saIpBanSignals.Pre_Log(ip);
+
+	unsigned long failures = loginlog_failedattempts(ip, login_config.dynamic_pass_failure_ban_interval);// how many times failed account? in one ip.
 
 	// if over the limit, add a temporary ban entry
 	if( failures >= login_config.dynamic_pass_failure_ban_limit )
@@ -90,6 +115,7 @@ void ipban_log(uint32 ip) {
 			ipban_table, p[3], p[2], p[1], login_config.dynamic_pass_failure_ban_duration) )
 			Sql_ShowDebug(sql_handle);
 	}
+	saIpBanSignals.Post_Log(ip);
 }
 
 /**
@@ -105,10 +131,10 @@ void ipban_log(uint32 ip) {
 int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data) {
 	if( !login_config.ipban )
 		return 0;// ipban disabled
-
+	saIpBanSignals.Pre_CleanUp(tid,tick,id,data);
 	if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `ipbanlist` WHERE `rtime` <= NOW()") )
 		Sql_ShowDebug(sql_handle);
-
+	saIpBanSignals.Post_CleanUp(tid,tick,id,data);
 	return 0;
 }
 
@@ -119,10 +145,12 @@ int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data) {
  * @return true if successful, false if config not complete or server already running
  */
 bool ipban_config_read(const char* key, const char* value) {
+	saIpBanSignals.Pre_ConfigRead(key,value);
 	const char* signature;
+	bool lret(false);
 
 	if( ipban_inited )
-		return false;// settings can only be changed before init
+		return lret;// settings can only be changed before init
 
 	signature = "ipban_db_";
 	if( strncmpi(key, signature, strlen(signature)) == 0 )
@@ -143,8 +171,8 @@ bool ipban_config_read(const char* key, const char* value) {
 		if( strcmpi(key, "db") == 0 )
 			safestrncpy(ipban_db_database, value, sizeof(ipban_db_database));
 		else
-			return false;// not found
-		return true;
+			lret=false;// not found
+		lret=true;
 	}
 
 	signature = "ipban_";
@@ -172,11 +200,11 @@ bool ipban_config_read(const char* key, const char* value) {
 		if( strcmpi(key, "dynamic_pass_failure_ban_duration") == 0 )
 			login_config.dynamic_pass_failure_ban_duration = atoi(value);
 		else
-			return false;// not found
-		return true;
+			lret=false;// not found
+		lret=true;
 	}
-
-	return false;// not found
+	saIpBanSignals.Post_ConfigRead(key,value);
+	return lret;// not found
 }
 
 
@@ -187,6 +215,7 @@ bool ipban_config_read(const char* key, const char* value) {
  * Launched at login-serv start, create db or other long scope variable here.
  */
 void ipban_init(void) {
+	saIpBanSignals.Pre_Init();
 	const char* username = ipban_db_username;
 	const char* password = ipban_db_password;
 	const char* hostname = ipban_db_hostname;
@@ -230,6 +259,8 @@ void ipban_init(void) {
 		cleanup_timer_id = add_timer_interval(gettick()+10, ipban_cleanup, 0, 0, login_config.ipban_cleanup_interval*1000);
 	} else // make sure it gets cleaned up on login-server start regardless of interval-based cleanups
 		ipban_cleanup(0,0,0,0);
+
+	saIpBanSignals.Post_Init();
 }
 
 /**
@@ -237,6 +268,8 @@ void ipban_init(void) {
  * Launched at login-serv end, cleanup db connection or other thing here.
  */
 void ipban_final(void) {
+	saIpBanSignals.Pre_Final();
+
 	if( !login_config.ipban )
 		return;// ipban disabled
 
@@ -249,4 +282,6 @@ void ipban_final(void) {
 	// close connections
 	Sql_Free(sql_handle);
 	sql_handle = NULL;
+
+	saIpBanSignals.Post_Final();
 }

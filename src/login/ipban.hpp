@@ -20,6 +20,7 @@
  * @return true if found or error, false if not in list
  */
 bool ipban_check(uint32 ip);
+typedef void (*ipban_SCheck)(uint32);
 
 /**
  * Log a failed attempt.
@@ -27,6 +28,7 @@ bool ipban_check(uint32 ip);
  * @param ip: ipv4 ip to record the failure
  */
 void ipban_log(uint32 ip);
+typedef void (*ipban_SLog)(uint32);
 
 /**
  * Read configuration options.
@@ -35,17 +37,20 @@ void ipban_log(uint32 ip);
  * @return true if successful, false if config not complete or server already running
  */
 bool ipban_config_read(const char* key, const char* value);
+typedef void (*ipban_SConfigRead)(const char*,const char*);
 
 /**
  * Initialize the module.
  * Launched at login-serv start, create db or other long scope variable here.
  */
 void ipban_init(void);
+typedef void (*ipban_SInit)(void);
 
 /**
  * Destroy the module.
  * Launched at login-serv end, cleanup db connection or other thing here.
  */
 void ipban_final(void);
+typedef void (*ipban_SFinal)(void);
 
 #endif /* _IPBAN_HPP_ */

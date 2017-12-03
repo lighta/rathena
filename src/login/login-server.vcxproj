@@ -172,8 +172,12 @@
     <ClCompile Include="logincnslif.cpp" />
     <ClCompile Include="loginlog.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\boost.1.65.1.0\build\native\boost.targets" Condition="Exists('..\..\packages\boost.1.65.1.0\build\native\boost.targets')" />
   </ImportGroup>
   <Target Name="AfterClean">
     <Delete Files="$(SolutionDir)libmysql.dll" ContinueOnError="true" />
@@ -186,5 +190,11 @@
     <Copy SourceFiles="$(SolutionDir)tools\serv.bat" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)serv.bat')" />
     <Copy SourceFiles="$(SolutionDir)tools\logserv.bat" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)logserv.bat')" />
     <Copy SourceFiles="$(SolutionDir)tools\runserver.bat" DestinationFolder="$(SolutionDir)" ContinueOnError="true" Condition="!Exists('$(SolutionDir)runserver.bat')" />
+  </Target>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Ce projet fait référence à des packages NuGet qui sont manquants sur cet ordinateur. Utilisez l'option de restauration des packages NuGet pour les télécharger. Pour plus d'informations, consultez http://go.microsoft.com/fwlink/?LinkID=322105. Le fichier manquant est : {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\boost.1.65.1.0\build\native\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\boost.1.65.1.0\build\native\boost.targets'))" />
   </Target>
 </Project>
