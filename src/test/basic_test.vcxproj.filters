@@ -20,12 +20,18 @@
     <ClCompile Include="test_spinlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_crashDump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test_spinlock.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="test_thread.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="test_crashDump.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

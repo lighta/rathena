@@ -158,10 +158,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="basictest.cpp" />
+    <ClCompile Include="test_crashDump.cpp" />
     <ClCompile Include="test_spinlock.cpp" />
     <ClCompile Include="test_thread.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="test_crashDump.hpp" />
     <ClInclude Include="test_spinlock.hpp" />
     <ClInclude Include="test_thread.hpp" />
   </ItemGroup>

@@ -1,8 +1,14 @@
 #include "crashDumper.hpp"
 
+#ifdef __linux__
 #include <execinfo.h> // for backtrace
 #include <dlfcn.h>    // for dladdr
 #include <cxxabi.h>   // for __cxa_demangle
+#else
+#include <Windows.h>
+#include <Dbghelp.h>
+#endif
+#include <ctime>
 
 #include <cstdio>
 #include <cstdlib>
@@ -17,11 +23,43 @@ std::string mGetCurDateForFile() {
     char datestr [10+1+9];
     time (&rawtime);
     timeinfo = localtime (&rawtime);
-    strftime (datestr,10+1+9,"%F_%T",timeinfo);
+    strftime (datestr,10+1+9,"%H-%M-%S_%T",timeinfo);
     return std::string(datestr);
 }
 
-#ifdef __linux__
+#if defined(_WIN32)
+typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hFile, MINIDUMP_TYPE DumpType,PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,PMINIDUMP_CALLBACK_INFORMATION CallbackParam);
+void create_minidump(struct _EXCEPTION_POINTERS* apExceptionInfo)
+{   
+	HMODULE mhLib = ::LoadLibrary("dbghelp.dll");
+	MINIDUMPWRITEDUMP pDump = (MINIDUMPWRITEDUMP)::GetProcAddress(mhLib, "MiniDumpWriteDump");
+
+	std::ofstream trace_buf;
+	trace_buf.open("dumps/ebacktrace_"+mGetCurDateForFile()+".txt");
+	trace_buf.close();
+	const std::string lfilename = "backtrace_" + mGetCurDateForFile()+".dmp";
+	HANDLE  hFile = ::CreateFile(lfilename.c_str(), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+                    FILE_ATTRIBUTE_NORMAL, NULL); //0
+
+
+	_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
+	ExInfo.ThreadId = ::GetCurrentThreadId();
+	ExInfo.ExceptionPointers = apExceptionInfo;
+	ExInfo.ClientPointers = FALSE; //true
+
+	//(MINIDUMP_TYPE) (MiniDumpWithFullMemory|MiniDumpWithHandleData)
+	pDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL);
+	::CloseHandle(hFile);
+}
+
+LONG WINAPI unhandled_handler(struct _EXCEPTION_POINTERS* apExceptionInfo)
+{
+    create_minidump(apExceptionInfo);
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+#endif
+
+#if defined(__linux__)
 void CrashDumper::Backtrace(int skip) {
     void *callstack[128];
     const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
@@ -57,25 +95,8 @@ void CrashDumper::Backtrace(int skip) {
         trace_buf << "[truncated]\n";
     //return trace_buf.str();
 }
-#elif _WIN32
-void CrashDumper::Backtrace(int skip)
-{   
-	HMODULE mhLib = ::LoadLibrary(_T("dbghelp.dll"));
-	MINIDUMPWRITEDUMP pDump = (MINIDUMPWRITEDUMP)::GetProcAddress(mhLib, "MiniDumpWriteDump");
-
-	HANDLE  hFile = ::CreateFile(_T("dumps/backtrace_"+mGetCurDateForFile()), GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
-                    FILE_ATTRIBUTE_NORMAL, NULL);
-
-
-	_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
-	ExInfo.ThreadId = ::GetCurrentThreadId();
-	ExInfo.ExceptionPointers = apExceptionInfo;
-	ExInfo.ClientPointers = FALSE;
-
-	pDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL);
-	::CloseHandle(hFile);
-}
-
+#elif defined(_WIN32)
+void CrashDumper::Backtrace( int skip ) {}
 #else
 void CrashDumper::Backtrace(int skip){}
 	//no implementation yet

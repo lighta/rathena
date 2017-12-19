@@ -75,6 +75,8 @@ sigfunc *compat_signal(int signo, sigfunc *func) {
  *	CORE : Console events for Windows
  *--------------------------------------*/
 #ifdef _WIN32
+LONG WINAPI unhandled_handler( struct _EXCEPTION_POINTERS* apExceptionInfo );
+
 static BOOL WINAPI console_handler(DWORD c_event) {
     switch(c_event) {
     case CTRL_CLOSE_EVENT:
@@ -94,6 +96,8 @@ static BOOL WINAPI console_handler(DWORD c_event) {
 static void cevents_init() {
 	if (SetConsoleCtrlHandler(console_handler,TRUE)==FALSE)
 		ShowWarning ("Unable to install the console handler!\n");
+
+	SetUnhandledExceptionFilter( unhandled_handler );
 }
 #endif
 
