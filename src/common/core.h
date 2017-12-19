@@ -5,6 +5,14 @@
 #define	_CORE_H_
 
 #ifdef __cplusplus
+
+class CrashDumper
+{
+public:
+	void Backtrace(int skip=1);
+};
+
+
 extern "C" {
 #endif
 

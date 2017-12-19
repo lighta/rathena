@@ -12,13 +12,15 @@
 #include "../common/core.h"
 #include "test_thread.hpp"
 #include "test_spinlock.hpp"
+#include "test_crashDump.hpp"
 
 using namespace ra::unit_tests;
 
 int do_init( int, char** )
 {
-  test_thread_creation_and_wait();
-  test_thread_spinlock();
+  //test_thread_creation_and_wait();
+  //test_thread_spinlock();
+  test_crashDump();
   return 0;
 }
 
