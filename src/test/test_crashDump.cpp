@@ -3,7 +3,7 @@
 #include <thread>
 
 #include "../common/showmsg.h"
-#include "../common/core.h"
+#include "../common/crashDumper.hpp"
 
 namespace ra 
 {
