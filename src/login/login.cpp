@@ -667,7 +667,7 @@ bool login_config_read(const char* cfgName, bool normal) {
 			if (accounts && accounts->set_property(accounts, w1, w2))
 				continue;
 			// try others
-			ipban_config_read(w1, w2);
+			rA::login::IpBanManager::smGetInstance().mForeachConfigRead(w1, w2);
 			loginlog_config_read(w1, w2);
 		}
 	}
@@ -744,7 +744,7 @@ void do_final(void) {
 		loginlog_final();
 
 	do_final_msg();
-	ipban_final();
+	rA::login::IpBanManager::smGetInstance().mForeachFinal();
 	do_final_loginclif();
 	do_final_logincnslif();
 
@@ -832,7 +832,8 @@ int do_init(int argc, char** argv) {
 		loginlog_init();
 
 	// initialize static and dynamic ipban system
-	ipban_init();
+	rA::login::IpBanManager::smGetInstance().mAttachListener( std::shared_ptr<rA::login::IpBanIF>( new rA::login::IpBan() ) );
+	rA::login::IpBanManager::smGetInstance().mForeachInit();
 
 	// Online user database init
 	online_db = idb_alloc(DB_OPT_RELEASE_DATA);

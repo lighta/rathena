@@ -35,15 +35,14 @@ static Sql* sql_handle = NULL;
 static int cleanup_timer_id = INVALID_TIMER;
 static bool ipban_inited = false;
 
-//early declaration
-int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data);
+using namespace rA::login;
 
 /**
  * Check if ip is in the active bans list.
  * @param ip: ipv4 ip to check if ban
  * @return true if found or error, false if not in list
  */
-bool ipban_check(uint32 ip) {
+bool IpBan::ipban_check(uint32 ip) {
 	uint8* p = (uint8*)&ip;
 	char* data = NULL;
 	int matches;
@@ -74,7 +73,7 @@ bool ipban_check(uint32 ip) {
  *  Also bans the user if too many failed attempts are made.
  * @param ip: ipv4 ip to record the failure
  */
-void ipban_log(uint32 ip) {
+void IpBan::ipban_log(uint32 ip) {
 	unsigned long failures;
 
 	if( !login_config.ipban )
@@ -102,7 +101,7 @@ void ipban_log(uint32 ip) {
  * @param data: unused
  * @return 0
  */
-int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data) {
+int IpBan::ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data) {
 	if( !login_config.ipban )
 		return 0;// ipban disabled
 
@@ -118,7 +117,7 @@ int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data) {
  * @param value: config value for keyword
  * @return true if successful, false if config not complete or server already running
  */
-bool ipban_config_read(const char* key, const char* value) {
+bool IpBan::ipban_config_read(const char* key, const char* value) {
 	const char* signature;
 
 	if( ipban_inited )
@@ -186,7 +185,7 @@ bool ipban_config_read(const char* key, const char* value) {
  * Initialize the module.
  * Launched at login-serv start, create db or other long scope variable here.
  */
-void ipban_init(void) {
+void IpBan::ipban_init(void) {
 	const char* username = ipban_db_username;
 	const char* password = ipban_db_password;
 	const char* hostname = ipban_db_hostname;
@@ -226,8 +225,8 @@ void ipban_init(void) {
 
 	if( login_config.ipban_cleanup_interval > 0 )
 	{ // set up periodic cleanup of connection history and active bans
-		add_timer_func_list(ipban_cleanup, "ipban_cleanup");
-		cleanup_timer_id = add_timer_interval(gettick()+10, ipban_cleanup, 0, 0, login_config.ipban_cleanup_interval*1000);
+		add_timer_func_list(IpBan::ipban_cleanup, "ipban_cleanup");
+		cleanup_timer_id = add_timer_interval(gettick()+10, IpBan::ipban_cleanup, 0, 0, login_config.ipban_cleanup_interval*1000);
 	} else // make sure it gets cleaned up on login-server start regardless of interval-based cleanups
 		ipban_cleanup(0,0,0,0);
 }
@@ -236,13 +235,13 @@ void ipban_init(void) {
  * Destroy the module.
  * Launched at login-serv end, cleanup db connection or other thing here.
  */
-void ipban_final(void) {
+void IpBan::ipban_final(void) {
 	if( !login_config.ipban )
 		return;// ipban disabled
 
 	if( login_config.ipban_cleanup_interval > 0 )
 		// release data
-		delete_timer(cleanup_timer_id, ipban_cleanup);
+		delete_timer(cleanup_timer_id, IpBan::ipban_cleanup);
 
 	ipban_cleanup(0,0,0,0); // always clean up on login-server stop
 

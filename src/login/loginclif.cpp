@@ -216,7 +216,7 @@ static void logclif_auth_failed(struct login_session_data* sd, int result) {
 	}
 
 	if( (result == 0 || result == 1) && login_config.dynamic_pass_failure_ban )
-		ipban_log(ip); // log failed password attempt
+		rA::login::IpBanManager::smGetInstance().mForeachLog(ip); // log failed password attempt
 
 #if PACKETVER >= 20120000 /* not sure when this started */
 	WFIFOHEAD(fd,26);
@@ -495,16 +495,19 @@ int logclif_parse(int fd) {
 	if( sd == NULL )
 	{
 		// Perform ip-ban check
-		if( login_config.ipban && ipban_check(ipl) )
+		if( login_config.ipban)
 		{
-			ShowStatus("Connection refused: IP isn't authorised (deny/allow, ip: %s).\n", ip);
-			login_log(ipl, "unknown", -3, "ip banned");
-			WFIFOHEAD(fd,23);
-			WFIFOW(fd,0) = 0x6a;
-			WFIFOB(fd,2) = 3; // 3 = Rejected from Server
-			WFIFOSET(fd,23);
-			set_eof(fd);
-			return 0;
+			if ( rA::login::IpBanManager::smGetInstance().mForeachCheck( ipl ) )
+			{
+				ShowStatus("Connection refused: IP isn't authorised (deny/allow, ip: %s).\n", ip);
+				login_log(ipl, "unknown", -3, "ip banned");
+				WFIFOHEAD(fd,23);
+				WFIFOW(fd,0) = 0x6a;
+				WFIFOB(fd,2) = 3; // 3 = Rejected from Server
+				WFIFOSET(fd,23);
+				set_eof(fd);
+				return 0;
+			}
 		}
 		// create a session for this new connection
 		CREATE(session[fd]->session_data, struct login_session_data, 1);

@@ -12,40 +12,122 @@
 #ifndef _IPBAN_HPP_
 #define _IPBAN_HPP_
 
+#include <memory>
+#include <map>
 #include "../common/cbasetypes.h"
 
-/**
- * Check if ip is in the active bans list.
- * @param ip: ipv4 ip to check if ban
- * @return true if found or error, false if not in list
- */
-bool ipban_check(uint32 ip);
+namespace rA 
+{
+	namespace login 
+	{
+		struct IpBanIF 
+		{
+			//virtual size_t mGetID() = 0;
+				/**
+			 * Initialize the module.
+			 * Launched at login-serv start, create db or other long scope variable here.
+			 */
+			virtual void ipban_init(void)  = 0;
 
-/**
- * Log a failed attempt.
- *  Also bans the user if too many failed attempts are made.
- * @param ip: ipv4 ip to record the failure
- */
-void ipban_log(uint32 ip);
+			/**
+			 * Destroy the module.
+			 * Launched at login-serv end, cleanup db connection or other thing here.
+			 */
+			virtual void ipban_final(void)  = 0;
 
-/**
- * Read configuration options.
- * @param key: config keyword
- * @param value: config value for keyword
- * @return true if successful, false if config not complete or server already running
- */
-bool ipban_config_read(const char* key, const char* value);
+				/**
+			 * Read configuration options.
+			 * @param key: config keyword
+			 * @param value: config value for keyword
+			 * @return true if successful, false if config not complete or server already running
+			 */
+			virtual bool ipban_config_read(const char* key, const char* value)  = 0;
 
-/**
- * Initialize the module.
- * Launched at login-serv start, create db or other long scope variable here.
- */
-void ipban_init(void);
+			/**
+			 * Log a failed attempt.
+			 *  Also bans the user if too many failed attempts are made.
+			 * @param ip: ipv4 ip to record the failure
+			 */
+			virtual void ipban_log(uint32 ip) = 0;
 
-/**
- * Destroy the module.
- * Launched at login-serv end, cleanup db connection or other thing here.
- */
-void ipban_final(void);
+			/**
+			 * Check if ip is in the active bans list.
+			 * @param ip: ipv4 ip to check if ban
+			 * @return true if found or error, false if not in list
+			 */
+			virtual bool ipban_check(uint32 ip) = 0;
+		};
+
+		class IpBanManager {
+			std::map<size_t, std::shared_ptr<IpBanIF>> aListeners;
+		public:
+			static IpBanManager& smGetInstance() 
+			{ 
+				static IpBanManager lInstance;
+				return lInstance;
+			}
+			size_t mAttachListener( std::shared_ptr<IpBanIF> pListener, size_t pIndex = -1 ) 
+			{
+				size_t lIndex = pIndex;
+				if ( lIndex == -1 )
+					lIndex = aListeners.size();
+				aListeners[lIndex] = pListener; //index might be taken
+				return lIndex;
+			}
+			void mDettachListener( size_t pIndex ) 
+			{
+				aListeners.erase(pIndex);
+			}
+
+			void mForeachInit(){
+				for ( const auto& lCur : aListeners )
+				{
+					lCur.second->ipban_init();
+				}
+			}
+			void mForeachFinal(){
+				for ( const auto& lCur : aListeners )
+				{
+					lCur.second->ipban_final();
+				}
+			}
+			void mForeachConfigRead(const char* key, const char* value){
+				for ( const auto& lCur : aListeners )
+				{
+					lCur.second->ipban_config_read(key,value);
+				}
+			}
+			void mForeachLog(uint32 ip){
+				for ( const auto& lCur : aListeners )
+				{
+					lCur.second->ipban_log(ip);
+				}
+			}
+			bool mForeachCheck(uint32 ipl){
+				bool lActive = false;
+				for ( const auto& lCur : aListeners )
+				{
+					lActive = lCur.second->ipban_check(ipl);
+					if ( lActive ) return true;
+				}
+				return lActive;
+			}
+		};
+
+		//the default rA impl
+		class IpBan 
+			: public IpBanIF
+		{
+		public:
+			void ipban_init(void);
+			void ipban_final(void);
+			bool ipban_config_read(const char* key, const char* value);
+			void ipban_log(uint32 ip);
+			bool ipban_check(uint32 ip);
+
+			static int ipban_cleanup(int tid, unsigned int tick, int id, intptr_t data);
+		};
+	}
+}
 
 #endif /* _IPBAN_HPP_ */
