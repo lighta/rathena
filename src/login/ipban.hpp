@@ -14,7 +14,9 @@
 
 #include <memory>
 #include <map>
+#include <iostream>
 #include "../common/cbasetypes.h"
+#include "Windows.h"
 
 namespace rA 
 {
@@ -58,15 +60,34 @@ namespace rA
 			virtual bool ipban_check(uint32 ip) = 0;
 		};
 
+		// Function Pointer Declaration of IpBan concrete implementation() [Entry Point Function]
+		typedef IpBanIF* (*CREATE_IpBan) ();
+
 		class IpBanManager {
-			std::map<size_t, std::shared_ptr<IpBanIF>> aListeners;
+		private:
+			struct sDllEntry { HINSTANCE aDSOHandle; size_t aListenerIndex; };
+			std::map<size_t, std::shared_ptr<IpBanIF>> aManagedLister; //those are the one we might need to release
+			std::map<size_t, IpBanIF*> aListeners;
+			std::map < std::string, sDllEntry > aDlls; 
+
+			IpBanManager()
+				: aListeners()
+				, aDlls()
+			{}
+			~IpBanManager()
+			{
+				for ( const auto& lCur : aDlls )
+					mUnLoadDll(lCur.first);
+				for ( const auto& lCur : aListeners )
+					mDettachListener(lCur.first);
+			}
 		public:
 			static IpBanManager& smGetInstance() 
 			{ 
 				static IpBanManager lInstance;
 				return lInstance;
 			}
-			size_t mAttachListener( std::shared_ptr<IpBanIF> pListener, size_t pIndex = -1 ) 
+			size_t mAttachListener( IpBanIF* pListener, size_t pIndex = -1 ) 
 			{
 				size_t lIndex = pIndex;
 				if ( lIndex == -1 )
@@ -74,9 +95,39 @@ namespace rA
 				aListeners[lIndex] = pListener; //index might be taken
 				return lIndex;
 			}
+			size_t mAttachListener( std::shared_ptr<IpBanIF> pListener, size_t pIndex = -1 )
+			{
+				size_t lIndex = mAttachListener(pListener.get(),pIndex);
+				aManagedLister[lIndex] = pListener;
+				return lIndex;
+			}
+
 			void mDettachListener( size_t pIndex ) 
 			{
 				aListeners.erase(pIndex);
+			}
+
+			bool mLoadDll( const std::string& pDllpath ) {
+				if ( aDlls.find( pDllpath ) != aDlls.end() ) //already loaded
+					return false;
+				 sDllEntry lEntry;
+				 lEntry.aDSOHandle = LoadLibrary( pDllpath.c_str() );
+				 if (lEntry.aDSOHandle == nullptr) {
+					std::cout << "Failed to load library. path="<< pDllpath.c_str() <<"\n";
+					return false;
+				 }
+				 CREATE_IpBan pEntryFunction = (CREATE_IpBan)GetProcAddress(lEntry.aDSOHandle,"CreateIpBanObj");
+				 rA::login::IpBanIF* pIpBan = pEntryFunction();
+				 lEntry.aListenerIndex = mAttachListener(pIpBan);
+				 return true;
+			}
+
+			void mUnLoadDll( const std::string& pDllpath ) {
+				if ( aDlls.find( pDllpath ) != aDlls.end() ) {
+					mDettachListener(aDlls.at( pDllpath ).aListenerIndex);
+					FreeLibrary( aDlls.at(pDllpath).aDSOHandle );
+					aDlls.erase(pDllpath);
+				}
 			}
 
 			void mForeachInit(){

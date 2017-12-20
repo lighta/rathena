@@ -216,9 +216,10 @@ void IpBan::ipban_init(void) {
                         username, password, hostname, port, database);
 		Sql_ShowDebug(sql_handle);
 		Sql_Free(sql_handle);
-		exit(EXIT_FAILURE);
+		//exit(EXIT_FAILURE);
+		return;
 	}
-        ShowInfo("Ipban connection made.\n");
+  ShowInfo("Ipban connection made.\n");
         
 	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
 		Sql_ShowDebug(sql_handle);

@@ -833,6 +833,7 @@ int do_init(int argc, char** argv) {
 
 	// initialize static and dynamic ipban system
 	rA::login::IpBanManager::smGetInstance().mAttachListener( std::shared_ptr<rA::login::IpBanIF>( new rA::login::IpBan() ) );
+	rA::login::IpBanManager::smGetInstance().mLoadDll("Plugin_IpBan.dll"); //hardcoded test
 	rA::login::IpBanManager::smGetInstance().mForeachInit();
 
 	// Online user database init
