@@ -4,6 +4,7 @@
 #ifndef _ITEMDB_HPP_
 #define _ITEMDB_HPP_
 
+#include <string>
 #include "../common/db.h"
 #include "../common/mmo.h" // ITEM_NAME_LENGTH
 
@@ -793,7 +794,8 @@ extern struct s_roulette_db rd;
 struct item_data
 {
 	unsigned short nameid;
-	char name[ITEM_NAME_LENGTH],jname[ITEM_NAME_LENGTH];
+	std::string name;
+	std::string jname;
 
 	//Do not add stuff between value_buy and view_id (see how getiteminfo works)
 	int value_buy;

@@ -1023,23 +1023,16 @@ static const char* skip_word(const char* p)
 /// @see add_str
 static int add_word(const char* p)
 {
-	char* word;
-	int len;
-	int i;
-
 	// Check for a word
-	len = skip_word(p) - p;
+	intptr_t len = skip_word(p) - p;
 	if( len == 0 )
 		disp_error_message("script:add_word: invalid word. A word consists of undercores and/or alphanumeric characters, and valid variable prefixes/postfixes.", p);
 
 	// Duplicate the word
-	word = (char*)aMalloc(len+1);
-	memcpy(word, p, len);
-	word[len] = 0;
+	std::string word = std::string( p, len );
 
 	// add the word
-	i = add_str(word);
-	aFree(word);
+	int i = add_str(word.c_str());
 	return i;
 }
 
@@ -2411,15 +2404,11 @@ static void read_constdb(void){
 	};
 
 	for( int i = 0; i < ARRAYLENGTH(dbsubpath); i++ ){
-		int n2 = strlen(db_path) + strlen(dbsubpath[i]) + 1;
-		char* dbsubpath2 = (char*)aMalloc(n2 + 1);
+		std::string dbsubpath2 = db_path;
+		dbsubpath2 += dbsubpath[i];
+
 		bool silent = i > 0;
-
-		safesnprintf(dbsubpath2, n2, "%s%s", db_path, dbsubpath[i]);
-
-		sv_readdb(dbsubpath2, "const.txt", ',', 1, 3, -1, &read_constdb_sub, silent);
-
-		aFree(dbsubpath2);
+		sv_readdb(dbsubpath2.c_str(), "const.txt", ',', 1, 3, -1, &read_constdb_sub, silent);	
 	}
 }
 
@@ -8676,7 +8665,7 @@ BUILDIN_FUNC(getequipname)
 
 	item = sd->inventory_data[i];
 	if( item != 0 )
-		script_pushstrcopy(st,item->jname);
+		script_pushstrcopy(st,item->jname.c_str());
 	else
 		script_pushconststr(st,"");
 
@@ -13638,8 +13627,8 @@ BUILDIN_FUNC(getitemname)
 	}
 	item_name=(char *)aMalloc(ITEM_NAME_LENGTH*sizeof(char));
 
-	memcpy(item_name, i_data->jname, ITEM_NAME_LENGTH);
-	script_pushstr(st,item_name);
+	memcpy(item_name, i_data->jname.c_str(), ITEM_NAME_LENGTH);
+	script_pushstr(st,item_name); //shared_ptr might avoid useless copy
 	return SCRIPT_CMD_SUCCESS;
 }
 
@@ -15738,7 +15727,7 @@ BUILDIN_FUNC(insertchar)
 	const char *c = script_getstr(st,3);
 	int index = script_getnum(st,4);
 	char *output;
-	size_t len = strlen(str);
+	int len = min(strlen(str),INT_MAX);
 
 	if(index < 0)
 		index = 0;

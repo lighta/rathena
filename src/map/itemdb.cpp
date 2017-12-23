@@ -84,11 +84,11 @@ static int itemdb_searchname_sub(DBKey key, DBData *data, va_list ap)
 	dst2 = va_arg(ap,struct item_data **);
 
 	//Absolute priority to Aegis code name.
-	if (dst != NULL && strcmpi(item->name, str) == 0)
+	if (dst != NULL && strcmpi(item->name.c_str(), str) == 0)
 		*dst = item;
 
 	//Second priority to Client displayed name.
-	if (dst2 != NULL && strcmpi(item->jname, str) == 0)
+	if (dst2 != NULL && strcmpi(item->jname.c_str(), str) == 0)
 		*dst2 = item;
 	return 0;
 }
@@ -124,11 +124,12 @@ static int itemdb_searchname_array_sub(DBKey key, DBData data, va_list ap)
 	struct item_data *item = (struct item_data *)db_data2ptr(&data);
 	char *str = va_arg(ap,char *);
 
-	if (stristr(item->jname,str))
+	if (stristr(item->jname.c_str(),str))
 		return 0;
-	if (stristr(item->name,str))
+	if (stristr(item->name.c_str(),str))
 		return 0;
-	return strcmpi(item->jname,str);
+	//return strcmpi(item->jname.c_str(),str); //do we really need this ?
+	return -1;
 }
 
 /*==========================================
@@ -414,8 +415,8 @@ static void itemdb_create_dummy(void) {
 	dummy_item->weight = 1;
 	dummy_item->value_sell = 1;
 	dummy_item->type = IT_ETC; //Etc item
-	safestrncpy(dummy_item->name, "UNKNOWN_ITEM", sizeof(dummy_item->name));
-	safestrncpy(dummy_item->jname, "Unknown Item", sizeof(dummy_item->jname));
+	dummy_item->name = "UNKNOWN_ITEM";
+	dummy_item->jname = "Unknown Item";
 	dummy_item->view_id = UNKNOWN_ITEM_ID;
 }
 
@@ -1272,9 +1273,9 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		// Adds a new Item ID
 		id = itemdb_create_item(nameid);
 	}
-
-	safestrncpy(id->name, str[1], sizeof(id->name));
-	safestrncpy(id->jname, str[2], sizeof(id->jname));
+	//if name too long
+	id->name = std::string( str[1] );
+	id->jname = std::string( str[2] );
 
 	id->type = atoi(str[3]);
 

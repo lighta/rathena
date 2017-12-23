@@ -581,6 +581,7 @@ struct auction_data {
 	struct item item;
 	// This data is required for searching, as itemdb is not read by char server
 	char item_name[ITEM_NAME_LENGTH];
+	//std::string item_name;
 	short type;
 
 	unsigned short hours;
