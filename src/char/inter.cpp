@@ -608,7 +608,7 @@ int inter_accreg_fromsql(uint32 account_id, uint32 char_id, int fd, int type)
 {
 	char* data;
 	size_t len;
-	unsigned int plen = 0;
+	size_t plen = 0;
 
 	switch( type ) {
 		case 3: //char reg

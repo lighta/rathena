@@ -15727,7 +15727,7 @@ BUILDIN_FUNC(insertchar)
 	const char *c = script_getstr(st,3);
 	int index = script_getnum(st,4);
 	char *output;
-	int len = min(strlen(str),INT_MAX);
+	int len = static_cast<int>(min(strlen(str),INT_MAX));
 
 	if(index < 0)
 		index = 0;

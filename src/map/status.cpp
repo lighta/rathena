@@ -14521,27 +14521,34 @@ int status_readdb(void)
 	// read databases
 	// path,filename,separator,mincol,maxcol,maxrow,func_parsor
 	for(i=0; i<ARRAYLENGTH(dbsubpath); i++){
-		int n1 = strlen(db_path)+strlen(dbsubpath[i])+1;
-		int n2 = strlen(db_path)+strlen(DBPATH)+strlen(dbsubpath[i])+1;
-		char* dbsubpath1 = (char*)aMalloc(n1+1);
-		char* dbsubpath2 = (char*)aMalloc(n2+1);
+		size_t n1 = strlen(db_path)+strlen(dbsubpath[i])+1;
+		size_t n2 = strlen(db_path)+strlen(DBPATH)+strlen(dbsubpath[i])+1;
+		char* dbsubpath1_old = (char*)aMalloc(n1+1);
+		char* dbsubpath2_old = (char*)aMalloc(n2+1);
+
+		std::string dbsubpath1=db_path; //common db path for re/pre
+		std::string dbsubpath2=db_path; //specific db path for re/pre
+		dbsubpath1+=dbsubpath[i];
 
 		if(i==0) {
-			safesnprintf(dbsubpath1,n1,"%s%s",db_path,dbsubpath[i]);
-			safesnprintf(dbsubpath2,n2,"%s/%s%s",db_path,DBPATH,dbsubpath[i]);
+			dbsubpath2+=DBPATH;
+			dbsubpath2+=dbsubpath[i];
+			safesnprintf(dbsubpath1_old,n1,"%s%s",db_path,dbsubpath[i]);
+			safesnprintf(dbsubpath2_old,n2,"%s/%s%s",db_path,DBPATH,dbsubpath[i]);
 		}
 		else {
-			safesnprintf(dbsubpath1,n1,"%s%s",db_path,dbsubpath[i]);
-			safesnprintf(dbsubpath2,n1,"%s%s",db_path,dbsubpath[i]);
+			dbsubpath2+=dbsubpath[i];
+			safesnprintf(dbsubpath1_old,n1,"%s%s",db_path,dbsubpath[i]);
+			safesnprintf(dbsubpath2_old,n1,"%s%s",db_path,dbsubpath[i]);
 		}
 
-		status_readdb_attrfix(dbsubpath2,i > 0); // !TODO use sv_readdb ?
-		sv_readdb(dbsubpath1, "status_disabled.txt", ',', 2, 2, -1, &status_readdb_status_disabled, i > 0);
-		sv_readdb(dbsubpath1, "size_fix.txt",',',MAX_WEAPON_TYPE,MAX_WEAPON_TYPE,ARRAYLENGTH(atkmods),&status_readdb_sizefix, i > 0);
-
-		status_yaml_readdb_refine(dbsubpath2, "refine_db.yml");
-		aFree(dbsubpath1);
-		aFree(dbsubpath2);
+		status_readdb_attrfix(dbsubpath2.c_str(),i > 0); // !TODO use sv_readdb ?
+		sv_readdb(dbsubpath1.c_str(), "status_disabled.txt", ',', 2, 2, -1, &status_readdb_status_disabled, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "size_fix.txt",',',MAX_WEAPON_TYPE,MAX_WEAPON_TYPE,ARRAYLENGTH(atkmods),&status_readdb_sizefix, i > 0);
+		status_yaml_readdb_refine(dbsubpath2.c_str(), "refine_db.yml");
+		
+		aFree(dbsubpath1_old);
+		aFree(dbsubpath2_old);
 	}
 	return 0;
 }

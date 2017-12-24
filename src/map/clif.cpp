@@ -19852,7 +19852,7 @@ void clif_sale_search_reply( struct map_session_data* sd, struct cash_item_data*
 /// 09ac <length>.W <account id>.L <item name>.?B (CZ_REQ_CASH_BARGAIN_SALE_ITEM_INFO)
 void clif_parse_sale_search( int fd, struct map_session_data* sd ){
 #if PACKETVER_SUPPORTS_SALES
-	char item_name[ITEM_NAME_LENGTH];
+	std::string item_name;
 	struct item_data *id = NULL;
 
 	nullpo_retv(sd);
@@ -19864,10 +19864,9 @@ void clif_parse_sale_search( int fd, struct map_session_data* sd ){
 	if( !pc_has_permission( sd, PC_PERM_CASHSHOP_SALE ) ){
 		return;
 	}
+	item_name = std::string( RFIFOCP( fd, 8 ), min( max(0,RFIFOW(fd,2)-7), ITEM_NAME_LENGTH ) );
 
-	safestrncpy( item_name, RFIFOCP(fd, 8), min(RFIFOW(fd, 2) - 7, ITEM_NAME_LENGTH) );
-
-	id = itemdb_searchname(item_name);
+	id = itemdb_searchname(item_name.c_str());
 
 	if( id ){
 		int i;

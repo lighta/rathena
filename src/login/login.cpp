@@ -281,7 +281,7 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
  */
 int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 	struct mmo_account acc;
-	int len;
+	size_t len;
 
 	char ip[16];
 	ip2str(session[sd->fd]->client_addr, ip);

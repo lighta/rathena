@@ -6220,7 +6220,7 @@ ACMD_FUNC(autolootitem)
 					ShowDebug("Non-existant item %d on autolootitem list (account_id: %d, char_id: %d)", sd->state.autolootid[i], sd->status.account_id, sd->status.char_id);
 					continue;
 				}
-				sprintf(atcmd_output, "'%s'/'%s' {%hu}", item_data->name, item_data->jname, item_data->nameid);
+				sprintf(atcmd_output, "'%s'/'%s' {%hu}", item_data->name.c_str(), item_data->jname.c_str(), item_data->nameid);
 				clif_displaymessage(fd, atcmd_output);
 			}
 		}
@@ -7284,9 +7284,9 @@ ACMD_FUNC(mobinfo)
 			if (pc_isvip(sd)) // Display drop rate increase for VIP
 				droprate += (droprate * battle_config.vip_drop_increase) / 100;
 			if (item_data->slot)
-				sprintf(atcmd_output2, " - %s[%d]  %02.02f%%", item_data->jname, item_data->slot, (float)droprate / 100);
+				sprintf(atcmd_output2, " - %s[%d]  %02.02f%%", item_data->jname.c_str(), item_data->slot, (float)droprate / 100);
 			else
-				sprintf(atcmd_output2, " - %s  %02.02f%%", item_data->jname, (float)droprate / 100);
+				sprintf(atcmd_output2, " - %s  %02.02f%%", item_data->jname.c_str(), (float)droprate / 100);
 			strcat(atcmd_output, atcmd_output2);
 			if (++j % 3 == 0) {
 				clif_displaymessage(fd, atcmd_output);
@@ -7317,14 +7317,14 @@ ACMD_FUNC(mobinfo)
 					j++;
 					if (j == 1) {
 						if (item_data->slot)
-							sprintf(atcmd_output2, " %s[%d]  %02.02f%%", item_data->jname, item_data->slot, mvppercent);
+							sprintf(atcmd_output2, " %s[%d]  %02.02f%%", item_data->jname.c_str(), item_data->slot, mvppercent);
 						else
-							sprintf(atcmd_output2, " %s  %02.02f%%", item_data->jname, mvppercent);
+							sprintf(atcmd_output2, " %s  %02.02f%%", item_data->jname.c_str(), mvppercent);
 					} else {
 						if (item_data->slot)
-							sprintf(atcmd_output2, " - %s[%d]  %02.02f%%", item_data->jname, item_data->slot, mvppercent);
+							sprintf(atcmd_output2, " - %s[%d]  %02.02f%%", item_data->jname.c_str(), item_data->slot, mvppercent);
 						else
-							sprintf(atcmd_output2, " - %s  %02.02f%%", item_data->jname, mvppercent);
+							sprintf(atcmd_output2, " - %s  %02.02f%%", item_data->jname.c_str(), mvppercent);
 					}
 					strcat(atcmd_output, atcmd_output2);
 				}

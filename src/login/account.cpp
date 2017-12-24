@@ -700,7 +700,7 @@ void mmo_send_global_accreg(AccountDB* self, int fd, int account_id, int char_id
 	Sql* sql_handle = ((AccountDB_SQL*)self)->accounts;
 	AccountDB_SQL* db = (AccountDB_SQL*)self;
 	char* data;
-	int plen = 0;
+	size_t plen = 0;
 	size_t len;
 
 	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT `key`, `index`, `value` FROM `%s` WHERE `account_id`='%d'", db->global_acc_reg_str_table, account_id) )
@@ -749,7 +749,7 @@ void mmo_send_global_accreg(AccountDB* self, int fd, int account_id, int char_id
 		WFIFOW(fd, 14) += 1;
 
 		if( plen > 60000 ) {
-			WFIFOW(fd, 2) = plen;
+			WFIFOW(fd, 2) = static_cast<int>(plen);
 			WFIFOSET(fd, plen);
 
 			// prepare follow up

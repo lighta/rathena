@@ -408,9 +408,7 @@ static void itemdb_jobid2mapid(uint64 *bclass, uint64 jobmask)
 * Create dummy item_data as dummy_item and dummy item group entry as dummy_itemgroup
 */
 static void itemdb_create_dummy(void) {
-	CREATE(dummy_item, struct item_data, 1);
-
-	memset(dummy_item, 0, sizeof(struct item_data));
+	dummy_item = new item_data();
 	dummy_item->nameid = 500;
 	dummy_item->weight = 1;
 	dummy_item->value_sell = 1;
@@ -425,9 +423,7 @@ static void itemdb_create_dummy(void) {
 * @param nameid
 */
 static struct item_data *itemdb_create_item(unsigned short nameid) {
-	struct item_data *id;
-	CREATE(id, struct item_data, 1);
-	memset(id, 0, sizeof(struct item_data));
+	struct item_data *id = new struct item_data();
 	id->nameid = nameid;
 	id->type = IT_ETC; //Etc item
 	uidb_put(itemdb, nameid, id);
@@ -1262,6 +1258,11 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		ShowWarning("itemdb_parse_dbrow: Invalid id %d in line %d of \"%s\", skipping.\n", atoi(str[0]), line, source);
 		return false;
 	}
+	if( strlen(str[1]) > ITEM_NAME_LENGTH || strlen(str[2]) > ITEM_NAME_LENGTH ) //not hard requierement but nice to have
+	{
+		ShowWarning("itemdb_parse_dbrow: Invalid name too long in line %d of \"%s\", skipping.\n", line, source);
+		return false;
+	}
 	nameid = atoi(str[0]);
 
 	//ID,Name,Jname,Type,Price,Sell,Weight,ATK,DEF,Range,Slot,Job,Job Upper,Gender,Loc,wLV,eLV,refineable,View
@@ -1273,7 +1274,6 @@ static bool itemdb_parse_dbrow(char** str, const char* source, int line, int scr
 		// Adds a new Item ID
 		id = itemdb_create_item(nameid);
 	}
-	//if name too long
 	id->name = std::string( str[1] );
 	id->jname = std::string( str[2] );
 
@@ -1854,12 +1854,7 @@ static void destroy_item_data(struct item_data* self) {
 		}
 		aFree(self->combos);
 	}
-#if defined(DEBUG)
-	// trash item
-	memset(self, 0xDD, sizeof(struct item_data));
-#endif
-	// free self
-	aFree(self);
+	delete self;
 }
 
 /**

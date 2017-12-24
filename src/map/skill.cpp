@@ -21520,12 +21520,18 @@ static void skill_readdb(void)
 		skill_changematerial_count = skill_spellbook_count = skill_magicmushroom_count = 0;
 
 	for(i=0; i<ARRAYLENGTH(dbsubpath); i++){
-		int n1 = strlen(db_path)+strlen(dbsubpath[i])+1;
-		int n2 = strlen(db_path)+strlen(DBPATH)+strlen(dbsubpath[i])+1;
-		char* dbsubpath1 = (char*)aMalloc(n1+1);
-		char* dbsubpath2 = (char*)aMalloc(n2+1);
+		size_t n1 = strlen(db_path)+strlen(dbsubpath[i])+1;
+		size_t n2 = strlen(db_path)+strlen(DBPATH)+strlen(dbsubpath[i])+1;
+		char* dbsubpath1_old = (char*)aMalloc(n1+1);
+		char* dbsubpath2_old = (char*)aMalloc(n2+1);
+
+		std::string dbsubpath1=db_path; //common db path for re/pre
+		std::string dbsubpath2=db_path; //specific db path for re/pre
+		dbsubpath1+=dbsubpath[i];
 
 		if (i == 0) {
+			dbsubpath2+=DBPATH;
+			dbsubpath2+=dbsubpath[i];
 			safesnprintf(dbsubpath1,n1,"%s%s",db_path,dbsubpath[i]);
 			safesnprintf(dbsubpath2,n2,"%s/%s%s",db_path,DBPATH,dbsubpath[i]);
 		} else {
@@ -21533,27 +21539,27 @@ static void skill_readdb(void)
 			safesnprintf(dbsubpath2,n1,"%s%s",db_path,dbsubpath[i]);
 		}
 		
-		sv_readdb(dbsubpath2, "skill_db.txt"          , ',',  18, 18, -1, skill_parse_row_skilldb, i > 0);
-		sv_readdb(dbsubpath2, "skill_require_db.txt"  , ',',  34, 34, -1, skill_parse_row_requiredb, i > 0);
-		sv_readdb(dbsubpath2, "skill_cast_db.txt"     , ',',   7,  8, -1, skill_parse_row_castdb, i > 0);
-		sv_readdb(dbsubpath2, "skill_castnodex_db.txt", ',',   2,  3, -1, skill_parse_row_castnodexdb, i > 0);
-		sv_readdb(dbsubpath2, "skill_unit_db.txt"     , ',',   8,  8, -1, skill_parse_row_unitdb, i > 0);
-		sv_readdb(dbsubpath2, "skill_nocast_db.txt"   , ',',   2,  2, -1, skill_parse_row_nocastdb, i > 0);
+		sv_readdb(dbsubpath2.c_str(), "skill_db.txt"          , ',',  18, 18, -1, skill_parse_row_skilldb, i > 0);
+		sv_readdb(dbsubpath2.c_str(), "skill_require_db.txt"  , ',',  34, 34, -1, skill_parse_row_requiredb, i > 0);
+		sv_readdb(dbsubpath2.c_str(), "skill_cast_db.txt"     , ',',   7,  8, -1, skill_parse_row_castdb, i > 0);
+		sv_readdb(dbsubpath2.c_str(), "skill_castnodex_db.txt", ',',   2,  3, -1, skill_parse_row_castnodexdb, i > 0);
+		sv_readdb(dbsubpath2.c_str(), "skill_unit_db.txt"     , ',',   8,  8, -1, skill_parse_row_unitdb, i > 0);
+		sv_readdb(dbsubpath2.c_str(), "skill_nocast_db.txt"   , ',',   2,  2, -1, skill_parse_row_nocastdb, i > 0);
 
-		sv_readdb(dbsubpath2, "produce_db.txt"        , ',',   5,  5+2*MAX_PRODUCE_RESOURCE, MAX_SKILL_PRODUCE_DB, skill_parse_row_producedb, i > 0);
-		sv_readdb(dbsubpath1, "create_arrow_db.txt"   , ',', 1+2,  1+2*MAX_ARROW_RESULT, MAX_SKILL_ARROW_DB, skill_parse_row_createarrowdb, i > 0);
-		sv_readdb(dbsubpath1, "abra_db.txt"           , ',',   3,  3, MAX_SKILL_ABRA_DB, skill_parse_row_abradb, i > 0);
-		sv_readdb(dbsubpath1, "spellbook_db.txt"      , ',',   3,  3, MAX_SKILL_SPELLBOOK_DB, skill_parse_row_spellbookdb, i > 0);
-		sv_readdb(dbsubpath1, "magicmushroom_db.txt"  , ',',   1,  2, MAX_SKILL_MAGICMUSHROOM_DB, skill_parse_row_magicmushroomdb, i > 0);
-		sv_readdb(dbsubpath1, "skill_copyable_db.txt"       , ',',   2,  4, -1, skill_parse_row_copyabledb, i > 0);
-		sv_readdb(dbsubpath1, "skill_improvise_db.txt"      , ',',   2,  2, MAX_SKILL_IMPROVISE_DB, skill_parse_row_improvisedb, i > 0);
-		sv_readdb(dbsubpath1, "skill_changematerial_db.txt" , ',',   5,  5+2*MAX_SKILL_CHANGEMATERIAL_SET, MAX_SKILL_CHANGEMATERIAL_DB, skill_parse_row_changematerialdb, i > 0);
-		sv_readdb(dbsubpath1, "skill_nonearnpc_db.txt"      , ',',   2,  3, -1, skill_parse_row_nonearnpcrangedb, i > 0);
+		sv_readdb(dbsubpath2.c_str(), "produce_db.txt"        , ',',   5,  5+2*MAX_PRODUCE_RESOURCE, MAX_SKILL_PRODUCE_DB, skill_parse_row_producedb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "create_arrow_db.txt"   , ',', 1+2,  1+2*MAX_ARROW_RESULT, MAX_SKILL_ARROW_DB, skill_parse_row_createarrowdb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "abra_db.txt"           , ',',   3,  3, MAX_SKILL_ABRA_DB, skill_parse_row_abradb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "spellbook_db.txt"      , ',',   3,  3, MAX_SKILL_SPELLBOOK_DB, skill_parse_row_spellbookdb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "magicmushroom_db.txt"  , ',',   1,  2, MAX_SKILL_MAGICMUSHROOM_DB, skill_parse_row_magicmushroomdb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "skill_copyable_db.txt"       , ',',   2,  4, -1, skill_parse_row_copyabledb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "skill_improvise_db.txt"      , ',',   2,  2, MAX_SKILL_IMPROVISE_DB, skill_parse_row_improvisedb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "skill_changematerial_db.txt" , ',',   5,  5+2*MAX_SKILL_CHANGEMATERIAL_SET, MAX_SKILL_CHANGEMATERIAL_DB, skill_parse_row_changematerialdb, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "skill_nonearnpc_db.txt"      , ',',   2,  3, -1, skill_parse_row_nonearnpcrangedb, i > 0);
 #ifdef ADJUST_SKILL_DAMAGE
-		sv_readdb(dbsubpath1, "skill_damage_db.txt"         , ',',   4,  7, -1, skill_parse_row_skilldamage, i > 0);
+		sv_readdb(dbsubpath1.c_str(), "skill_damage_db.txt"         , ',',   4,  7, -1, skill_parse_row_skilldamage, i > 0);
 #endif
-		aFree(dbsubpath1);
-		aFree(dbsubpath2);
+		aFree(dbsubpath1_old);
+		aFree(dbsubpath2_old);
 	}
 	
 	skill_init_unit_layout();
