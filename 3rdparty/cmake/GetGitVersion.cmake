@@ -26,29 +26,40 @@ set(__get_git_version INCLUDED)
 function(get_git_version)
   if(GIT_EXECUTABLE)
       #determine remote tracking master sha
-      execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse origin/master
+      set (git_cmd "${GIT_EXECUTABLE}") #fix space in path issue
+      #message( STATUS "Git Determining remote tracking master sha, PROJECT_SOURCE_DIR =${PROJECT_SOURCE_DIR}")
+      execute_process(COMMAND ${git_cmd} rev-parse origin/master
+          WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
           RESULT_VARIABLE status
           OUTPUT_VARIABLE GIT_VERSION
-          ERROR_QUIET)
+          ERROR_QUIET
+      )
       if(${status})
+        #message( STATUS "status=${status}")
         set(GIT_VERSION "unknow")
       else()
+        #message( STATUS "GIT_VERSION=${GIT_VERSION}")
         string(STRIP ${GIT_VERSION} GIT_VERSION)
       endif()
     
       #determine current head sha
-      execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --verify HEAD
+      #message( STATUS "Git Determining current head sha")
+      execute_process(COMMAND ${git_cmd} rev-parse --verify HEAD
+          WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
           RESULT_VARIABLE status
           OUTPUT_VARIABLE GIT_HEAD_VERSION
-          ERROR_QUIET)
+          ERROR_QUIET
+      )
       if(${status})
+        #message( STATUS "status=${status}")
         set(GIT_HEAD_VERSION "unknow")
       else()
+        #message( STATUS "GIT_HEAD_VERSION=${GIT_HEAD_VERSION}")
         string(STRIP ${GIT_HEAD_VERSION} GIT_HEAD_VERSION)
       endif()   
 
   endif()
-  message("-- git Version: ${GIT_VERSION}, ${GIT_HEAD_VERSION}")
+  message(STATUS "-- git Version: ${GIT_VERSION}, ${GIT_HEAD_VERSION}")
   set(GIT_VERSION ${GIT_VERSION} PARENT_SCOPE)
   set(GIT_HEAD_VERSION ${GIT_HEAD_VERSION} PARENT_SCOPE)
 endfunction()
