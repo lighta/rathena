@@ -8,8 +8,8 @@ find_path( PCRE_LOCAL_INCLUDE_DIRS "pcre.h"
 	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/include"
 	NO_DEFAULT_PATH )
 find_library( PCRE_LOCAL_LIBRARIES
-	NAMES pcre
-	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+	NAMES pcre pcre8
+	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib/${visual_arch_eqname}"
 	NO_DEFAULT_PATH )
 mark_as_advanced( PCRE_LOCAL_LIBRARIES )
 mark_as_advanced( PCRE_LOCAL_INCLUDE_DIRS )

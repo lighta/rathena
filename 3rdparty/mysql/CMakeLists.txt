@@ -9,7 +9,7 @@ find_path( MYSQL_LOCAL_INCLUDE_DIRS "mysql.h"
 	NO_DEFAULT_PATH )
 find_library( MYSQL_LOCAL_LIBRARIES
 	NAMES libmysql
-	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib/${visual_arch_eqname}"
 	NO_DEFAULT_PATH )
 mark_as_advanced( MYSQL_LOCAL_LIBRARIES )
 mark_as_advanced( MYSQL_LOCAL_INCLUDE_DIRS )

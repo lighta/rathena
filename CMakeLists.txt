@@ -42,8 +42,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON) #...is required...
 #actually this might be misleading for arm...
 if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
 	set(architecture x86)
+	set(visual_arch_eqname Win32)
 elseif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
 	set(architecture x64)
+	set(visual_arch_eqname x64)
 else()
 	message( FATAL_ERROR "unexpected architecture (CMAKE_SIZEOF_VOID_P is ${CMAKE_SIZEOF_VOID_P})" )
 endif()
@@ -164,6 +166,7 @@ endif()
 #
 # math library (FreeBSD/Linux/Solaris)
 #
+if( NOT WIN32 )
 message( STATUS "Detecting math library (m)" )
 CHECK_INCLUDE_FILE( math.h HAVE_MATH_H )
 if( NOT HAVE_MATH_H )
@@ -176,7 +179,7 @@ if( FUNCTION_FLOOR_LIBRARIES )
 	set_property( CACHE GLOBAL_LIBRARIES  PROPERTY VALUE ${GLOBAL_LIBRARIES} ${FUNCTION_FLOOR_LIBRARIES} )
 endif()
 message( STATUS "Detecting math library (m) - done" )
-
+endif()
 
 #
 # dynamic loading library (Linux)

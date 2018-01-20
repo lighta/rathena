@@ -8,8 +8,8 @@ find_path( ZLIB_LOCAL_INCLUDE_DIRS "zlib.h"
 	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/include"
 	NO_DEFAULT_PATH )
 find_library( ZLIB_LOCAL_LIBRARIES
-	NAMES zdll
-	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib"
+	NAMES zdll zlib
+	PATHS "${CMAKE_CURRENT_SOURCE_DIR}/lib/${visual_arch_eqname}"
 	NO_DEFAULT_PATH )
 mark_as_advanced( ZLIB_LOCAL_LIBRARIES )
 mark_as_advanced( ZLIB_LOCAL_INCLUDE_DIRS )
