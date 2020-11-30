@@ -5,6 +5,7 @@
 
 #include <stdlib.h> // exit
 #include <string.h>
+#include <memory>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/mmo.hpp"
@@ -29,7 +30,7 @@ static char   log_db_database[32] = "";
 static char   log_codepage[32] = "";
 static char   log_login_db[256] = "loginlog";
 
-static Sql* sql_handle = NULL;
+static std::unique_ptr<RAII_SQLHandler> sql_handle(nullptr);
 static bool enabled = false;
 
 
@@ -45,16 +46,16 @@ unsigned long loginlog_failedattempts(uint32 ip, unsigned int minutes) {
 	if( !enabled )
 		return 0;
 
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT count(*) FROM `%s` WHERE `ip` = '%s' AND (`rcode` = '0' OR `rcode` = '1') AND `time` > NOW() - INTERVAL %d MINUTE",
+	if( SQL_ERROR == Sql_Query(sql_handle->raw(), "SELECT count(*) FROM `%s` WHERE `ip` = '%s' AND (`rcode` = '0' OR `rcode` = '1') AND `time` > NOW() - INTERVAL %d MINUTE",
 		log_login_db, ip2str(ip,NULL), minutes) )// how many times failed account? in one ip.
-		Sql_ShowDebug(sql_handle);
+		Sql_ShowDebug(sql_handle->raw());
 
-	if( SQL_SUCCESS == Sql_NextRow(sql_handle) )
+	if( SQL_SUCCESS == Sql_NextRow(sql_handle->raw()) )
 	{
 		char* data;
-		Sql_GetData(sql_handle, 0, &data, NULL);
+		Sql_GetData(sql_handle->raw(), 0, &data, NULL);
 		failures = strtoul(data, NULL, 10);
-		Sql_FreeResult(sql_handle);
+		Sql_FreeResult(sql_handle->raw());
 	}
 	return failures;
 }
@@ -68,22 +69,22 @@ unsigned long loginlog_failedattempts(uint32 ip, unsigned int minutes) {
  * @param message:
  */
 void login_log(uint32 ip, const char* username, int rcode, const char* message) {
-	char esc_username[NAME_LENGTH*2+1];
-	char esc_message[255*2+1];
+	char esc_username[NAME_LENGTH*2+1]={0};
+	char esc_message[255*2+1]={0};
 	int retcode;
 
 	if( !enabled )
 		return;
 
-	Sql_EscapeStringLen(sql_handle, esc_username, username, strnlen(username, NAME_LENGTH));
-	Sql_EscapeStringLen(sql_handle, esc_message, message, strnlen(message, 255));
+	Sql_EscapeStringLen(sql_handle->raw(), esc_username, username, strnlen(username, NAME_LENGTH));
+	Sql_EscapeStringLen(sql_handle->raw(), esc_message, message, strnlen(message, 255));
 
-	retcode = Sql_Query(sql_handle,
+	retcode = Sql_Query(sql_handle->raw(),
 		"INSERT INTO `%s`(`time`,`ip`,`user`,`rcode`,`log`) VALUES (NOW(), '%s', '%s', '%d', '%s')",
 		log_login_db, ip2str(ip,NULL), esc_username, rcode, esc_message);
 
 	if( retcode != SQL_SUCCESS )
-		Sql_ShowDebug(sql_handle);
+		Sql_ShowDebug(sql_handle->raw());
 }
 
 /**
@@ -182,19 +183,18 @@ bool loginlog_init(void) {
 		codepage = global_codepage;
 	}
 
-	sql_handle = Sql_Malloc();
-
-	if( SQL_ERROR == Sql_Connect(sql_handle, username, password, hostname, port, database) )
+	sql_handle = std::unique_ptr<RAII_SQLHandler>(new RAII_SQLHandler());
+	if( SQL_ERROR == Sql_Connect(sql_handle->raw(), username, password, hostname, port, database) )
 	{
         ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
                         username, password, hostname, port, database);
-		Sql_ShowDebug(sql_handle);
-		Sql_Free(sql_handle);
+		Sql_ShowDebug(sql_handle->raw());
+		sql_handle.reset();
 		exit(EXIT_FAILURE);
 	}
 
-	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
-		Sql_ShowDebug(sql_handle);
+	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle->raw(), codepage) )
+		Sql_ShowDebug(sql_handle->raw());
 
 	enabled = true;
 
@@ -208,7 +208,6 @@ bool loginlog_init(void) {
  * @return true success
  */
 bool loginlog_final(void) {
-	Sql_Free(sql_handle);
-	sql_handle = NULL;
+	sql_handle.reset();
 	return true;
 }

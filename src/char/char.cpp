@@ -3115,8 +3115,6 @@ void do_final(void)
 	char_set_all_offline(-1);
 	char_set_all_offline_sql();
 
-	inter_final();
-
 	flush_fifos();
 
 	do_final_msg();
@@ -3133,7 +3131,7 @@ void do_final(void)
 		char_fd = -1;
 	}
 
-	Sql_Free(sql_handle);
+	inter_final();
 	mapindex_final();
 
 	ShowStatus("Finished.\n");

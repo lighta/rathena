@@ -352,4 +352,20 @@ void SqlStmt_Free(SqlStmt* self);
 
 void Sql_Init(void);
 
+
+class RAII_SQLHandler {
+public:
+	RAII_SQLHandler(){
+		_handle = Sql_Malloc();
+	}
+	~RAII_SQLHandler(){
+		Sql_Free(_handle);
+		_handle = 0;
+	}
+	Sql* raw() const { return _handle; }
+private:
+	Sql* _handle;
+	RAII_SQLHandler(const RAII_SQLHandler& rhs) = delete;
+};
+
 #endif /* SQL_HPP */

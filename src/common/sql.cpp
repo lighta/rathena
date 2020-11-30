@@ -33,8 +33,8 @@ unsigned int mysql_reconnect_count;
 /// Sql handle
 struct Sql
 {
-	StringBuf buf;
-	MYSQL handle;
+	RAII_StringBuf buf;
+	MYSQL* handle;
 	MYSQL_RES* result;
 	MYSQL_ROW row;
 	unsigned long* lengths;
@@ -79,16 +79,15 @@ struct SqlStmt
 /// Allocates and initializes a new Sql handle.
 Sql* Sql_Malloc(void)
 {
-	Sql* self;
+	Sql* self = new Sql();
 
-	CREATE(self, Sql, 1);
-	mysql_init(&self->handle);
-	StringBuf_Init(&self->buf);
+	//CREATE(self, Sql, 1);
+	self->handle = mysql_init(nullptr);
 	self->lengths = NULL;
 	self->result = NULL;
 	self->keepalive = INVALID_TIMER;
 	my_bool reconnect = 1;
-	mysql_options(&self->handle, MYSQL_OPT_RECONNECT, &reconnect);
+	mysql_options(self->handle, MYSQL_OPT_RECONNECT, &reconnect);
 	return self;
 }
 
@@ -99,7 +98,7 @@ Sql* Sql_Malloc(void)
  * @return last error number
  */
 unsigned int Sql_GetError( Sql* self ){
-	return mysql_errno( &self->handle );
+	return mysql_errno(self->handle );
 }
 
 static int Sql_P_Keepalive(Sql* self);
@@ -119,10 +118,10 @@ int Sql_Connect(Sql* self, const char* user, const char* passwd, const char* hos
 	if( self == NULL )
 		return SQL_ERROR;
 
-	StringBuf_Clear(&self->buf);
-	if( !mysql_real_connect(&self->handle, host, user, passwd, db, (unsigned int)port, NULL/*unix_socket*/, 0/*clientflag*/) )
+	StringBuf_Clear(self->buf.raw());
+	if( !mysql_real_connect(self->handle, host, user, passwd, db, (unsigned int)port, NULL/*unix_socket*/, 0/*clientflag*/) )
 	{
-		ShowSQL("%s\n", mysql_error(&self->handle));
+		ShowSQL("%s\n", mysql_error(self->handle));
 		return SQL_ERROR;
 	}
 
@@ -203,7 +202,7 @@ int Sql_SetEncoding(Sql* self, const char* encoding)
 /// Pings the connection.
 int Sql_Ping(Sql* self)
 {
-	if( self && mysql_ping(&self->handle) == 0 )
+	if( self && mysql_ping(self->handle) == 0 )
 		return SQL_SUCCESS;
 	return SQL_ERROR;
 }
@@ -251,7 +250,7 @@ static int Sql_P_Keepalive(Sql* self)
 size_t Sql_EscapeString(Sql* self, char *out_to, const char *from)
 {
 	if( self )
-		return (size_t)mysql_real_escape_string(&self->handle, out_to, from, (unsigned long)strlen(from));
+		return (size_t)mysql_real_escape_string(self->handle, out_to, from, (unsigned long)strlen(from));
 	else
 		return (size_t)mysql_escape_string(out_to, from, (unsigned long)strlen(from));
 }
@@ -262,7 +261,7 @@ size_t Sql_EscapeString(Sql* self, char *out_to, const char *from)
 size_t Sql_EscapeStringLen(Sql* self, char *out_to, const char *from, size_t from_len)
 {
 	if( self )
-		return (size_t)mysql_real_escape_string(&self->handle, out_to, from, (unsigned long)from_len);
+		return (size_t)mysql_real_escape_string(self->handle, out_to, from, (unsigned long)from_len);
 	else
 		return (size_t)mysql_escape_string(out_to, from, (unsigned long)from_len);
 }
@@ -291,19 +290,19 @@ int Sql_QueryV(Sql* self, const char* query, va_list args)
 		return SQL_ERROR;
 
 	Sql_FreeResult(self);
-	StringBuf_Clear(&self->buf);
-	StringBuf_Vprintf(&self->buf, query, args);
-	if( mysql_real_query(&self->handle, StringBuf_Value(&self->buf), (unsigned long)StringBuf_Length(&self->buf)) )
+	StringBuf_Clear(self->buf.raw());
+	StringBuf_Vprintf(self->buf.raw(), query, args);
+	if( mysql_real_query(self->handle, StringBuf_Value(self->buf.raw()), (unsigned long)StringBuf_Length(self->buf.raw())) )
 	{
-		ShowSQL("DB error - %s\n", mysql_error(&self->handle));
-		ra_mysql_error_handler(mysql_errno(&self->handle));
+		ShowSQL("DB error - %s\n", mysql_error(self->handle));
+		ra_mysql_error_handler(mysql_errno(self->handle));
 		return SQL_ERROR;
 	}
-	self->result = mysql_store_result(&self->handle);
-	if( mysql_errno(&self->handle) != 0 )
+	self->result = mysql_store_result(self->handle);
+	if( mysql_errno(self->handle) != 0 )
 	{
-		ShowSQL("DB error - %s\n", mysql_error(&self->handle));
-		ra_mysql_error_handler(mysql_errno(&self->handle));
+		ShowSQL("DB error - %s\n", mysql_error(self->handle));
+		ra_mysql_error_handler(mysql_errno(self->handle));
 		return SQL_ERROR;
 	}
 	return SQL_SUCCESS;
@@ -318,19 +317,19 @@ int Sql_QueryStr(Sql* self, const char* query)
 		return SQL_ERROR;
 
 	Sql_FreeResult(self);
-	StringBuf_Clear(&self->buf);
-	StringBuf_AppendStr(&self->buf, query);
-	if( mysql_real_query(&self->handle, StringBuf_Value(&self->buf), (unsigned long)StringBuf_Length(&self->buf)) )
+	StringBuf_Clear(self->buf.raw());
+	StringBuf_AppendStr(self->buf.raw(), query);
+	if( mysql_real_query(self->handle, StringBuf_Value(self->buf.raw()), (unsigned long)StringBuf_Length(self->buf.raw())) )
 	{
-		ShowSQL("DB error - %s\n", mysql_error(&self->handle));
-		ra_mysql_error_handler(mysql_errno(&self->handle));
+		ShowSQL("DB error - %s\n", mysql_error(self->handle));
+		ra_mysql_error_handler(mysql_errno(self->handle));
 		return SQL_ERROR;
 	}
-	self->result = mysql_store_result(&self->handle);
-	if( mysql_errno(&self->handle) != 0 )
+	self->result = mysql_store_result(self->handle);
+	if( mysql_errno(self->handle) != 0 )
 	{
-		ShowSQL("DB error - %s\n", mysql_error(&self->handle));
-		ra_mysql_error_handler(mysql_errno(&self->handle));
+		ShowSQL("DB error - %s\n", mysql_error(self->handle));
+		ra_mysql_error_handler(mysql_errno(self->handle));
 		return SQL_ERROR;
 	}
 	return SQL_SUCCESS;
@@ -342,7 +341,7 @@ int Sql_QueryStr(Sql* self, const char* query)
 uint64 Sql_LastInsertId(Sql* self)
 {
 	if( self )
-		return (uint64)mysql_insert_id(&self->handle);
+		return (uint64)mysql_insert_id(self->handle);
 	else
 		return 0;
 }
@@ -373,7 +372,7 @@ uint64 Sql_NumRows(Sql* self)
 uint64 Sql_NumRowsAffected(Sql* self)
 {
 	if( self )
-		return (uint64)mysql_affected_rows(&self->handle);
+		return (uint64)mysql_affected_rows(self->handle);
 	return 0;
 }
 
@@ -391,7 +390,7 @@ int Sql_NextRow(Sql* self)
 			return SQL_SUCCESS;
 		}
 		self->lengths = NULL;
-		if( mysql_errno(&self->handle) == 0 )
+		if( mysql_errno(self->handle) == 0 )
 			return SQL_NO_DATA;
 	}
 	return SQL_ERROR;
@@ -440,8 +439,8 @@ void Sql_ShowDebug_(Sql* self, const char* debug_file, const unsigned long debug
 {
 	if( self == NULL )
 		ShowDebug("at %s:%lu - self is NULL\n", debug_file, debug_line);
-	else if( StringBuf_Length(&self->buf) > 0 )
-		ShowDebug("at %s:%lu - %s\n", debug_file, debug_line, StringBuf_Value(&self->buf));
+	else if( StringBuf_Length(self->buf.raw()) > 0 )
+		ShowDebug("at %s:%lu - %s\n", debug_file, debug_line, StringBuf_Value(self->buf.raw()));
 	else
 		ShowDebug("at %s:%lu\n", debug_file, debug_line);
 }
@@ -454,9 +453,11 @@ void Sql_Free(Sql* self)
 	if( self )
 	{
 		Sql_FreeResult(self);
-		StringBuf_Destroy(&self->buf);
-		if( self->keepalive != INVALID_TIMER ) delete_timer(self->keepalive, Sql_P_KeepaliveTimer);
-		aFree(self);
+		if( self->keepalive != INVALID_TIMER ) 
+			delete_timer(self->keepalive, Sql_P_KeepaliveTimer);
+		mysql_close(self->handle);
+		delete self;
+		//aFree(self);
 	}
 }
 
@@ -634,10 +635,10 @@ SqlStmt* SqlStmt_Malloc(Sql* sql)
 	if( sql == NULL )
 		return NULL;
 
-	stmt = mysql_stmt_init(&sql->handle);
+	stmt = mysql_stmt_init(sql->handle);
 	if( stmt == NULL )
 	{
-		ShowSQL("DB error - %s\n", mysql_error(&sql->handle));
+		ShowSQL("DB error - %s\n", mysql_error(sql->handle));
 		return NULL;
 	}
 	CREATE(self, SqlStmt, 1);

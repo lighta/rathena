@@ -984,6 +984,7 @@ void inter_final(void)
 
 	if(geoip_cache) aFree(geoip_cache);
 	
+	Sql_Free(sql_handle);
 	return;
 }
 

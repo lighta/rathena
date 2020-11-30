@@ -5,6 +5,7 @@
 #define STRLIB_HPP
 
 #include <stdarg.h>
+#include <iostream>
 
 #include "cbasetypes.hpp"
 #include "malloc.hpp"
@@ -138,15 +139,18 @@ const char* skip_escaped_c(const char* p);
 /// Returns 'true' if it was able to process the specified file, or 'false' if it could not be read.
 bool sv_readdb(const char* directory, const char* filename, char delim, int mincols, int maxcols, int maxrows, bool (*parseproc)(char* fields[], int columns, int current), bool silent);
 
-
 /// StringBuf - dynamic string
 struct StringBuf
 {
 	char *buf_;
 	char *ptr_;
 	unsigned int max_;
+	StringBuf()
+	: buf_(nullptr)
+	, ptr_(nullptr)
+	, max_(0)
+	{}	
 };
-typedef struct StringBuf StringBuf;
 
 StringBuf* _StringBuf_Malloc(const char *file, int line, const char *func);
 #define StringBuf_Malloc() _StringBuf_Malloc(ALC_MARK)
@@ -165,5 +169,21 @@ char* StringBuf_Value(StringBuf* self);
 void StringBuf_Clear(StringBuf* self);
 void StringBuf_Destroy(StringBuf* self);
 void StringBuf_Free(StringBuf* self);
+
+//tmp handler to ensure we not leaking anymore
+class RAII_StringBuf {
+public:
+	RAII_StringBuf(){
+		_handle = StringBuf_Malloc();
+	}
+	~RAII_StringBuf(){
+		StringBuf_Free(_handle);
+		_handle = 0;
+	}
+	StringBuf* raw() const { return _handle; }
+private:
+	StringBuf* _handle;
+	RAII_StringBuf(const RAII_StringBuf& rhs) = delete;
+};
 
 #endif /* STRLIB_HPP */

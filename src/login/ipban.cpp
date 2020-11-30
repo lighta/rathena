@@ -5,6 +5,8 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <memory>
+#include <iostream>
 
 #include "../common/cbasetypes.hpp"
 #include "../common/showmsg.hpp"
@@ -25,9 +27,11 @@ static char   ipban_codepage[32] = "";
 static char   ipban_table[32] = "ipbanlist";
 
 // globals
-static Sql* sql_handle = NULL;
-static int cleanup_timer_id = INVALID_TIMER;
-static bool ipban_inited = false;
+namespace {
+	std::unique_ptr<RAII_SQLHandler> sql_handle(nullptr);
+	static int cleanup_timer_id = INVALID_TIMER;
+	static bool ipban_inited = false;
+}
 
 //early declaration
 TIMER_FUNC(ipban_cleanup);
@@ -45,20 +49,20 @@ bool ipban_check(uint32 ip) {
 	if( !login_config.ipban )
 		return false;// ipban disabled
 
-	if( SQL_ERROR == Sql_Query(sql_handle, "SELECT count(*) FROM `%s` WHERE `rtime` > NOW() AND (`list` = '%u.*.*.*' OR `list` = '%u.%u.*.*' OR `list` = '%u.%u.%u.*' OR `list` = '%u.%u.%u.%u')",
+	if( SQL_ERROR == Sql_Query(sql_handle->raw(), "SELECT count(*) FROM `%s` WHERE `rtime` > NOW() AND (`list` = '%u.*.*.*' OR `list` = '%u.%u.*.*' OR `list` = '%u.%u.%u.*' OR `list` = '%u.%u.%u.%u')",
 		ipban_table, p[3], p[3], p[2], p[3], p[2], p[1], p[3], p[2], p[1], p[0]) )
 	{
-		Sql_ShowDebug(sql_handle);
+		Sql_ShowDebug(sql_handle->raw());
 		// close connection because we can't verify their connectivity.
 		return true;
 	}
 
-	if( SQL_ERROR == Sql_NextRow(sql_handle) )
+	if( SQL_ERROR == Sql_NextRow(sql_handle->raw()) )
 		return true;// Shouldn't happen, but just in case...
 
-	Sql_GetData(sql_handle, 0, &data, NULL);
+	Sql_GetData(sql_handle->raw(), 0, &data, NULL);
 	matches = atoi(data);
-	Sql_FreeResult(sql_handle);
+	Sql_FreeResult(sql_handle->raw());
 
 	return( matches > 0 );
 }
@@ -80,9 +84,9 @@ void ipban_log(uint32 ip) {
 	if( failures >= login_config.dynamic_pass_failure_ban_limit )
 	{
 		uint8* p = (uint8*)&ip;
-		if( SQL_ERROR == Sql_Query(sql_handle, "INSERT INTO `%s`(`list`,`btime`,`rtime`,`reason`) VALUES ('%u.%u.%u.*', NOW() , NOW() +  INTERVAL %d MINUTE ,'Password error ban')",
+		if( SQL_ERROR == Sql_Query(sql_handle->raw(), "INSERT INTO `%s`(`list`,`btime`,`rtime`,`reason`) VALUES ('%u.%u.%u.*', NOW() , NOW() +  INTERVAL %d MINUTE ,'Password error ban')",
 			ipban_table, p[3], p[2], p[1], login_config.dynamic_pass_failure_ban_duration) )
-			Sql_ShowDebug(sql_handle);
+			Sql_ShowDebug(sql_handle->raw());
 	}
 }
 
@@ -97,11 +101,11 @@ void ipban_log(uint32 ip) {
  * @return 0
  */
 TIMER_FUNC(ipban_cleanup){
-	if( !login_config.ipban )
+	if( !login_config.ipban || !sql_handle )
 		return 0;// ipban disabled
 
-	if( SQL_ERROR == Sql_Query(sql_handle, "DELETE FROM `%s` WHERE `rtime` <= NOW()", ipban_table) )
-		Sql_ShowDebug(sql_handle);
+	if( SQL_ERROR == Sql_Query(sql_handle->raw(), "DELETE FROM `%s` WHERE `rtime` <= NOW()", ipban_table) )
+		Sql_ShowDebug(sql_handle->raw());
 
 	return 0;
 }
@@ -204,19 +208,19 @@ void ipban_init(void) {
 	}
 
 	// establish connections
-	sql_handle = Sql_Malloc();
-	if( SQL_ERROR == Sql_Connect(sql_handle, username, password, hostname, port, database) )
+	sql_handle = std::make_unique<RAII_SQLHandler>();
+	if( SQL_ERROR == Sql_Connect(sql_handle->raw(), username, password, hostname, port, database) )
 	{
                 ShowError("Couldn't connect with uname='%s',passwd='%s',host='%s',port='%d',database='%s'\n",
                         username, password, hostname, port, database);
-		Sql_ShowDebug(sql_handle);
-		Sql_Free(sql_handle);
+		Sql_ShowDebug(sql_handle->raw());
+		sql_handle.reset();
 		exit(EXIT_FAILURE);
 	}
-        ShowInfo("Ipban connection made.\n");
+	ShowInfo("Ipban connection made.\n");
         
-	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle, codepage) )
-		Sql_ShowDebug(sql_handle);
+	if( codepage[0] != '\0' && SQL_ERROR == Sql_SetEncoding(sql_handle->raw(), codepage) )
+		Sql_ShowDebug(sql_handle->raw());
 
 	if( login_config.ipban_cleanup_interval > 0 )
 	{ // set up periodic cleanup of connection history and active bans
@@ -241,6 +245,5 @@ void ipban_final(void) {
 	ipban_cleanup(0,0,0,0); // always clean up on login-server stop
 
 	// close connections
-	Sql_Free(sql_handle);
-	sql_handle = NULL;
+	sql_handle.reset();
 }

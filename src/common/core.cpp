@@ -19,6 +19,7 @@
 #include "winapi.hpp" // Console close event handling
 #include <direct.h> // _chdir
 #endif
+#include <string>
 
 #include "cbasetypes.hpp"
 #include "malloc.hpp"

@@ -34,23 +34,25 @@
 using namespace rathena;
 
 #define LOGIN_MAX_MSG 30				/// Max number predefined in msg_conf
-static char* msg_table[LOGIN_MAX_MSG];	/// Login Server messages_conf
+static char* msg_table[LOGIN_MAX_MSG]={0};	/// Login Server messages_conf
 
 //definition of exported var declared in header
-struct mmo_char_server ch_server[MAX_SERVERS];	/// char server data
+struct mmo_char_server ch_server[MAX_SERVERS]={0};	/// char server data
 struct Login_Config login_config;				/// Configuration of login-serv
 std::unordered_map<uint32,struct online_login_data> online_db;
 std::unordered_map<uint32,struct auth_node> auth_db;
 
 // account database
-AccountDB* accounts = NULL;
+AccountDB* accounts = nullptr;
 // Advanced subnet check [LuzZza]
 struct s_subnet {
 	uint32 mask;
 	uint32 char_ip;
 	uint32 map_ip;
-} subnet[16];
+};
 int subnet_count = 0; //number of subnet config
+std::array<s_subnet,16> subnet; //TODO remplace this by std::vector
+
 
 int login_fd; // login server file descriptor socket
 
@@ -291,16 +293,15 @@ int login_mmo_auth_new(const char* userid, const char* pass, const char sex, con
  */
 int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 	struct mmo_account acc;
-	int len;
 
-	char ip[16];
+	char ip[16]={0};
 	ip2str(session[sd->fd]->client_addr, ip);
 
 	// DNS Blacklist check
 	if( login_config.use_dnsbl ) {
-		char r_ip[16];
-		char ip_dnsbl[256];
-		char* dnsbl_serv;
+		char r_ip[16]={0};
+		char ip_dnsbl[256]={0};
+		char* dnsbl_serv=nullptr;
 		uint8* sin_addr = (uint8*)&session[sd->fd]->client_addr;
 
 		sprintf(r_ip, "%u.%u.%u.%u", sin_addr[0], sin_addr[1], sin_addr[2], sin_addr[3]);
@@ -315,7 +316,7 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 
 	}
 
-	len = strnlen(sd->userid, NAME_LENGTH);
+	int len = strnlen(sd->userid, NAME_LENGTH);
 
 	// Account creation with _M/_F
 	if( login_config.new_account_flag ) {
@@ -367,7 +368,7 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
 	}
 
 	if( login_config.client_hash_check && !isServer ) {
-		struct client_hash_node *node = NULL;
+		struct client_hash_node *node = nullptr;
 		bool match = false;
 
 		for( node = login_config.client_hash_nodes; node; node = node->next ) {
@@ -435,7 +436,8 @@ int login_mmo_auth(struct login_session_data* sd, bool isServer) {
  * @return true if matching else false
  */
 bool login_check_encrypted(const char* str1, const char* str2, const char* passwd) {
-	char tmpstr[64+1], md5str[32+1];
+	char tmpstr[64+1]={0};
+	char md5str[32+1]={0};
 
 	safesnprintf(tmpstr, sizeof(tmpstr), "%s%s", str1, str2);
 	MD5_String(tmpstr, md5str);
@@ -571,13 +573,16 @@ int login_lan_config_read(const char *lancfgName) {
  * @return True:success, Fals:failure (file not found|readable)
  */
 bool login_config_read(const char* cfgName, bool normal) {
-	char line[1024], w1[32], w2[1024];
-	FILE* fp = fopen(cfgName, "r");
-	if (fp == NULL) {
+	char line[1024]={0};
+	char w1[32]={0};
+	char w2[1024]={0};
+
+	std::unique_ptr<FILE,void(*)(FILE*)> fp(fopen(cfgName, "r"), [](FILE* f) { fclose(f); } );
+	if (fp == nullptr) {
 		ShowError("Configuration file (%s) not found.\n", cfgName);
 		return false;
 	}
-	while(fgets(line, sizeof(line), fp)) {
+	while(fgets(line, sizeof(line), fp.get())) {
 		if (line[0] == '/' && line[1] == '/')
 			continue;
 
@@ -717,7 +722,6 @@ bool login_config_read(const char* cfgName, bool normal) {
 			loginlog_config_read(w1, w2);
 		}
 	}
-	fclose(fp);
 	ShowInfo("Finished reading %s.\n", cfgName);
 	return true;
 }

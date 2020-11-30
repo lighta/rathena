@@ -271,8 +271,10 @@ static void ers_obj_destroy(ERS *self)
 	else
 		InstanceList = instance->Next;
 
+	ShowDebug("ers_obj_destroy '%s', instanceAdr=%d\n",instance->Name,intptr_t(instance));
 	if( instance->Options & ERS_OPT_FREE_NAME )
 		aFree(instance->Name);
+
 
 	aFree(instance);
 }
@@ -294,6 +296,7 @@ ERS *ers_new(uint32 size, const char *name, enum ERSOptions options)
 {
 	struct ers_instance_t *instance;
 	CREATE(instance,struct ers_instance_t, 1);
+	ShowDebug("ers_new Allocating '%s', instanceAdr=%d\n",name,intptr_t(instance));
 
 	size += sizeof(struct ers_list);
 
@@ -355,12 +358,13 @@ void ers_report(void) {
  * Call on shutdown to clear remaining entries
  **/
 void ers_final(void) {
-	struct ers_instance_t *instance = InstanceList, *next;
+	struct ers_instance_t* instance = InstanceList;
+	struct ers_instance_t* prev;
 
 	while( instance ) {
-		next = instance->Next;
+		prev = instance->Prev;
 		ers_obj_destroy((ERS*)instance);
-		instance = next;
+		instance = prev;
 	}
 }
 

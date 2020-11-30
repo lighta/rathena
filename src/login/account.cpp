@@ -6,6 +6,7 @@
 #include <algorithm> //min / max
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 
 #include "../common/malloc.hpp"
 #include "../common/mmo.hpp"
@@ -120,6 +121,7 @@ static bool account_db_sql_init(AccountDB* self) {
 	const char* codepage = "";
 
 	db->accounts = Sql_Malloc();
+	std::cout << "account_db_sql_init_ Sql_Malloc called, ret=" << intptr_t(db->accounts) << "\n";
 	sql_handle = db->accounts;
 
 	username = db->db_username;
@@ -158,8 +160,9 @@ static void account_db_sql_destroy(AccountDB* self){
 		Sql_ShowDebug( db->accounts );
 	}
 
+	std::cout << "account_db_sql_destroy Sql_Free called, on=" << intptr_t(db->accounts) << "\n";
 	Sql_Free(db->accounts);
-	db->accounts = NULL;
+	db->accounts = nullptr;
 	aFree(db);
 }
 
